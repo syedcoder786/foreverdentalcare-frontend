@@ -82,6 +82,7 @@ describe('other schemas', () => {
       whatsappNumber: '',
       email: '',
       mapEmbedUrl: '',
+      mapLinkUrl: '',
       openingTime: '10:00',
       closingTime: '09:00',
       breakStartTime: '',

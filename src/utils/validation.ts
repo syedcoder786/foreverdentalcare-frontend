@@ -1,3 +1,4 @@
+import { extractEmbedSrc } from './maps';
 import { z } from 'zod';
 
 /** Same rule as the backend: optional '+', 10-15 digits, spaces/dashes/parentheses allowed. */
@@ -88,8 +89,14 @@ export const settingsSchema = z
     email: z.string().trim().email('Enter a valid email').or(z.literal('')),
     mapEmbedUrl: z
       .string()
+      .transform(extractEmbedSrc)
+      .pipe(z.string().regex(/^https:\/\/www\.google\.com\/maps\/embed\?.+/, 'Must be a Google Maps embed URL (https://www.google.com/maps/embed?...)').or(z.literal(''))),
+    mapLinkUrl: z
+      .string()
       .trim()
-      .regex(/^https:\/\/www\.google\.com\/maps\/embed\?.+/, 'Must be a Google Maps embed URL (https://www.google.com/maps/embed?...)')
+      .max(500)
+      .regex(/^https:\/\/\S+$/, 'Use a full https:// link')
+      .refine((v) => !/goo\.gl\//i.test(v), 'Short maps.app.goo.gl links do not open on every network. Use the full google.com/maps link.')
       .or(z.literal('')),
     openingTime: z.string().regex(timeRegex, 'Required'),
     closingTime: z.string().regex(timeRegex, 'Required'),

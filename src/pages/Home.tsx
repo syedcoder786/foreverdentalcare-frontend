@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { motion, useScroll, useTransform, type Variants } from 'motion/react';
-import { ArrowRight, CalendarPlus, Check, Clock, Phone, Quote, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarPlus, Check, Clock, MapPin, Phone, Quote, Sparkles, Star } from 'lucide-react';
 import type { Section } from '../types';
 import { useDoctors, useGallery, usePage, useServices, useSite, useSpecialties, useTestimonials } from '../hooks/usePublicData';
 import { LinkButton } from '../components/ui/Button';
@@ -15,6 +15,7 @@ import { CmsButtons, CmsCards, CmsHeading, CustomSection, RichText, SmartLink } 
 import { Seo } from '../components/content/Seo';
 import { EASE_OUT, Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 import { formatPhone, telHref } from '../utils/format';
+import { directionsHref } from '../utils/maps';
 import { getErrorMessage } from '../utils/errors';
 import { todayStatus, weeklySchedule } from '../utils/clinicHours';
 import { cn } from '../utils/cn';
@@ -41,6 +42,59 @@ function Aurora() {
       />
       <div className="absolute inset-0 opacity-0 [background-image:radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)] [background-size:22px_22px] dark:opacity-100" />
     </div>
+  );
+}
+
+function HeroContact({ href, icon, label, newTab, children }: { href: string; icon: ReactNode; label: string; newTab?: boolean; children: ReactNode }) {
+  return (
+    <a
+      href={href}
+      {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      className="group flex items-center gap-3 whitespace-nowrap rounded-full py-1 pr-2"
+    >
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-1 ring-brand-100 transition-colors group-hover:bg-brand-100 dark:bg-brand-400/10 dark:text-brand-300 dark:ring-brand-400/25 dark:group-hover:bg-brand-400/20">
+        {icon}
+      </span>
+      <span className="leading-tight">
+        <span className="block text-xs font-medium text-muted">{label}</span>
+        <span className="block text-base font-semibold text-ink transition-colors group-hover:text-brand-700 dark:group-hover:text-brand-300">{children}</span>
+      </span>
+    </a>
+  );
+}
+
+/** "Miston Ganj, Rampur" from a full comma-separated address (empty for the seeded placeholder). */
+function shortArea(address?: string): string {
+  if (!address || address.startsWith('[PLACEHOLDER]')) return '';
+  const parts = address.split(',').map((p) => p.trim()).filter(Boolean);
+  return parts.length >= 3 ? parts.slice(-3, -1).join(', ') : parts[0] ?? '';
+}
+
+/** Highlighted "Get directions" card: gradient border, pulsing pin and an arrow button, so it invites a click. */
+function DirectionsCard({ href, area }: { href: string; area: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative rounded-2xl bg-gradient-to-r from-brand-400/80 via-sky-soft-500/60 to-brand-400/80 p-px shadow-lg shadow-brand-700/15 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/30"
+    >
+      <span className="flex items-center gap-3.5 rounded-[15px] bg-surface/95 py-2 pr-2.5 pl-2 backdrop-blur-md">
+        <span className="relative flex size-11 shrink-0 items-center justify-center">
+          <span aria-hidden className="absolute inset-0 animate-ping rounded-xl bg-brand-400/30 [animation-duration:2.4s]" />
+          <span className="relative flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-700 text-white shadow-md shadow-brand-700/30">
+            <MapPin className="size-5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110" aria-hidden />
+          </span>
+        </span>
+        <span className="leading-tight whitespace-nowrap">
+          <span className="block text-base font-semibold text-ink">Get directions</span>
+          <span className="mt-0.5 block text-xs font-medium text-muted">{area ? `${area} · Google Maps` : 'Open in Google Maps'}</span>
+        </span>
+        <span className="ml-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-1 ring-brand-100 transition-all duration-300 group-hover:bg-brand-600 group-hover:text-white group-hover:ring-brand-600 dark:text-brand-300 dark:ring-brand-400/25 dark:group-hover:bg-brand-500 dark:group-hover:text-white">
+          <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+        </span>
+      </span>
+    </a>
   );
 }
 
@@ -91,22 +145,35 @@ function Hero({ section }: { section: Section }) {
               <RichText text={section.body} />
             </motion.div>
           )}
-          <motion.div variants={heroItem} className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <motion.div variants={heroItem} className="mt-9 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5">
             <CmsButtons section={section} />
             {!section.primaryButtonLabel && (
-              <LinkButton to="/book" size="lg" icon={<CalendarPlus className="size-5" aria-hidden />}>{clinic.headerCtaText || 'Book an appointment'}</LinkButton>
-            )}
-            {clinic.phone && (
-              <LinkButton href={telHref(clinic.phone)} variant="ghost" size="lg" icon={<Phone className="size-5" aria-hidden />}>
-                {formatPhone(clinic.phone)}
+              <LinkButton
+                to="/book"
+                size="lg"
+                className="shadow-lg shadow-brand-700/25 hover:-translate-y-0.5 dark:shadow-brand-400/20"
+                icon={<CalendarPlus className="size-5" aria-hidden />}
+              >
+                {clinic.headerCtaText || 'Book an appointment'}
               </LinkButton>
             )}
           </motion.div>
+          <motion.div variants={heroItem} className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+            {clinic.phone && (
+              <HeroContact href={telHref(clinic.phone)} icon={<Phone className="size-[18px] transition-transform duration-200 group-hover:rotate-12" aria-hidden />} label="Call us">
+                {formatPhone(clinic.phone)}
+              </HeroContact>
+            )}
+            {(clinic.mapLinkUrl || clinic.address) && <DirectionsCard href={directionsHref(clinic)} area={shortArea(clinic.address)} />}
+          </motion.div>
           {section.items.length > 0 && (
-            <motion.ul variants={heroItem} className="mt-8 grid gap-2.5 text-sm text-slate-600 sm:grid-cols-3">
+            <motion.ul variants={heroItem} className="mt-8 flex flex-wrap gap-2.5 text-sm font-medium text-slate-600">
               {section.items.map((item, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <span className="flex size-5 items-center justify-center rounded-full bg-brand-100 text-brand-700 dark:text-brand-300">
+                <li
+                  key={i}
+                  className="flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-200/80 bg-surface/60 py-1.5 pr-3.5 pl-1.5 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.03]"
+                >
+                  <span className="flex size-5 items-center justify-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-400/15 dark:text-brand-300">
                     <Check className="size-3" aria-hidden />
                   </span>
                   {item.title}

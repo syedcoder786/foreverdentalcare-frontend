@@ -7,7 +7,7 @@ type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'ghostDanger' | '
 type Size = 'sm' | 'md' | 'lg';
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 ' +
+  'group/btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-all duration-200 ' +
   'disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 select-none';
 
 const variants: Record<Variant, string> = {

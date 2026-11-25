@@ -24,7 +24,7 @@ export function Logo({ className, light }: { className?: string; light?: boolean
       ) : (
         <ToothMark className="size-9 shrink-0" />
       )}
-      <span className="leading-tight">
+      <span className="whitespace-nowrap leading-tight">
         <span className={cn('block font-display text-lg font-semibold', light ? 'text-white' : 'text-ink')}>{clinic.clinicName}</span>
         {clinic.tagline && (
           <span className={cn('block text-[11px] font-medium tracking-wide', light ? 'text-mint' : 'text-muted')}>{clinic.tagline}</span>

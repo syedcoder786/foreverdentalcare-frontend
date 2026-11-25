@@ -49,17 +49,20 @@ export function Navbar() {
           : 'border-b border-transparent bg-transparent',
       )}
     >
-      <div className="container-page flex h-18 items-center justify-between gap-4">
-        <Logo />
+      <div className="mx-auto flex h-18 w-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        <Logo className="shrink-0" />
 
-        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+        <nav
+          aria-label="Main"
+          className="hidden items-center gap-0.5 rounded-full border border-slate-200/80 bg-white/60 p-1 shadow-soft backdrop-blur-md xl:flex dark:border-white/10 dark:bg-white/[0.04]"
+        >
           {links.map((l) =>
             l.external ? (
               <a
                 key={l.to}
                 href={l.to}
                 {...(l.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-ink"
+                className="whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100/70 hover:text-ink dark:hover:bg-white/5"
               >
                 {l.label}
               </a>
@@ -70,8 +73,8 @@ export function Navbar() {
               end={l.to === '/'}
               className={({ isActive }) =>
                 cn(
-                  'relative rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                  isActive ? 'text-brand-800' : 'text-slate-600 hover:text-ink',
+                  'relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                  isActive ? 'text-brand-800' : 'text-slate-600 hover:bg-slate-100/70 hover:text-ink dark:hover:bg-white/5',
                 )
               }
             >
@@ -80,7 +83,7 @@ export function Navbar() {
                   {isActive && (
                     <motion.span
                       layoutId="nav-active-pill"
-                      className="absolute inset-0 -z-10 rounded-full bg-brand-50 ring-1 ring-brand-100 dark:ring-brand-400/20"
+                      className="absolute inset-0 -z-10 rounded-full bg-brand-50 shadow-sm ring-1 ring-brand-100 dark:bg-brand-400/15 dark:ring-brand-400/30"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     />
                   )}
@@ -92,18 +95,28 @@ export function Navbar() {
           )}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <a href={telHref(clinic.phone)} className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-brand-700">
-            <Phone className="size-4" aria-hidden />
-            {formatPhone(clinic.phone)}
+        <div className="hidden shrink-0 items-center gap-2 xl:flex">
+          <a
+            href={telHref(clinic.phone)}
+            title={`Call ${formatPhone(clinic.phone)}`}
+            aria-label={`Call ${formatPhone(clinic.phone)}`}
+            className="group flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-slate-200/80 px-3 text-sm font-medium text-slate-600 transition-colors hover:border-brand-300 hover:text-brand-700 dark:border-white/10 dark:hover:border-brand-400/40"
+          >
+            <Phone className="size-4 transition-transform group-hover:rotate-12" aria-hidden />
+            <span className="hidden 2xl:inline">{formatPhone(clinic.phone)}</span>
           </a>
           <ThemeToggle />
-          <LinkButton to="/book" size="sm" icon={<CalendarPlus className="size-4" aria-hidden />}>
+          <LinkButton
+            to="/book"
+            size="sm"
+            className="ml-1 whitespace-nowrap shadow-lg shadow-brand-700/25 transition-shadow hover:shadow-brand-700/40 dark:shadow-brand-400/20"
+            icon={<CalendarPlus className="size-4" aria-hidden />}
+          >
             {ctaText}
           </LinkButton>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-2 xl:hidden">
           <ThemeToggle />
           <button
             type="button"
@@ -138,7 +151,7 @@ export function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.35, ease: EASE_OUT }}
-            className="overflow-hidden border-t border-slate-100 lg:hidden"
+            className="overflow-hidden border-t border-slate-100 xl:hidden dark:border-white/5"
           >
             <motion.nav
               aria-label="Mobile"

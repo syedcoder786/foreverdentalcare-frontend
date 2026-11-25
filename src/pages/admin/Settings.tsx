@@ -24,6 +24,7 @@ function toForm(s: ClinicSettings): SettingsFormValues {
     whatsappNumber: s.whatsappNumber ?? '',
     email: s.email ?? '',
     mapEmbedUrl: s.mapEmbedUrl ?? '',
+    mapLinkUrl: s.mapLinkUrl ?? '',
     openingTime: s.openingTime,
     closingTime: s.closingTime,
     breakStartTime: s.breakStartTime ?? '',
@@ -107,6 +108,7 @@ export default function Settings() {
         whatsappNumber: v.whatsappNumber.trim(),
         email: v.email.trim(),
         mapEmbedUrl: v.mapEmbedUrl.trim(),
+        mapLinkUrl: v.mapLinkUrl.trim(),
         openingTime: v.openingTime,
         closingTime: v.closingTime,
         breakStartTime: v.breakStartTime || undefined,
@@ -147,9 +149,17 @@ export default function Settings() {
           label="Google Maps embed URL"
           optional
           placeholder="https://www.google.com/maps/embed?pb=..."
-          hint="Google Maps -> Share -> Embed a map -> copy only the src URL."
+          hint="Google Maps -> Share -> Embed a map -> Copy HTML. Paste the whole <iframe> code or just its src URL."
           error={errors.mapEmbedUrl?.message}
           {...register('mapEmbedUrl')}
+        />
+        <Input
+          label="Google Maps link (for Get directions)"
+          optional
+          placeholder="https://www.google.com/maps/dir/?api=1&destination=..."
+          hint="Use a directions link so Get directions opens route planning: https://www.google.com/maps/dir/?api=1&destination= followed by the clinic's plus code or address. Don't use short goo.gl links."
+          error={errors.mapLinkUrl?.message}
+          {...register('mapLinkUrl')}
         />
       </Section>
 

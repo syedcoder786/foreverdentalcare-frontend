@@ -66,14 +66,24 @@ export function CmsButtons({ section, size = 'lg', className, light }: { section
   return (
     <div className={cn('flex flex-col gap-3 sm:flex-row', className)}>
       {section.primaryButtonLabel && section.primaryButtonUrl && (
-        <LinkButton {...props(section.primaryButtonUrl)} size={size} variant={light ? 'white' : 'primary'}>
+        <LinkButton
+          {...props(section.primaryButtonUrl)}
+          size={size}
+          variant={light ? 'white' : 'primary'}
+          className={light ? undefined : 'shadow-lg shadow-brand-700/25 hover:-translate-y-0.5 dark:shadow-brand-400/20'}
+        >
           {section.primaryButtonLabel}
         </LinkButton>
       )}
       {section.secondaryButtonLabel && section.secondaryButtonUrl && (
-        <LinkButton {...props(section.secondaryButtonUrl)} size={size} variant={light ? 'glass' : 'outline'}>
+        <LinkButton
+          {...props(section.secondaryButtonUrl)}
+          size={size}
+          variant={light ? 'glass' : 'outline'}
+          className={light ? undefined : 'hover:-translate-y-0.5 dark:border-white/15 dark:bg-white/[0.03] dark:backdrop-blur'}
+        >
           {section.secondaryButtonLabel}
-          <ArrowRight className="size-4" aria-hidden />
+          <ArrowRight className="size-4 transition-transform duration-200 group-hover/btn:translate-x-1" aria-hidden />
         </LinkButton>
       )}
     </div>

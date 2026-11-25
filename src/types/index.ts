@@ -243,6 +243,8 @@ export interface ClinicSettings {
   instagramUrl?: string;
   youtubeUrl?: string;
   googleReviewsUrl?: string;
+  /** Google Maps share link (e.g. https://maps.app.goo.gl/...), used for "Get directions". */
+  mapLinkUrl?: string;
 }
 
 export type ClinicSettingsPayload = Omit<ClinicSettings, 'timezone'>;

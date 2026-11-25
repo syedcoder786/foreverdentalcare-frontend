@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { CalendarPlus, Clock, Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowUpRight, CalendarPlus, Clock, Mail, MapPin, Navigation, Phone } from 'lucide-react';
 import { useClinic, usePage } from '../hooks/usePublicData';
 import { Seo } from '../components/content/Seo';
 import { CustomSections } from '../components/content/Cms';
@@ -8,6 +8,7 @@ import { LinkButton } from '../components/ui/Button';
 import { WhatsAppIcon } from '../components/layout/WhatsAppButton';
 import { formatPhone, formatTime, telHref, whatsappHref } from '../utils/format';
 import { weeklySchedule } from '../utils/clinicHours';
+import { directionsHref } from '../utils/maps';
 import { cn } from '../utils/cn';
 import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 
@@ -28,7 +29,7 @@ export default function Contact() {
   const { section, sections, seo } = usePage('CONTACT');
   const intro = section('intro');
   const schedule = weeklySchedule(clinic);
-  const mapsSearch = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinic.address)}`;
+  const directions = directionsHref(clinic);
 
   return (
     <>
@@ -57,8 +58,9 @@ export default function Contact() {
         <Stagger className="space-y-4 lg:col-span-2">
           <InfoCard icon={<MapPin className="size-5" aria-hidden />} title="Clinic address">
             <p>{clinic.address}</p>
-            <a href={mapsSearch} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block font-semibold text-brand-700 hover:underline">
+            <a href={directions} target="_blank" rel="noopener noreferrer" className="group mt-2 inline-flex items-center gap-1 font-semibold text-brand-700 hover:underline dark:text-brand-300">
               Get directions
+              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
             </a>
           </InfoCard>
           <InfoCard icon={<Phone className="size-5" aria-hidden />} title="Phone">
@@ -108,8 +110,8 @@ export default function Contact() {
                 <p className="max-w-sm text-sm text-muted">
                   Add the clinic&apos;s Google Maps embed URL in Admin &rarr; Settings to show an interactive map here.
                 </p>
-                <LinkButton href={mapsSearch} target="_blank" rel="noopener noreferrer" variant="outline" size="sm">
-                  Open in Google Maps
+                <LinkButton href={directions} target="_blank" rel="noopener noreferrer" variant="outline" size="sm" icon={<Navigation className="size-4" aria-hidden />}>
+                  Get directions
                 </LinkButton>
               </div>
             )}
