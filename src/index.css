@@ -1,0 +1,167 @@
+@import 'tailwindcss';
+
+/* `dark:` utilities apply when <html class="dark"> (set by ThemeContext and the inline script in index.html). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Teal - primary brand */
+  --color-brand-50: #effcf9;
+  --color-brand-100: #c9f5ec;
+  --color-brand-200: #95eadb;
+  --color-brand-300: #59d6c4;
+  --color-brand-400: #2bbaa9;
+  --color-brand-500: #149d8f;
+  --color-brand-600: #0d8075;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #115a54;
+  --color-brand-900: #124b46;
+
+  /* Soft blue - secondary accent */
+  --color-sky-soft-50: #f1f7ff;
+  --color-sky-soft-100: #e1eeff;
+  --color-sky-soft-200: #c3dcff;
+  --color-sky-soft-500: #4c8dea;
+  --color-sky-soft-700: #2a5fb8;
+
+  /* Semantic tokens (re-mapped in dark mode below) */
+  --color-ink: #0f1f2e;
+  --color-muted: #5b6b7b;
+  --color-canvas: #ffffff; /* page background */
+  --color-surface: #ffffff; /* cards, inputs, panels */
+  --color-mint: #c9f5ec; /* light text on deep-teal bands; never re-mapped */
+
+  --shadow-soft: 0 1px 2px rgb(15 31 46 / 0.04), 0 8px 24px -12px rgb(15 31 46 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(15 31 46 / 0.04), 0 18px 40px -18px rgb(15 31 46 / 0.22);
+  --shadow-glow: 0 0 0 1px rgb(20 157 143 / 0.18), 0 18px 50px -20px rgb(20 157 143 / 0.35);
+
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/*
+ * Dark theme: instead of sprinkling `dark:` variants over every component, the palette itself is re-mapped.
+ * Neutrals (slate) are inverted onto a deep teal-navy scale, light brand/status tints become dark glowing tints,
+ * and accent text shades are brightened for contrast. Components keep their light-mode class names.
+ */
+.dark {
+  color-scheme: dark;
+
+  --color-ink: #e6f2f4;
+  --color-muted: #94abb7;
+  --color-canvas: #050f14;
+  --color-surface: #0b1a21;
+
+  --color-slate-50: #0a1820;
+  --color-slate-100: #11242d;
+  --color-slate-200: #1a313c;
+  --color-slate-300: #29444f;
+  --color-slate-400: #67818d;
+  --color-slate-500: #8aa3ae;
+  --color-slate-600: #a8bdc6;
+  --color-slate-700: #c6d6dd;
+  --color-slate-800: #dde8ec;
+  --color-slate-900: #eef5f7;
+
+  --color-brand-50: #0a2427;
+  --color-brand-100: #0e3234;
+  --color-brand-700: #0f9486;
+  --color-brand-800: #3cc8b6;
+
+  --color-sky-soft-50: #0b1b2e;
+  --color-sky-soft-100: #10294a;
+  --color-sky-soft-200: #1c3b63;
+  --color-sky-soft-700: #93bcf7;
+
+  --color-amber-50: #241a07;
+  --color-amber-200: #533e11;
+  --color-amber-700: #f5c46b;
+  --color-amber-800: #f8d590;
+  --color-emerald-50: #07241b;
+  --color-emerald-200: #134a37;
+  --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7;
+  --color-emerald-800: #a7f3d0;
+  --color-red-50: #2a0d11;
+  --color-red-100: #451820;
+  --color-red-200: #5a1e26;
+  --color-red-700: #fca5a5;
+  --color-red-800: #fecaca;
+  --color-violet-50: #1b1433;
+  --color-violet-600: #a78bfa;
+
+  --shadow-soft: 0 0 0 1px rgb(255 255 255 / 0.02), 0 10px 30px -14px rgb(0 0 0 / 0.7);
+  --shadow-lift: 0 0 0 1px rgb(89 214 196 / 0.08), 0 24px 60px -22px rgb(0 0 0 / 0.85);
+  --shadow-glow: 0 0 0 1px rgb(89 214 196 / 0.28), 0 20px 60px -18px rgb(20 157 143 / 0.55);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+  /* Ambient aurora behind dark-mode pages. */
+  .dark body {
+    background-image:
+      radial-gradient(60rem 30rem at 85% -10%, rgb(20 157 143 / 0.14), transparent 70%),
+      radial-gradient(50rem 28rem at -10% 40%, rgb(76 141 234 / 0.08), transparent 70%);
+    background-attachment: fixed;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply tracking-tight;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+  ::selection {
+    background: rgb(89 214 196 / 0.3);
+  }
+}
+
+/* Theme switch: circular reveal via the View Transitions API (see ThemeContext). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+/* Gradient headline text used for highlighted words (brighter in dark mode). */
+@utility text-gradient-brand {
+  background-image: linear-gradient(100deg, var(--color-brand-700), var(--color-sky-soft-700));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
