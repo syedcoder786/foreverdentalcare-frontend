@@ -491,10 +491,10 @@ function SupabaseHelp() {
     <aside className="h-fit rounded-2xl bg-slate-50 p-5 text-sm text-slate-600 dark:bg-white/[0.03]">
       <h3 className="mb-3 flex items-center gap-2 font-semibold text-ink"><KeyRound className="size-4" aria-hidden /> Using Supabase</h3>
       <ol className="list-decimal space-y-2.5 pl-4">
-        <li>In your Supabase project, click <b>Connect</b> and choose <b>Direct</b> (connection string).</li>
+        <li>In your Supabase project, click <b>Connect</b> and choose <b>Session pooler</b> (port 5432).</li>
         <li>
-          Copy the URI and paste it above. Use <b>Direct connection</b> if this server has IPv6, otherwise the <b>Session pooler</b>{' '}
-          (port 5432). Avoid the Transaction pooler.
+          Copy the URI and paste it above. The Session pooler works over IPv4; the <b>Direct connection</b> only works if this
+          server has IPv6. Avoid the Transaction pooler.
         </li>
         <li>Type your database password. Forgot it? Reset it under <b>Project Settings → Database</b>.</li>
         <li>Press <b>Test connection</b>, keep <b>Copy all data</b> ticked, then switch.</li>
