@@ -22,6 +22,20 @@ describe('parseConnectionString', () => {
     });
   });
 
+  it('ignores line breaks and spaces from a wrapped copy, and keeps a raw % in the password', () => {
+    const wrapped = 'postgresql://postgres.abc:pa%Zss\n@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres';
+    const withSpace = 'postgresql://postgres.abc:pa%Zss @aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres';
+    for (const raw of [wrapped, withSpace]) {
+      expect(parseConnectionString(raw)).toMatchObject({
+        username: 'postgres.abc',
+        password: 'pa%Zss',
+        host: 'aws-0-ap-northeast-1.pooler.supabase.com',
+        port: 5432,
+        database: 'postgres',
+      });
+    }
+  });
+
   it('uses no SSL for localhost and rejects other text', () => {
     expect(parseConnectionString('postgresql://u:p@localhost/clinic')).toMatchObject({ host: 'localhost', port: 5432, database: 'clinic', sslMode: 'disable' });
     expect(parseConnectionString('mysql://u:p@host/db')).toBeNull();

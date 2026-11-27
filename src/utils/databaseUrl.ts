@@ -20,8 +20,11 @@ export function isLocalHost(host: string): boolean {
  * A placeholder password in square brackets is left empty. Returns null when the text is not a connection string.
  */
 export function parseConnectionString(raw: string): Partial<DatabaseConnectionPayload> | null {
+  // A connection string never contains whitespace. Remove line breaks and spaces that sneak in when it is copied
+  // from a wrapped message (some browsers turn a pasted line break into a space, which would end up in the password).
+  const text = raw.replace(/\s+/g, '');
   const match = /^postgres(?:ql)?:\/\/(?:([^:@/]*)(?::(.*))?@)?(\[[^\]]+\]|[^:/?#@]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?$/i.exec(
-    raw.trim(),
+    text,
   );
   if (!match) return null;
   const [, user, password, host, port, database, query] = match;
