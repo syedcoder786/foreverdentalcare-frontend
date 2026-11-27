@@ -3,7 +3,20 @@ import type { ApiResponse, AuthPayload, PatientAuthPayload } from '../types';
 import { tokenStore } from './tokenStore';
 import { patientTokenStore } from './patientTokenStore';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? '';
+/**
+ * Where API calls go. The SPA always calls `/api/...` on its own origin, and that origin forwards to the right backend:
+ * - localhost (npm run dev / npm run preview): Vite proxies /api to the local backend (VITE_DEV_API_PROXY_TARGET,
+ *   default http://localhost:8080).
+ * - Vercel: vercel.json rewrites /api to the Oracle Cloud backend, server side.
+ * Calling the Oracle backend directly from the browser would not work: the Vercel site is HTTPS and the backend is
+ * plain HTTP (browsers block that as mixed content), and the SameSite=Strict refresh cookie needs a same-site API.
+ * Set VITE_API_BASE_URL only to call a backend directly (for example once it has its own HTTPS domain).
+ */
+export function resolveApiBaseUrl(override: string | undefined = import.meta.env.VITE_API_BASE_URL): string {
+  return override?.trim().replace(/\/+$/, '') ?? '';
+}
+
+const baseURL = resolveApiBaseUrl();
 
 /** Shared axios instance. `withCredentials` lets the refresh-token cookies flow to /api/auth/* and /api/patient-auth/*. */
 export const apiClient = axios.create({

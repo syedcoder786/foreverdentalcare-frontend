@@ -5,18 +5,25 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  // On localhost the SPA calls /api on its own origin and Vite forwards to the local Spring Boot backend.
+  // This keeps the refresh-token cookie first-party (SameSite=Strict) without CORS complications.
+  // On Vercel the same /api calls are forwarded to the Oracle Cloud backend by vercel.json.
+  const apiProxy = {
+    '/api': {
+      target: env.VITE_DEV_API_PROXY_TARGET || 'http://localhost:8080',
+      changeOrigin: false,
+    },
+  };
   return {
     plugins: [react(), tailwindcss()],
     server: {
       port: 5173,
-      // In development the SPA calls /api on its own origin and Vite forwards to Spring Boot.
-      // This keeps the refresh-token cookie first-party (SameSite=Strict) without CORS complications.
-      proxy: {
-        '/api': {
-          target: env.VITE_DEV_API_PROXY_TARGET || 'http://localhost:8080',
-          changeOrigin: false,
-        },
-      },
+      proxy: apiProxy,
+    },
+    // `npm run preview` (local test of the production build) uses the same local backend.
+    preview: {
+      port: 4173,
+      proxy: apiProxy,
     },
     build: {
       rollupOptions: {

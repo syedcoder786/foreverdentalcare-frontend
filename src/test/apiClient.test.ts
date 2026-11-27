@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import axios, { AxiosError, AxiosHeaders, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios';
-import { apiClient } from '../services/apiClient';
+import { apiClient, resolveApiBaseUrl } from '../services/apiClient';
 import { tokenStore } from '../services/tokenStore';
 
 function respond(config: InternalAxiosRequestConfig, status: number, data: unknown) {
@@ -79,5 +79,17 @@ describe('apiClient auth handling', () => {
 
     await expect(apiClient.get('/api/public/services')).rejects.toBeInstanceOf(AxiosError);
     expect(refresh).not.toHaveBeenCalled();
+  });
+});
+
+describe('resolveApiBaseUrl', () => {
+  it('uses same-origin /api by default (Vite proxy on localhost, vercel.json rewrite on Vercel)', () => {
+    expect(resolveApiBaseUrl(undefined)).toBe('');
+    expect(resolveApiBaseUrl('')).toBe('');
+    expect(resolveApiBaseUrl('   ')).toBe('');
+  });
+
+  it('honours an explicit VITE_API_BASE_URL without a trailing slash', () => {
+    expect(resolveApiBaseUrl('https://api.example.com/')).toBe('https://api.example.com');
   });
 });

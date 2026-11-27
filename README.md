@@ -40,6 +40,23 @@ npm run build    # type-check + production build into dist/
 
 ## Deployment
 
+### Vercel (current setup)
+
+The backend runs on Oracle Cloud (`http://137.23.54.124`). `vercel.json` forwards every `/api/*` request to it, server side, and sends all other paths to `index.html` (SPA routing):
+
+| Where the site runs | `/api/...` goes to |
+|---|---|
+| `localhost` (`npm run dev` / `npm run preview`) | local backend via the Vite proxy (`VITE_DEV_API_PROXY_TARGET`, default `http://localhost:8080`) |
+| Vercel | Oracle backend via the `vercel.json` rewrite |
+
+The browser therefore only talks HTTPS to the Vercel domain: no mixed-content blocking (the backend is plain HTTP), no CORS, and the `SameSite=Strict` refresh cookie keeps working.
+
+1. Import the `foreverdentalcare-frontend` repo in Vercel (framework: Vite; build and output settings come from `vercel.json`).
+2. Environment variables: leave `VITE_API_BASE_URL` **unset**. Optionally set `VITE_CURRENCY` / `VITE_LOCALE`.
+3. If the backend's address changes, update the destination in `vercel.json`.
+
+### Other hosts
+
 Serve `dist/` as static files with an SPA fallback (unknown paths return `index.html`).
 
 - **Same domain as the API** (recommended): put a reverse proxy in front so `/api/*` goes to the backend, and leave `VITE_API_BASE_URL` empty.
