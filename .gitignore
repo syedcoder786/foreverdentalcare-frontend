@@ -1,0 +1,16 @@
+# Env (only .env.example is committed)
+.env
+.env.local
+.env.*.local
+
+# Build / deps
+node_modules/
+dist/
+coverage/
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
