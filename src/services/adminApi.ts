@@ -12,6 +12,13 @@ import type {
   CalendarRange,
   ClinicSettings,
   ClinicSettingsPayload,
+  WhatsAppSettings,
+  WhatsAppSettingsPayload,
+  MetaTemplate,
+  WhatsAppTemplateName,
+  WhatsAppTemplate,
+  WhatsAppTemplatePayload,
+  WhatsAppCampaign,
   Dashboard,
   DaySchedule,
   DentalService,
@@ -107,6 +114,28 @@ export const adminApi = {
   // ---------- settings & content ----------
   getSettings: () => unwrap(apiClient.get<ApiResponse<ClinicSettings>>('/api/admin/settings')),
   updateSettings: (payload: ClinicSettingsPayload) => unwrap(apiClient.put<ApiResponse<ClinicSettings>>('/api/admin/settings', payload)),
+  getWhatsAppSettings: () => unwrap(apiClient.get<ApiResponse<WhatsAppSettings>>('/api/admin/settings/whatsapp')),
+  updateWhatsAppSettings: (payload: WhatsAppSettingsPayload) =>
+    unwrap(apiClient.put<ApiResponse<WhatsAppSettings>>('/api/admin/settings/whatsapp', payload)),
+  sendWhatsAppTest: (phone: string) => apiClient.post<ApiResponse<void>>('/api/admin/settings/whatsapp/test', { phone }),
+  getTemplateNames: () => unwrap(apiClient.get<ApiResponse<WhatsAppTemplateName[]>>('/api/admin/whatsapp/template-names')),
+  addTemplateName: (name: string, language: string) =>
+    unwrap(apiClient.post<ApiResponse<WhatsAppTemplateName>>('/api/admin/whatsapp/template-names', { name, language })),
+  deleteTemplateName: (id: number) => apiClient.delete(`/api/admin/whatsapp/template-names/${id}`),
+  getTemplateNameDetails: (id: number) =>
+    unwrap(apiClient.get<ApiResponse<MetaTemplate>>(`/api/admin/whatsapp/template-names/${id}/details`)),
+  getWhatsAppTemplates: () => unwrap(apiClient.get<ApiResponse<WhatsAppTemplate[]>>('/api/admin/whatsapp/templates')),
+  createWhatsAppTemplate: (payload: WhatsAppTemplatePayload) =>
+    unwrap(apiClient.post<ApiResponse<WhatsAppTemplate>>('/api/admin/whatsapp/templates', payload)),
+  updateWhatsAppTemplate: (id: number, payload: WhatsAppTemplatePayload) =>
+    unwrap(apiClient.put<ApiResponse<WhatsAppTemplate>>(`/api/admin/whatsapp/templates/${id}`, payload)),
+  deleteWhatsAppTemplate: (id: number) => apiClient.delete(`/api/admin/whatsapp/templates/${id}`),
+  testWhatsAppTemplate: (id: number, phone: string) =>
+    apiClient.post<ApiResponse<void>>(`/api/admin/whatsapp/templates/${id}/test`, { phone }),
+  getWhatsAppAudience: () => unwrap(apiClient.get<ApiResponse<{ optedInPatients: number }>>('/api/admin/whatsapp/audience')),
+  getWhatsAppCampaigns: () => unwrap(apiClient.get<ApiResponse<WhatsAppCampaign[]>>('/api/admin/whatsapp/campaigns')),
+  startWhatsAppCampaign: (templateId: number) =>
+    unwrap(apiClient.post<ApiResponse<WhatsAppCampaign>>('/api/admin/whatsapp/campaigns', { templateId })),
 
   getNavigation: () => unwrap(apiClient.get<ApiResponse<NavigationItem[]>>('/api/admin/navigation')),
   saveNavigation: (items: NavigationItem[]) => unwrap(apiClient.put<ApiResponse<NavigationItem[]>>('/api/admin/navigation', { items })),

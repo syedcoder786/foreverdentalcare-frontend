@@ -4,8 +4,13 @@ import { WhatsAppFloatingButton } from '../components/layout/WhatsAppButton';
 import { ScrollToTop } from '../components/layout/ScrollToTop';
 import { AnimatedOutlet } from '../components/motion/AnimatedOutlet';
 import { ScrollProgress } from '../components/motion/ScrollProgress';
+import { useLocation } from 'react-router-dom';
+import { PatientSignInModal } from '../components/patient/PatientSignInModal';
+import { NextAppointmentCard } from '../components/patient/NextAppointmentCard';
 
 export function PublicLayout() {
+  // The home page shows the card inside its hero (which sits under the transparent navbar).
+  const isHome = useLocation().pathname === '/';
   return (
     <div className="flex min-h-dvh flex-col">
       <a
@@ -18,10 +23,12 @@ export function PublicLayout() {
       <ScrollToTop />
       <Navbar />
       <main id="main" className="flex-1">
+        {!isHome && <NextAppointmentCard />}
         <AnimatedOutlet />
       </main>
       <Footer />
       <WhatsAppFloatingButton />
+      <PatientSignInModal />
     </div>
   );
 }

@@ -16,6 +16,7 @@ import {
   UserRound,
   Users,
   X,
+  MessageCircle,
 } from 'lucide-react';
 import { ToothMark } from '../layout/Logo';
 import { useAuth } from '../../context/AuthContext';
@@ -34,6 +35,7 @@ const items = [
   { to: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
   { to: '/admin/gallery', label: 'Gallery', icon: Images },
   { to: '/admin/seo', label: 'SEO settings', icon: Search },
+  { to: '/admin/whatsapp', label: 'WhatsApp', icon: MessageCircle },
   { to: '/admin/settings', label: 'Clinic settings', icon: Settings },
 ];
 

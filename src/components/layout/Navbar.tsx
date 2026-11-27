@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
-import { CalendarPlus, Menu, Phone, X } from 'lucide-react';
+import { CalendarPlus, Menu, Phone, UserRound, X } from 'lucide-react';
+import { usePatientAuth } from '../../context/PatientAuthContext';
 import { Logo } from './Logo';
 import { LinkButton } from '../ui/Button';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -27,6 +28,8 @@ export function Navbar() {
     : navigation.map((n) => ({ to: n.url, label: n.label, external: !n.url.startsWith('/'), newTab: n.openInNewTab }));
   const ctaText = clinic.headerCtaText || 'Book appointment';
   const location = useLocation();
+  const { status: patientStatus, patient, openSignIn } = usePatientAuth();
+  const initials = (patient?.fullName ?? '').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
 
   useEffect(() => setOpen(false), [location.pathname]);
 
@@ -106,6 +109,30 @@ export function Navbar() {
             <span className="hidden 2xl:inline">{formatPhone(clinic.phone)}</span>
           </a>
           <ThemeToggle />
+          {patientStatus === 'authenticated' ? (
+            <NavLink
+              to="/profile"
+              title="My profile"
+              aria-label="My profile"
+              className={({ isActive }) =>
+                cn(
+                  'flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-700 text-sm font-semibold text-white shadow-sm ring-2 transition-transform hover:scale-105',
+                  isActive ? 'ring-brand-300' : 'ring-transparent',
+                )
+              }
+            >
+              {initials || <UserRound className="size-4" aria-hidden />}
+            </NavLink>
+          ) : (
+            <button
+              type="button"
+              onClick={openSignIn}
+              className="flex h-10 items-center gap-2 whitespace-nowrap rounded-full px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-ink dark:hover:bg-white/5"
+            >
+              <UserRound className="size-4" aria-hidden />
+              Sign in
+            </button>
+          )}
           <LinkButton
             to="/book"
             size="sm"
@@ -190,6 +217,22 @@ export function Navbar() {
                 variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
                 className="mt-3 grid gap-2 sm:grid-cols-2"
               >
+                {patientStatus === 'authenticated' ? (
+                  <LinkButton to="/profile" variant="outline" icon={<UserRound className="size-4" aria-hidden />} className="sm:col-span-2">
+                    My profile{patient ? ` (${patient.fullName.split(' ')[0]})` : ''}
+                  </LinkButton>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      openSignIn();
+                    }}
+                    className="flex h-11 items-center justify-center gap-2 rounded-full border border-slate-300 bg-surface text-sm font-semibold text-ink hover:border-brand-600 hover:text-brand-700 sm:col-span-2"
+                  >
+                    <UserRound className="size-4" aria-hidden /> Sign in with mobile
+                  </button>
+                )}
                 <LinkButton href={telHref(clinic.phone)} variant="outline" icon={<Phone className="size-4" aria-hidden />}>
                   Call {formatPhone(clinic.phone)}
                 </LinkButton>

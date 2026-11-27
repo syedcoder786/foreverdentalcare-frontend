@@ -509,3 +509,170 @@ export interface AdminAppointmentPayload {
   message?: string;
   initialStatus: 'PENDING' | 'CONFIRMED';
 }
+
+// ---------- Patient sign-in (WhatsApp code) ----------
+
+export interface PatientProfile {
+  id: number;
+  fullName: string;
+  phone: string;
+  email?: string;
+  whatsappOptIn: boolean;
+  createdAt: string;
+}
+
+export interface PatientAuthPayload {
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  patient: PatientProfile;
+}
+
+export interface OtpSent {
+  phone: string;
+  maskedPhone: string;
+  expiresInSeconds: number;
+  resendAfterSeconds: number;
+}
+
+export interface OtpVerifyResult {
+  newPatient: boolean;
+  signupToken?: string;
+  auth?: PatientAuthPayload;
+}
+
+export interface PatientAppointment {
+  id: number;
+  status: AppointmentStatus;
+  serviceName: string;
+  doctorName: string;
+  doctorSlug: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  endTime: string;
+  message?: string;
+  createdAt: string;
+}
+
+export interface PatientBookingRequest {
+  serviceId: number;
+  doctorId?: number;
+  appointmentDate: string;
+  appointmentTime: string;
+  message?: string;
+  consent: boolean;
+}
+
+// ---------- Admin: WhatsApp Cloud API settings ----------
+
+export interface WhatsAppSettings {
+  enabled: boolean;
+  phoneNumberId?: string;
+  businessAccountId?: string;
+  accessTokenSet: boolean;
+  accessTokenLast4?: string;
+  otpTemplateName?: string;
+  otpTemplateLanguage: string;
+  defaultCountryCode: string;
+  ready: boolean;
+  updatedAt?: string;
+}
+
+export interface WhatsAppSettingsPayload {
+  enabled: boolean;
+  phoneNumberId: string;
+  businessAccountId: string;
+  /** Empty keeps the saved token. */
+  accessToken: string;
+  otpTemplateName: string;
+  otpTemplateLanguage: string;
+  defaultCountryCode: string;
+}
+
+// ---------- Admin: WhatsApp message templates & campaigns ----------
+
+export type TemplatePurpose =
+  | 'APPOINTMENT_RECEIVED'
+  | 'APPOINTMENT_CONFIRMED'
+  | 'APPOINTMENT_CANCELLED'
+  | 'APPOINTMENT_RESCHEDULED'
+  | 'MARKETING';
+
+export type TemplateParamSource =
+  | 'PATIENT_NAME'
+  | 'PATIENT_FIRST_NAME'
+  | 'SERVICE_NAME'
+  | 'DOCTOR_NAME'
+  | 'APPOINTMENT_DATE'
+  | 'APPOINTMENT_TIME'
+  | 'BOOKING_REFERENCE'
+  | 'CLINIC_NAME'
+  | 'CLINIC_PHONE'
+  | 'CLINIC_ADDRESS'
+  | 'CUSTOM_TEXT';
+
+export interface TemplateParam {
+  source: TemplateParamSource;
+  text?: string | null;
+}
+
+export interface WhatsAppTemplate {
+  id: number;
+  purpose: TemplatePurpose;
+  label: string;
+  enabled: boolean;
+  templateName?: string;
+  templateLanguage: string;
+  headerParams: TemplateParam[];
+  bodyParams: TemplateParam[];
+  buttonParams: TemplateParam[];
+  headerMediaUrl?: string;
+  updatedAt?: string;
+}
+
+export interface WhatsAppTemplatePayload {
+  /** Only used when adding. */
+  purpose?: TemplatePurpose;
+  label?: string;
+  enabled: boolean;
+  templateName: string;
+  templateLanguage: string;
+  headerParams: TemplateParam[];
+  bodyParams: TemplateParam[];
+  buttonParams: TemplateParam[];
+  headerMediaUrl?: string;
+}
+
+/** A template name saved by the admin for reuse. */
+export interface WhatsAppTemplateName {
+  id: number;
+  name: string;
+  language: string;
+  inUse: boolean;
+}
+
+export interface MetaTemplate {
+  name: string;
+  language: string;
+  status: string;
+  category: string;
+  headerFormat?: string | null;
+  headerText?: string | null;
+  headerParams: number;
+  bodyText: string;
+  bodyParams: number;
+  footerText?: string | null;
+  buttons: Array<{ index: number; type: string; text: string; needsValue: boolean }>;
+}
+
+export interface WhatsAppCampaign {
+  id: number;
+  templateLabel: string;
+  status: 'SENDING' | 'COMPLETED' | 'FAILED';
+  total: number;
+  sent: number;
+  failed: number;
+  createdBy?: string;
+  createdAt: string;
+  finishedAt?: string;
+}

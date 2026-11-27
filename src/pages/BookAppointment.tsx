@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { CalendarClock, PhoneCall, ShieldCheck, Stethoscope } from 'lucide-react';
 import { useClinic, usePage } from '../hooks/usePublicData';
 import { AppointmentForm } from '../components/appointment/AppointmentForm';
+import { PatientAuthFlow } from '../components/patient/PatientAuthFlow';
+import { usePatientAuth } from '../context/PatientAuthContext';
 import { PageLoader } from '../components/ui/Spinner';
 import { RichText } from '../components/content/Cms';
 import { Seo } from '../components/content/Seo';
@@ -23,6 +25,7 @@ export default function BookAppointment() {
   const intro = section('intro');
   const emergency = section('emergency');
   const consent = section('consent');
+  const { status: patientStatus, patient } = usePatientAuth();
 
   return (
     <section className="relative">
@@ -62,11 +65,19 @@ export default function BookAppointment() {
 
         <motion.div className="lg:col-span-8" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }}>
           <div className="rounded-[2rem] border border-slate-200/80 bg-surface p-5 shadow-lift sm:p-8 dark:ring-1 dark:ring-brand-400/10">
-            {clinicLoading || pageLoading ? (
+            {clinicLoading || pageLoading || patientStatus === 'loading' ? (
               <PageLoader label="Loading booking form..." />
+            ) : patientStatus !== 'authenticated' ? (
+              <div className="mx-auto max-w-md py-4">
+                <PatientAuthFlow
+                  title="First, verify your mobile"
+                  subtitle="We'll send a 6-digit code to your WhatsApp. It takes 30 seconds and keeps all your visits in one place."
+                />
+              </div>
             ) : (
               <AppointmentForm
                 clinic={clinic}
+                patient={patient}
                 consentText={consent?.body}
                 prefill={{
                   specialty: params.get('specialty') ?? undefined,

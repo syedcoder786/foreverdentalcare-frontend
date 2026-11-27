@@ -2,6 +2,8 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { adminApi } from '../services/adminApi';
 import type {
   AdminAppointmentPayload,
+  WhatsAppSettingsPayload,
+  WhatsAppTemplatePayload,
   AppointmentFilters,
   AppointmentStatus,
   BlockPayload,
@@ -36,6 +38,12 @@ export const adminKeys = {
   patient: (id: number) => ['admin', 'patient', id] as const,
   audit: (page: number) => ['admin', 'audit', page] as const,
   settings: ['admin', 'settings'] as const,
+  whatsapp: ['admin', 'settings', 'whatsapp'] as const,
+  whatsappTemplates: ['admin', 'whatsapp', 'templates'] as const,
+  templateNames: ['admin', 'whatsapp', 'template-names'] as const,
+  templateDetails: (id: number) => ['admin', 'whatsapp', 'template-details', id] as const,
+  whatsappAudience: ['admin', 'whatsapp', 'audience'] as const,
+  whatsappCampaigns: ['admin', 'whatsapp', 'campaigns'] as const,
   navigation: ['admin', 'navigation'] as const,
   sections: (pageKey: PageKey) => ['admin', 'sections', pageKey] as const,
   seo: ['admin', 'seo'] as const,
@@ -306,4 +314,104 @@ export function useDeleteGalleryImage() {
 
 export function useUploadImage() {
   return useMutation({ mutationFn: (file: File) => adminApi.uploadImage(file) });
+}
+
+export function useWhatsAppSettings() {
+  return useQuery({ queryKey: adminKeys.whatsapp, queryFn: adminApi.getWhatsAppSettings });
+}
+
+export function useSaveWhatsAppSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: WhatsAppSettingsPayload) => adminApi.updateWhatsAppSettings(payload),
+    onSuccess: (data) => queryClient.setQueryData(adminKeys.whatsapp, data),
+  });
+}
+
+export function useSendWhatsAppTest() {
+  return useMutation({ mutationFn: (phone: string) => adminApi.sendWhatsAppTest(phone) });
+}
+
+export function useWhatsAppTemplates() {
+  return useQuery({ queryKey: adminKeys.whatsappTemplates, queryFn: adminApi.getWhatsAppTemplates });
+}
+
+/** Template names the admin saved for reuse. */
+export function useTemplateNames() {
+  return useQuery({ queryKey: adminKeys.templateNames, queryFn: adminApi.getTemplateNames });
+}
+
+export function useAddTemplateName() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ name, language }: { name: string; language: string }) => adminApi.addTemplateName(name, language),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.templateNames }),
+  });
+}
+
+export function useDeleteTemplateName() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => adminApi.deleteTemplateName(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.templateNames }),
+  });
+}
+
+/** The saved template's text and placeholders, read from Meta. */
+export function useTemplateNameDetails(id?: number) {
+  return useQuery({
+    queryKey: adminKeys.templateDetails(id ?? 0),
+    queryFn: () => adminApi.getTemplateNameDetails(id!),
+    enabled: Boolean(id),
+    staleTime: 60_000,
+    retry: false,
+  });
+}
+
+export function useSaveWhatsAppTemplate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id?: number; payload: WhatsAppTemplatePayload }) =>
+      id ? adminApi.updateWhatsAppTemplate(id, payload) : adminApi.createWhatsAppTemplate(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.whatsappTemplates });
+      queryClient.invalidateQueries({ queryKey: adminKeys.templateNames });
+    },
+  });
+}
+
+export function useDeleteWhatsAppTemplate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => adminApi.deleteWhatsAppTemplate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.whatsappTemplates });
+      queryClient.invalidateQueries({ queryKey: adminKeys.templateNames });
+    },
+  });
+}
+
+export function useTestWhatsAppTemplate() {
+  return useMutation({ mutationFn: ({ id, phone }: { id: number; phone: string }) => adminApi.testWhatsAppTemplate(id, phone) });
+}
+
+export function useWhatsAppAudience() {
+  return useQuery({ queryKey: adminKeys.whatsappAudience, queryFn: adminApi.getWhatsAppAudience });
+}
+
+/** Polls every 3 seconds while a campaign is still sending. */
+export function useWhatsAppCampaigns() {
+  return useQuery({
+    queryKey: adminKeys.whatsappCampaigns,
+    queryFn: adminApi.getWhatsAppCampaigns,
+    refetchInterval: (query) => (query.state.data?.some((c) => c.status === 'SENDING') ? 3000 : false),
+  });
+}
+
+export function useStartWhatsAppCampaign() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (templateId: number) => adminApi.startWhatsAppCampaign(templateId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.whatsappCampaigns }),
+  });
 }

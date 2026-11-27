@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { MotionConfig } from 'motion/react';
 import { AuthProvider } from './context/AuthContext';
+import { PatientAuthProvider } from './context/PatientAuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import App from './App';
 import './index.css';
@@ -30,7 +31,9 @@ createRoot(document.getElementById('root')!).render(
           {/* reducedMotion="user": all Motion animations respect the OS "reduce motion" setting. */}
           <MotionConfig reducedMotion="user">
             <AuthProvider>
-              <App />
+              <PatientAuthProvider>
+                <App />
+              </PatientAuthProvider>
             </AuthProvider>
           </MotionConfig>
         </ThemeProvider>

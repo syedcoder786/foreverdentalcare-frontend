@@ -4,7 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
 import { Check, Clock, Send, UserRound } from 'lucide-react';
-import type { BookingConfirmation, ClinicSettings } from '../../types';
+import { Link } from 'react-router-dom';
+import type { BookingConfirmation, ClinicSettings, PatientProfile } from '../../types';
+import { usePatientBookAppointment } from '../../hooks/usePatientData';
+import { formatPhone } from '../../utils/format';
 import { createAppointmentSchema, type AppointmentFormValues } from '../../utils/validation';
 import { parseApiError } from '../../utils/errors';
 import { addDays, todayInZone } from '../../utils/dates';
@@ -31,6 +34,8 @@ interface AppointmentFormProps {
   clinic: Pick<ClinicSettings, 'timezone' | 'bookingWindowDays' | 'clinicName' | 'phone'>;
   prefill?: BookingPrefill;
   consentText?: string;
+  /** Signed-in patient: their profile supplies name, phone and email, and the booking is linked to their account. */
+  patient?: PatientProfile | null;
 }
 
 const FIELD_NAMES = ['fullName', 'phone', 'email', 'specialtyId', 'doctorId', 'serviceId', 'appointmentDate', 'appointmentTime', 'message', 'consent'] as const;
@@ -79,11 +84,22 @@ function ChoiceCard({ selected, onClick, children, label }: { selected: boolean;
  * Multi-step booking: specialty -> doctor -> that doctor's services -> date -> doctor's available slot -> details.
  * Every rule is re-validated by the backend; the UI only offers choices that are actually bookable.
  */
-export function AppointmentForm({ clinic, prefill, consentText }: AppointmentFormProps) {
+export function AppointmentForm({ clinic, prefill, consentText, patient }: AppointmentFormProps) {
   const today = todayInZone(clinic.timezone);
   const maxDate = addDays(today, clinic.bookingWindowDays);
   const schema = useMemo(() => createAppointmentSchema(today), [today]);
-  const mutation = useBookAppointment();
+  const publicMutation = useBookAppointment();
+  const patientMutation = usePatientBookAppointment();
+  const mutation = patient ? patientMutation : publicMutation;
+  const defaults = useMemo(
+    () => ({
+      fullName: patient?.fullName ?? '',
+      phone: patient?.phone ?? '',
+      email: patient?.email ?? '',
+      specialtyId: '', doctorId: '', serviceId: '', appointmentDate: '', appointmentTime: '', message: '', consent: false,
+    }),
+    [patient],
+  );
   const queryClient = useQueryClient();
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -100,7 +116,7 @@ export function AppointmentForm({ clinic, prefill, consentText }: AppointmentFor
   } = useForm<AppointmentFormValues>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
-    defaultValues: { fullName: '', phone: '', email: '', specialtyId: '', doctorId: '', serviceId: '', appointmentDate: '', appointmentTime: '', message: '', consent: false },
+    defaultValues: defaults,
   });
   register('specialtyId');
   register('doctorId');
@@ -162,23 +178,35 @@ export function AppointmentForm({ clinic, prefill, consentText }: AppointmentFor
     else if (list.length === 1) choose('serviceId', String(list[0].id));
   }, [services.data, doctorId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // After booking, bring the confirmation into view (the submit button is far down the form).
+  useEffect(() => {
+    if (!confirmation) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  }, [confirmation]);
+
   const selectedDoctor = doctors.data?.find((d) => String(d.id) === doctorId);
   const selectedService = services.data?.find((s) => String(s.id) === serviceId);
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     try {
-      const result = await mutation.mutateAsync({
-        fullName: values.fullName.trim(),
-        phone: values.phone.trim(),
-        email: values.email?.trim() || undefined,
+      const booking = {
         doctorId: Number(values.doctorId),
         serviceId: Number(values.serviceId),
         appointmentDate: values.appointmentDate,
         appointmentTime: values.appointmentTime,
         message: values.message?.trim() || undefined,
         consent: values.consent,
-      });
+      };
+      const result = patient
+        ? await patientMutation.mutateAsync(booking)
+        : await publicMutation.mutateAsync({
+            ...booking,
+            fullName: values.fullName.trim(),
+            phone: values.phone.trim(),
+            email: values.email?.trim() || undefined,
+          });
       setConfirmation(result);
     } catch (err) {
       const parsed = parseApiError(err);
@@ -206,7 +234,7 @@ export function AppointmentForm({ clinic, prefill, consentText }: AppointmentFor
         clinic={clinic}
         onBookAnother={() => {
           setConfirmation(null);
-          reset();
+          reset(defaults);
           mutation.reset();
         }}
       />
@@ -309,11 +337,27 @@ export function AppointmentForm({ clinic, prefill, consentText }: AppointmentFor
 
       <Step n={5} title="Your details" done={false} disabled={!time}>
         <div className="space-y-5">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <Input label="Full name" required autoComplete="name" placeholder="Your full name" error={errors.fullName?.message} wrapperClassName="sm:col-span-2" {...register('fullName')} />
-            <Input label="Phone number" required type="tel" inputMode="tel" autoComplete="tel" placeholder="+91 98765 43210" error={errors.phone?.message} {...register('phone')} />
-            <Input label="Email" optional type="email" autoComplete="email" placeholder="you@example.com" error={errors.email?.message} {...register('email')} />
-          </div>
+          {patient ? (
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-400/20">
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-brand-700 text-white">
+                  <UserRound className="size-5" aria-hidden />
+                </span>
+                <div className="leading-tight">
+                  <p className="text-xs font-medium text-muted">Booking as</p>
+                  <p className="font-semibold text-ink">{patient.fullName}</p>
+                  <p className="text-sm text-muted">{formatPhone(patient.phone)}{patient.email ? ` · ${patient.email}` : ''}</p>
+                </div>
+              </div>
+              <Link to="/profile" className="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-300">Edit</Link>
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Input label="Full name" required autoComplete="name" placeholder="Your full name" error={errors.fullName?.message} wrapperClassName="sm:col-span-2" {...register('fullName')} />
+              <Input label="Phone number" required type="tel" inputMode="tel" autoComplete="tel" placeholder="+91 98765 43210" error={errors.phone?.message} {...register('phone')} />
+              <Input label="Email" optional type="email" autoComplete="email" placeholder="you@example.com" error={errors.email?.message} {...register('email')} />
+            </div>
+          )}
           <Textarea label="Message" optional rows={3} placeholder="Anything you'd like the doctor to know" error={errors.message?.message} {...register('message')} />
           <Checkbox label={consentText || DEFAULT_CONSENT} error={errors.consent?.message} {...register('consent')} />
         </div>

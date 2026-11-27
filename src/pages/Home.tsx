@@ -13,6 +13,7 @@ import { PageLoader, Skeleton } from '../components/ui/Spinner';
 import { CtaBand } from '../components/layout/CtaBand';
 import { CmsButtons, CmsCards, CmsHeading, CustomSection, RichText, SmartLink } from '../components/content/Cms';
 import { Seo } from '../components/content/Seo';
+import { NextAppointmentCard } from '../components/patient/NextAppointmentCard';
 import { EASE_OUT, Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 import { formatPhone, telHref } from '../utils/format';
 import { directionsHref } from '../utils/maps';
@@ -112,6 +113,7 @@ function Hero({ section }: { section: Section }) {
   return (
     <section className="relative -mt-18 overflow-hidden pt-18">
       <Aurora />
+      <NextAppointmentCard />
       <div className="container-page relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
         <motion.div className="lg:col-span-7" variants={heroContainer} initial="hidden" animate="show">
           {section.subtitle && (

@@ -16,6 +16,7 @@ const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const BookAppointment = lazy(() => import('./pages/BookAppointment'));
+const Profile = lazy(() => import('./pages/Profile'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const Login = lazy(() => import('./pages/admin/Login'));
@@ -32,6 +33,7 @@ const TestimonialsAdmin = lazy(() => import('./pages/admin/TestimonialsAdmin'));
 const GalleryAdmin = lazy(() => import('./pages/admin/GalleryAdmin'));
 const SeoAdmin = lazy(() => import('./pages/admin/SeoAdmin'));
 const Settings = lazy(() => import('./pages/admin/Settings'));
+const WhatsAppAdmin = lazy(() => import('./pages/admin/WhatsAppAdmin'));
 
 export default function App() {
   return (
@@ -48,6 +50,7 @@ export default function App() {
           <Route path="services/:slug" element={<ServiceDetail />} />
           <Route path="contact" element={<Contact />} />
           <Route path="book" element={<BookAppointment />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 
@@ -72,6 +75,7 @@ export default function App() {
           <Route path="testimonials" element={<TestimonialsAdmin />} />
           <Route path="gallery" element={<GalleryAdmin />} />
           <Route path="seo" element={<SeoAdmin />} />
+          <Route path="whatsapp" element={<WhatsAppAdmin />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>

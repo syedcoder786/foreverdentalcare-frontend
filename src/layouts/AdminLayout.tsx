@@ -16,6 +16,7 @@ const TITLES: Record<string, string> = {
   '/admin/testimonials': 'Testimonials',
   '/admin/gallery': 'Gallery',
   '/admin/seo': 'SEO settings',
+  '/admin/whatsapp': 'WhatsApp',
   '/admin/settings': 'Clinic settings',
 };
 
