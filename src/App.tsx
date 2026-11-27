@@ -35,6 +35,7 @@ const SeoAdmin = lazy(() => import('./pages/admin/SeoAdmin'));
 const Settings = lazy(() => import('./pages/admin/Settings'));
 const WhatsAppAdmin = lazy(() => import('./pages/admin/WhatsAppAdmin'));
 const DatabaseAdmin = lazy(() => import('./pages/admin/DatabaseAdmin'));
+const StorageAdmin = lazy(() => import('./pages/admin/StorageAdmin'));
 
 export default function App() {
   return (
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="whatsapp" element={<WhatsAppAdmin />} />
           <Route path="settings" element={<Settings />} />
           <Route path="database" element={<DatabaseAdmin />} />
+          <Route path="storage" element={<StorageAdmin />} />
         </Route>
       </Routes>
     </Suspense>

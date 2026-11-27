@@ -1,4 +1,9 @@
 import type {
+  CloudinaryPayload,
+  StorageProvider,
+  StorageSaveResult,
+  StorageStatus,
+  StorageTestResult,
   DatabaseConnectionPayload,
   DatabaseStatus,
   DatabaseSwitchResult,
@@ -129,6 +134,13 @@ export const adminApi = {
     unwrap(apiClient.post<ApiResponse<DatabaseSwitchResult>>('/api/admin/database/switch', payload, { timeout: 600_000 })),
   useEnvironmentDatabase: (payload: { copyData: boolean; currentPassword: string }) =>
     unwrap(apiClient.post<ApiResponse<DatabaseSwitchResult>>('/api/admin/database/use-environment', payload, { timeout: 600_000 })),
+  getStorageStatus: () => unwrap(apiClient.get<ApiResponse<StorageStatus>>('/api/admin/storage')),
+  testCloudinary: (payload: CloudinaryPayload) =>
+    unwrap(apiClient.post<ApiResponse<StorageTestResult>>('/api/admin/storage/test', payload, { timeout: 60_000 })),
+  saveStorage: (payload: { provider: StorageProvider; cloudinary?: CloudinaryPayload; currentPassword: string }) =>
+    unwrap(apiClient.put<ApiResponse<StorageSaveResult>>('/api/admin/storage', payload, { timeout: 60_000 })),
+  useEnvironmentStorage: (payload: { currentPassword: string }) =>
+    unwrap(apiClient.post<ApiResponse<StorageSaveResult>>('/api/admin/storage/use-environment', payload)),
   sendWhatsAppTest: (phone: string) => apiClient.post<ApiResponse<void>>('/api/admin/settings/whatsapp/test', { phone }),
   getTemplateNames: () => unwrap(apiClient.get<ApiResponse<WhatsAppTemplateName[]>>('/api/admin/whatsapp/template-names')),
   addTemplateName: (name: string, language: string) =>

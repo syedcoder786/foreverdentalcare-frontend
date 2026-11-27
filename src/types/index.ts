@@ -736,3 +736,45 @@ export interface DatabaseSwitchResult {
   rowsCopied?: number;
   signInAgain: boolean;
 }
+
+/* ---------- Admin -> Image storage ---------- */
+
+export type StorageProvider = 'local' | 'cloudinary';
+
+export interface CloudinaryPayload {
+  cloudName: string;
+  apiKey: string;
+  /** Empty keeps the saved secret of the same cloud and API key. */
+  apiSecret: string;
+  folder: string;
+}
+
+export interface StorageStatus {
+  source: 'ADMIN_PANEL' | 'ENVIRONMENT';
+  provider: StorageProvider;
+  cloudName?: string;
+  apiKey?: string;
+  folder?: string;
+  /** CLOUDINARY_URL with the secret hidden. */
+  cloudinaryUrl?: string;
+  uploadDir?: string;
+  configFile?: string;
+  savedAt?: string;
+  savedBy?: string;
+  environmentProvider?: StorageProvider;
+  environmentCloudName?: string;
+}
+
+export interface StorageTestResult {
+  cloudName: string;
+  folder?: string;
+  plan?: string;
+  storageBytes?: number;
+  resources?: number;
+  creditsUsedPercent?: number;
+  sameAsCurrent: boolean;
+}
+
+export interface StorageSaveResult {
+  message: string;
+}

@@ -19,6 +19,7 @@ const TITLES: Record<string, string> = {
   '/admin/whatsapp': 'WhatsApp',
   '/admin/settings': 'Clinic settings',
   '/admin/database': 'Database',
+  '/admin/storage': 'Image storage',
 };
 
 export function AdminLayout() {

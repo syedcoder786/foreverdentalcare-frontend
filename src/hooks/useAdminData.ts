@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { adminApi } from '../services/adminApi';
 import type {
   AdminAppointmentPayload,
+  CloudinaryPayload,
   DatabaseConnectionPayload,
   WhatsAppSettingsPayload,
   WhatsAppTemplatePayload,
@@ -41,6 +42,7 @@ export const adminKeys = {
   settings: ['admin', 'settings'] as const,
   whatsapp: ['admin', 'settings', 'whatsapp'] as const,
   database: ['admin', 'database'] as const,
+  storage: ['admin', 'storage'] as const,
   whatsappTemplates: ['admin', 'whatsapp', 'templates'] as const,
   templateNames: ['admin', 'whatsapp', 'template-names'] as const,
   templateDetails: (id: number) => ['admin', 'whatsapp', 'template-details', id] as const,
@@ -442,5 +444,31 @@ export function useUseEnvironmentDatabase() {
   return useMutation({
     mutationFn: adminApi.useEnvironmentDatabase,
     onSuccess: () => queryClient.invalidateQueries(),
+  });
+}
+
+/* ---------- Image storage ---------- */
+
+export function useStorageStatus() {
+  return useQuery({ queryKey: adminKeys.storage, queryFn: adminApi.getStorageStatus });
+}
+
+export function useTestCloudinary() {
+  return useMutation({ mutationFn: (payload: CloudinaryPayload) => adminApi.testCloudinary(payload) });
+}
+
+export function useSaveStorage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: adminApi.saveStorage,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.storage }),
+  });
+}
+
+export function useUseEnvironmentStorage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: adminApi.useEnvironmentStorage,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.storage }),
   });
 }
