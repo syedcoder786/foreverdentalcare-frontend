@@ -676,3 +676,63 @@ export interface WhatsAppCampaign {
   createdAt: string;
   finishedAt?: string;
 }
+
+/* ---------- Admin -> Database ---------- */
+
+export type SslMode = 'disable' | 'allow' | 'prefer' | 'require' | 'verify-ca' | 'verify-full';
+
+export interface DatabaseConnectionPayload {
+  host: string;
+  port: number;
+  database: string;
+  username: string;
+  /** Empty keeps the saved password of the same host and user. */
+  password: string;
+  schema: string;
+  sslMode: SslMode;
+}
+
+export interface DatabaseStatus {
+  source: 'ADMIN_PANEL' | 'ENVIRONMENT';
+  host?: string;
+  port?: number;
+  database?: string;
+  username?: string;
+  schema?: string;
+  sslMode?: SslMode;
+  jdbcUrl?: string;
+  connected: boolean;
+  error?: string;
+  serverVersion?: string;
+  currentSchema?: string;
+  schemaVersion?: string;
+  activeConnections?: number;
+  totalConnections?: number;
+  maxConnections?: number;
+  configFile?: string;
+  savedAt?: string;
+  savedBy?: string;
+  environmentJdbcUrl?: string;
+}
+
+export interface DatabaseTestResult {
+  serverVersion?: string;
+  database?: string;
+  schemaWillBeCreated: boolean;
+  schemaVersion?: string;
+  pendingMigrations: number;
+  admins?: number;
+  patients?: number;
+  appointments?: number;
+  doctors?: number;
+  errors: string[];
+  warnings: string[];
+  sameAsCurrent: boolean;
+}
+
+export interface DatabaseSwitchResult {
+  message: string;
+  tablesCopied?: number;
+  rowsCopied?: number;
+  signInAgain: boolean;
+}

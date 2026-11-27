@@ -1,4 +1,8 @@
 import type {
+  DatabaseConnectionPayload,
+  DatabaseStatus,
+  DatabaseSwitchResult,
+  DatabaseTestResult,
   AdminAppointmentPayload,
   AdminDaySchedule,
   AdminDoctor,
@@ -117,6 +121,14 @@ export const adminApi = {
   getWhatsAppSettings: () => unwrap(apiClient.get<ApiResponse<WhatsAppSettings>>('/api/admin/settings/whatsapp')),
   updateWhatsAppSettings: (payload: WhatsAppSettingsPayload) =>
     unwrap(apiClient.put<ApiResponse<WhatsAppSettings>>('/api/admin/settings/whatsapp', payload)),
+  getDatabaseStatus: () => unwrap(apiClient.get<ApiResponse<DatabaseStatus>>('/api/admin/database')),
+  testDatabase: (payload: DatabaseConnectionPayload) =>
+    unwrap(apiClient.post<ApiResponse<DatabaseTestResult>>('/api/admin/database/test', payload, { timeout: 60_000 })),
+  // Migrating and copying a whole database can take a while.
+  switchDatabase: (payload: { connection: DatabaseConnectionPayload; copyData: boolean; currentPassword: string }) =>
+    unwrap(apiClient.post<ApiResponse<DatabaseSwitchResult>>('/api/admin/database/switch', payload, { timeout: 600_000 })),
+  useEnvironmentDatabase: (payload: { copyData: boolean; currentPassword: string }) =>
+    unwrap(apiClient.post<ApiResponse<DatabaseSwitchResult>>('/api/admin/database/use-environment', payload, { timeout: 600_000 })),
   sendWhatsAppTest: (phone: string) => apiClient.post<ApiResponse<void>>('/api/admin/settings/whatsapp/test', { phone }),
   getTemplateNames: () => unwrap(apiClient.get<ApiResponse<WhatsAppTemplateName[]>>('/api/admin/whatsapp/template-names')),
   addTemplateName: (name: string, language: string) =>

@@ -18,6 +18,7 @@ const TITLES: Record<string, string> = {
   '/admin/seo': 'SEO settings',
   '/admin/whatsapp': 'WhatsApp',
   '/admin/settings': 'Clinic settings',
+  '/admin/database': 'Database',
 };
 
 export function AdminLayout() {

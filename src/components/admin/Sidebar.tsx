@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   CalendarDays,
+  Database,
   ExternalLink,
   FileText,
   Home,
@@ -37,6 +38,7 @@ const items = [
   { to: '/admin/seo', label: 'SEO settings', icon: Search },
   { to: '/admin/whatsapp', label: 'WhatsApp', icon: MessageCircle },
   { to: '/admin/settings', label: 'Clinic settings', icon: Settings },
+  { to: '/admin/database', label: 'Database', icon: Database },
 ];
 
 interface SidebarProps {

@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { adminApi } from '../services/adminApi';
 import type {
   AdminAppointmentPayload,
+  DatabaseConnectionPayload,
   WhatsAppSettingsPayload,
   WhatsAppTemplatePayload,
   AppointmentFilters,
@@ -39,6 +40,7 @@ export const adminKeys = {
   audit: (page: number) => ['admin', 'audit', page] as const,
   settings: ['admin', 'settings'] as const,
   whatsapp: ['admin', 'settings', 'whatsapp'] as const,
+  database: ['admin', 'database'] as const,
   whatsappTemplates: ['admin', 'whatsapp', 'templates'] as const,
   templateNames: ['admin', 'whatsapp', 'template-names'] as const,
   templateDetails: (id: number) => ['admin', 'whatsapp', 'template-details', id] as const,
@@ -413,5 +415,32 @@ export function useStartWhatsAppCampaign() {
   return useMutation({
     mutationFn: (templateId: number) => adminApi.startWhatsAppCampaign(templateId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.whatsappCampaigns }),
+  });
+}
+
+/* ---------- Database connection ---------- */
+
+export function useDatabaseStatus() {
+  return useQuery({ queryKey: adminKeys.database, queryFn: adminApi.getDatabaseStatus });
+}
+
+export function useTestDatabase() {
+  return useMutation({ mutationFn: (payload: DatabaseConnectionPayload) => adminApi.testDatabase(payload) });
+}
+
+/** After a switch every cached query belongs to the old database, so all of them are refetched. */
+export function useSwitchDatabase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: adminApi.switchDatabase,
+    onSuccess: () => queryClient.invalidateQueries(),
+  });
+}
+
+export function useUseEnvironmentDatabase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: adminApi.useEnvironmentDatabase,
+    onSuccess: () => queryClient.invalidateQueries(),
   });
 }
