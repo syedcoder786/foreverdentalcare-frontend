@@ -109,8 +109,6 @@ export function DoctorProfileForm({ doctor, onSaved }: { doctor?: AdminDoctor; o
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-8">
-      {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
-
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ImageUpload label="Profile photo" aspect="portrait" value={photo} onChange={(url) => setValue('profileImageUrl', url, { shouldDirty: true })} />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:col-span-2">
@@ -186,6 +184,7 @@ export function DoctorProfileForm({ doctor, onSaved }: { doctor?: AdminDoctor; o
         <Input label="Display order" inputMode="numeric" wrapperClassName="w-32" {...register('displayOrder')} />
       </section>
 
+      {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
       <div className="flex justify-end border-t border-slate-100 pt-5">
         <Button type="submit" loading={save.isPending}>{doctor ? 'Save profile' : 'Create doctor'}</Button>
       </div>

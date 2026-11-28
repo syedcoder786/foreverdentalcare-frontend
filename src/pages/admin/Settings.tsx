@@ -16,6 +16,9 @@ import { Button } from '../../components/ui/Button';
 import { Alert, ErrorMessage } from '../../components/ui/Alert';
 import { PageLoader } from '../../components/ui/Spinner';
 import { cn } from '../../utils/cn';
+import { toast } from '../../components/ui/Toast';
+import { ClinicHours, ShiftIcon } from '../../components/ui/ShiftHours';
+import { DayTimeline, clinicSegments } from '../../components/hours/WeeklyHours';
 
 function toForm(s: ClinicSettings): SettingsFormValues {
   return {
@@ -67,11 +70,25 @@ function Section({ title, description, children }: { title: string; description?
   );
 }
 
+function ShiftBox({ icon, title, action, children }: { icon: ReactNode; title: string; action?: ReactNode; children: ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 dark:border-white/10 dark:bg-white/[0.02]">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <p className="flex items-center gap-2 text-sm font-semibold text-ink">{icon}{title}</p>
+        {action}
+      </div>
+      <div className="grid grid-cols-2 gap-3">{children}</div>
+    </div>
+  );
+}
+
 export default function Settings() {
   useDocumentTitle('Clinic settings');
   const { data, isLoading, isError, error, refetch } = useAdminSettings();
   const mutation = useSaveSettings();
   const [saved, setSaved] = useState(false);
+  /** Whether the clinic closes for a break (stored as break start / end). */
+  const [hasBreak, setHasBreak] = useState(false);
 
   const {
     register,
@@ -84,12 +101,27 @@ export default function Settings() {
   } = useForm<SettingsFormValues>({ resolver: zodResolver(settingsSchema) });
 
   useEffect(() => {
-    if (data) reset(toForm(data));
+    if (data) {
+      reset(toForm(data));
+      setHasBreak(!!(data.breakStartTime && data.breakEndTime));
+    }
   }, [data, reset]);
 
   const values = watch();
   const slots = previewSlots(values);
   const workingDays = (values.workingDays ?? []) as DayOfWeek[];
+
+  const previewHours = { start: values.openingTime, end: values.closingTime, breakStart: values.breakStartTime, breakEnd: values.breakEndTime };
+
+  /** Adds a break (13:00-14:00 when that fits inside the opening hours) or removes it. */
+  const toggleBreak = (on: boolean) => {
+    setHasBreak(on);
+    const open = values.openingTime ?? '';
+    const close = values.closingTime ?? '';
+    const fits = open < '13:00' && close > '14:00';
+    setValue('breakStartTime', on && fits ? '13:00' : '', { shouldDirty: true });
+    setValue('breakEndTime', on && fits ? '14:00' : '', { shouldDirty: true });
+  };
 
   const toggleDay = (day: DayOfWeek) => {
     const next = workingDays.includes(day) ? workingDays.filter((d) => d !== day) : [...workingDays, day];
@@ -98,6 +130,12 @@ export default function Settings() {
 
   const onSubmit = handleSubmit(async (v) => {
     setSaved(false);
+    if (hasBreak && (!v.breakStartTime || !v.breakEndTime)) {
+      if (!v.breakStartTime) setError('breakStartTime', { message: 'Enter when the break starts' });
+      if (!v.breakEndTime) setError('breakEndTime', { message: 'Enter when the break ends' });
+      toast.error('Enter the break times, or remove the break.', { title: 'Not saved yet' });
+      return;
+    }
     try {
       await mutation.mutateAsync({
         // Header/footer fields are edited in Website content -> Header & footer; keep their current values.
@@ -123,11 +161,12 @@ export default function Settings() {
         firstVisitOfferEnabled: v.firstVisitOfferEnabled,
       });
       setSaved(true);
+      toast.success('Settings saved. The website and booking slots now use the new values.');
     } catch (err) {
       const parsed = parseApiError(err);
       Object.entries(parsed.fieldErrors).forEach(([field, message]) => setError(field as keyof SettingsFormValues, { message }));
     }
-  });
+  }, () => toast.error('Some fields need attention. They are highlighted in the form.', { title: 'Not saved yet' }));
 
   if (isLoading) return <PageLoader label="Loading settings..." />;
   if (isError) return <ErrorMessage message={parseApiError(error).message} onRetry={() => refetch()} />;
@@ -135,13 +174,6 @@ export default function Settings() {
   return (
     <div className="space-y-6">
     <form onSubmit={onSubmit} noValidate className="rounded-2xl border border-slate-200 bg-surface px-5 shadow-soft sm:px-8">
-      {(saved || mutation.isError) && (
-        <div className="pt-6">
-          {saved && <Alert tone="success">Settings saved. The website and booking slots now use the new values.</Alert>}
-          {mutation.isError && <Alert tone="error">{parseApiError(mutation.error).message}</Alert>}
-        </div>
-      )}
-
       <Section title="Clinic information" description="Shown in the website header, footer and contact page.">
         <Input label="Clinic name" required error={errors.clinicName?.message} {...register('clinicName')} />
         <Textarea label="Address" required rows={2} error={errors.address?.message} {...register('address')} />
@@ -169,11 +201,38 @@ export default function Settings() {
       </Section>
 
       <Section title="Clinic opening hours" description="Shown on the website. Each doctor's bookable hours are set in Doctors -> Schedule.">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Input label="Opening time" type="time" required error={errors.openingTime?.message} {...register('openingTime')} />
-          <Input label="Closing time" type="time" required error={errors.closingTime?.message} {...register('closingTime')} />
-          <Input label="Break start" type="time" optional error={errors.breakStartTime?.message} {...register('breakStartTime')} />
-          <Input label="Break end" type="time" optional error={errors.breakEndTime?.message} {...register('breakEndTime')} />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <ShiftBox icon={<ShiftIcon shift={{ key: 'full' }} className="size-4" />} title="Opening hours">
+            <Input label="Opens" type="time" required error={errors.openingTime?.message} {...register('openingTime')} />
+            <Input label="Closes" type="time" required error={errors.closingTime?.message} {...register('closingTime')} />
+          </ShiftBox>
+          {hasBreak ? (
+            <ShiftBox
+              icon={<ShiftIcon shift={{ key: 'break' }} className="size-4" />}
+              title="Break"
+              action={<button type="button" onClick={() => toggleBreak(false)} className="text-xs font-semibold text-slate-500 hover:text-red-600">Remove</button>}
+            >
+              <Input label="From" type="time" required error={errors.breakStartTime?.message} {...register('breakStartTime')} />
+              <Input label="Until" type="time" required error={errors.breakEndTime?.message} {...register('breakEndTime')} />
+            </ShiftBox>
+          ) : (
+            <button
+              type="button"
+              onClick={() => toggleBreak(true)}
+              className="flex min-h-32 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-slate-200 p-4 text-sm font-medium text-slate-500 transition hover:border-brand-300 hover:text-brand-700 dark:border-white/10"
+            >
+              <ShiftIcon shift={{ key: 'break' }} className="size-5" />
+              Add a break
+              <span className="text-xs font-normal text-slate-400">e.g. lunch, when the clinic closes for a while</span>
+            </button>
+          )}
+        </div>
+        <div className="rounded-2xl border border-slate-200 p-4 dark:border-white/10">
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
+            Shown on the website as
+            <ClinicHours hours={previewHours} variant="inline" className="font-medium text-ink" empty="(enter the timings)" />
+          </p>
+          <DayTimeline segments={clinicSegments(previewHours)} gapLabel="Break" className="mt-6" />
         </div>
         <fieldset>
           <legend className="mb-2 text-sm font-medium text-slate-700">Working days</legend>
@@ -237,8 +296,14 @@ export default function Settings() {
         <DoctorsWithoutFee />
       </Section>
 
-      <div className="sticky bottom-0 -mx-5 flex justify-end gap-3 border-t border-slate-100 bg-surface/95 px-5 py-4 backdrop-blur sm:-mx-8 sm:px-8">
-        <Button variant="ghost" disabled={!isDirty || mutation.isPending} onClick={() => data && reset(toForm(data))}>
+      <div className="sticky bottom-0 -mx-5 flex flex-wrap justify-end gap-3 border-t border-slate-100 bg-surface/95 px-5 py-4 backdrop-blur sm:-mx-8 sm:px-8">
+        {(saved || mutation.isError) && (
+          <div className="w-full">
+            {saved && <Alert tone="success">Settings saved. The website and booking slots now use the new values.</Alert>}
+            {mutation.isError && <Alert tone="error">{parseApiError(mutation.error).message}</Alert>}
+          </div>
+        )}
+        <Button variant="ghost" disabled={!isDirty || mutation.isPending} onClick={() => { if (data) { reset(toForm(data)); setHasBreak(!!(data.breakStartTime && data.breakEndTime)); } }}>
           Discard changes
         </Button>
         <Button type="submit" loading={mutation.isPending} icon={<Save className="size-4" aria-hidden />}>
@@ -316,7 +381,7 @@ function ClinicHolidays() {
     <section className="rounded-2xl border border-slate-200 bg-surface p-5 shadow-soft sm:p-8">
       <h2 className="font-semibold text-ink">Clinic holidays</h2>
       <p className="mt-1 mb-5 text-sm text-slate-500">For leave of a single doctor, use Doctors &rarr; Blocked time instead.</p>
-      <div className="mb-4"><Notice message={message} onClear={() => setMessage(null)} /></div>
+      <Notice message={message} onClear={() => setMessage(null)} />
       <BlockedTimeManager blocks={holidays.data ?? []} onMessage={setMessage} />
     </section>
   );

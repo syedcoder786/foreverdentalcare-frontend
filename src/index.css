@@ -133,6 +133,10 @@
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
+  /* #anchor targets land below the sticky navbar instead of under it. */
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
   /* Never allow page-level sideways scrolling on any screen (entrance animations, absolutely positioned helpers,
      wide content). `clip` (not `hidden`) creates no scroll container, so sticky headers keep working.
      Horizontal scrollers inside the page (tables, carousels) still scroll on their own. */

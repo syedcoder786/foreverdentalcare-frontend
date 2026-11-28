@@ -90,7 +90,7 @@ export function NextAppointmentCard() {
 
   return (
     <div
-      className="container-page relative z-10 pt-5 pb-6 sm:pt-6 sm:pb-8"
+      className="container-page relative z-10 pt-3 pb-4 sm:pt-6 sm:pb-8"
       role="region"
       aria-roledescription={count > 1 ? 'carousel' : undefined}
       aria-label="Your upcoming appointments"
@@ -133,7 +133,7 @@ export function NextAppointmentCard() {
 
           {/* Story bars: one per appointment, the active one fills up */}
           {count > 1 && (
-            <div className="relative flex gap-1.5 px-5 pt-4 sm:px-6" aria-hidden>
+            <div className="relative flex gap-1.5 px-4 pt-3 sm:px-6 sm:pt-4" aria-hidden>
               {upcoming.map((a, i) => (
                 <button
                   key={a.id}
@@ -188,8 +188,14 @@ export function NextAppointmentCard() {
           </div>
 
           {/* Bottom bar: journey of the shown appointment + slider controls */}
-          <motion.div variants={item} className="relative flex items-center gap-3 border-t border-slate-100 px-5 py-3 sm:px-6 dark:border-white/5">
-            <JourneyBar a={current} now={now} />
+          <motion.div
+            variants={item}
+            className={cn(
+              'relative items-center gap-3 border-t border-slate-100 px-4 py-2 sm:px-6 sm:py-3 dark:border-white/5',
+              count > 1 ? 'flex justify-center md:justify-start' : 'hidden md:flex',
+            )}
+          >
+            <div className="hidden min-w-0 flex-1 md:flex"><JourneyBar a={current} now={now} /></div>
             {count > 1 ? (
               <div className="flex shrink-0 items-center gap-1.5">
                 <SlideButton label="Previous appointment" onClick={() => go(position - 1, -1)}>
@@ -303,9 +309,11 @@ function Slide({ a, now, heading }: { a: PatientAppointment; now: number; headin
   const pending = a.status === 'PENDING';
 
   return (
+    <>
+      <CompactSlide a={a} pending={pending} live={live} soon={soon} left={left} endsIn={endsIn} />
           <div
             className={cn(
-              'relative grid h-full gap-6 p-5 sm:p-6 lg:min-h-50 lg:items-center lg:gap-6',
+              'relative hidden h-full gap-6 p-5 sm:p-6 md:grid lg:min-h-50 lg:items-center lg:gap-6',
               pending ? 'lg:grid-cols-[minmax(0,1fr)_minmax(24rem,1.25fr)_auto]' : 'lg:grid-cols-[auto_1fr_auto] lg:gap-8',
             )}
           >
@@ -463,7 +471,94 @@ function Slide({ a, now, heading }: { a: PatientAppointment; now: number; headin
               )}
             </motion.div>
           </div>
+    </>
+  );
+}
 
+/** "2d 4h", "3h 12m", "12m": short countdown for the compact card. */
+function shortLeft(ms: number): string {
+  const d = Math.floor(ms / 86_400_000);
+  const h = Math.floor((ms % 86_400_000) / 3_600_000);
+  const m = Math.max(1, Math.ceil((ms % 3_600_000) / 60_000));
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+/** Phones: one short card with only what matters (when, what, who, status) and icon actions. */
+function CompactSlide({ a, pending, live, soon, left, endsIn }: { a: PatientAppointment; pending: boolean; live: boolean; soon: boolean; left: number; endsIn: number }) {
+  const { clinic } = useSite();
+  const iconBtn = 'flex size-9 shrink-0 items-center justify-center rounded-full ring-1 transition active:scale-95';
+  return (
+    <div className="relative space-y-3 p-3.5 md:hidden">
+      <div className="flex items-center gap-3">
+        {/* mini date tile */}
+        <div className="flex w-13 shrink-0 flex-col items-center overflow-hidden rounded-2xl bg-linear-to-b from-brand-500 to-brand-700 text-white shadow-md shadow-brand-700/25">
+          <span className="w-full bg-black/15 py-0.5 text-center text-[9px] font-bold tracking-[0.18em] uppercase">{datePart(a.appointmentDate, { month: 'short' })}</span>
+          <span className="pt-0.5 font-display text-2xl leading-none font-semibold">{datePart(a.appointmentDate, { day: 'numeric' })}</span>
+          <span className="pb-1 text-[9px] font-semibold tracking-wider uppercase opacity-90">{datePart(a.appointmentDate, { weekday: 'short' })}</span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h2 className="truncate font-display text-lg leading-tight font-semibold text-ink">{a.serviceName}</h2>
+            <StatusBadge status={a.status} className="shrink-0" />
+          </div>
+          <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted">
+            <Clock className="size-3.5 shrink-0 text-brand-600" aria-hidden />
+            <span className="font-semibold text-ink">{formatTime(a.appointmentTime)}</span>
+            <span aria-hidden>·</span>
+            <Link to={`/doctors/${a.doctorSlug}`} className="truncate hover:underline">{a.doctorName}</Link>
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        {/* one-line status */}
+        {pending ? (
+          <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 ring-1 ring-amber-200/70 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20">
+            <Hourglass className="size-3.5 shrink-0" aria-hidden />
+            <span className="truncate">Awaiting clinic confirmation</span>
+          </span>
+        ) : live ? (
+          <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-brand-600 px-3 py-2 text-xs font-semibold text-white">
+            <span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75" /><span className="relative inline-flex size-2 rounded-full bg-white" /></span>
+            <span className="truncate">It&apos;s time! {endsIn > 0 ? `Ends in ${endsIn} min` : 'Please come in'}</span>
+          </span>
+        ) : (
+          <span
+            className={cn(
+              'flex min-w-0 flex-1 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium ring-1',
+              soon ? 'bg-amber-50 text-amber-800 ring-amber-200/70 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20' : 'bg-brand-50 text-brand-800 ring-brand-100 dark:bg-brand-400/10 dark:text-brand-200 dark:ring-brand-400/20',
+            )}
+          >
+            <BellRing className="size-3.5 shrink-0" aria-hidden />
+            <span className="truncate">{soon ? 'Starting soon' : 'Starts in'} <span className="font-bold tabular-nums">{shortLeft(left)}</span></span>
+          </span>
+        )}
+
+        {/* icon actions */}
+        <a href={directionsHref(clinic)} target="_blank" rel="noopener noreferrer" aria-label="Get directions on Google Maps (opens in a new tab)"
+          className={cn(iconBtn, 'bg-brand-600 text-white ring-brand-500 shadow-md shadow-brand-700/25')}>
+          <Navigation className="size-4" aria-hidden />
+        </a>
+        {clinic.phone && (
+          <a href={telHref(clinic.phone)} aria-label={`Call the clinic on ${formatPhone(clinic.phone)}`} className={cn(iconBtn, 'bg-surface text-brand-700 ring-slate-200 dark:text-brand-300 dark:ring-white/10')}>
+            <Phone className="size-4" aria-hidden />
+          </a>
+        )}
+        {clinic.whatsappNumber && (
+          <a
+            href={whatsappHref(clinic.whatsappNumber, `Hi, I have an appointment on ${formatDate(a.appointmentDate)} at ${formatTime(a.appointmentTime)}.`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Message the clinic on WhatsApp at ${formatPhone(clinic.whatsappNumber)}`}
+            className={cn(iconBtn, 'bg-[#25D366]/10 text-[#128C7E] ring-[#25D366]/30 dark:text-[#5BE38F]')}
+          >
+            <WhatsAppIcon className="size-4" />
+          </a>
+        )}
+      </div>
+    </div>
   );
 }
 

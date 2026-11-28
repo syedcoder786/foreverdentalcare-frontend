@@ -13,6 +13,7 @@ import { Alert, ErrorMessage } from '../../components/ui/Alert';
 import { Modal } from '../../components/ui/Modal';
 import { Skeleton } from '../../components/ui/Spinner';
 import { cn } from '../../utils/cn';
+import { toast } from '../../components/ui/Toast';
 
 const EMPTY: CloudinaryPayload = { cloudName: '', apiKey: '', apiSecret: '', folder: 'forever-dental-care' };
 
@@ -23,6 +24,7 @@ export default function StorageAdmin() {
 
   const done = (text: string) => {
     setMessage(text);
+    toast.success(text);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

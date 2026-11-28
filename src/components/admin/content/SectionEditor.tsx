@@ -10,6 +10,7 @@ import { Alert } from '../../ui/Alert';
 import { ImageUpload } from '../ImageUpload';
 import { ICONS } from '../../content/CmsIcon';
 import { cn } from '../../../utils/cn';
+import { toast } from '../../ui/Toast';
 
 /** Human labels for built-in sections, with what each field controls. */
 const SECTION_INFO: Record<string, { label: string; help?: string; items?: string; noItems?: boolean }> = {
@@ -57,6 +58,7 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
         },
       });
       setSaved(true);
+      toast.success(overrides?.active !== undefined ? (overrides.active ? 'Section is now visible.' : 'Section hidden.') : 'Saved. The website now shows the new content.');
     } catch { /* shown below */ }
   };
 
@@ -82,8 +84,6 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <div className="space-y-5 border-t border-slate-100 p-4 sm:p-5">
               {info.help && <p className="rounded-xl bg-sky-soft-50 p-3 text-xs text-sky-soft-700">{info.help}</p>}
-              {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
-              {saved && <Alert tone="success">Saved. The website now shows the new content.</Alert>}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input label="Title" value={draft.title ?? ''} onChange={(e) => set('title', e.target.value)} error={fieldError('title')} />
                 <Input label="Subtitle / eyebrow" value={draft.subtitle ?? ''} onChange={(e) => set('subtitle', e.target.value)} />
@@ -132,6 +132,8 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
                 </div>
               )}
 
+              {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
+              {saved && <Alert tone="success">Saved. The website now shows the new content.</Alert>}
               <div className="flex flex-wrap items-end justify-between gap-4 border-t border-slate-100 pt-4">
                 <div className="flex items-end gap-4">
                   <Input label="Display order" inputMode="numeric" wrapperClassName="w-28" value={String(draft.displayOrder)} onChange={(e) => set('displayOrder', Number(e.target.value.replace(/\D/g, '') || 0))} />
@@ -139,7 +141,7 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
                 </div>
                 <div className="flex gap-2">
                   {!section.core && (
-                    <Button variant="ghostDanger" loading={remove.isPending} icon={<Trash2 className="size-4" />} onClick={() => remove.mutate(section.id)}>Delete section</Button>
+                    <Button variant="ghostDanger" loading={remove.isPending} icon={<Trash2 className="size-4" />} onClick={() => remove.mutate(section.id, { onSuccess: () => toast.success('Section deleted.') })}>Delete section</Button>
                   )}
                   <Button loading={save.isPending} onClick={() => submit()}>Save section</Button>
                 </div>

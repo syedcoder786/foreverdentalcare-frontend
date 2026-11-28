@@ -18,10 +18,12 @@ import { HeroOfferCard, OfferBadge, OfferTicker } from '../components/offer/Firs
 import { TreatmentOffersSection } from '../components/offer/TreatmentOffers';
 import { HeroSlides } from '../components/offer/HeroSlides';
 import { EASE_OUT, Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
-import { formatPhone, telHref } from '../utils/format';
+import { DAYS_ORDER, DAY_LABELS, formatPhone, telHref } from '../utils/format';
 import { directionsHref } from '../utils/maps';
 import { getErrorMessage } from '../utils/errors';
-import { todayStatus, weeklySchedule } from '../utils/clinicHours';
+import { clinicHours, clinicHoursText, timeInZone, todayStatus, weekdayInZone, type ClinicState, type ClinicStatus } from '../utils/clinicHours';
+import { DayTimeline, WeeklyHours, clinicSegments, clinicTiles } from '../components/hours/WeeklyHours';
+import { useNow } from '../hooks/useNow';
 import { cn } from '../utils/cn';
 
 const heroContainer: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.1 } } };
@@ -210,12 +212,12 @@ function Hero({ section }: { section: Section }) {
           <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.75, duration: 0.6, ease: EASE_OUT }} className="absolute -bottom-5 -left-3 sm:-left-8">
             <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               className="flex items-center gap-3 rounded-2xl bg-surface/90 p-3.5 pr-5 shadow-lift ring-1 ring-slate-100 backdrop-blur-md dark:ring-white/10">
-              <span className={cn('flex size-10 items-center justify-center rounded-xl', status.open ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500')}>
+              <span className={cn('flex size-10 items-center justify-center rounded-xl', status.state === 'open' ? 'bg-emerald-50 text-emerald-600' : status.state === 'break' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-500')}>
                 <Clock className="size-5" aria-hidden />
               </span>
               <div className="text-sm">
-                <p className="font-semibold text-ink">{status.open ? 'We are open today' : 'Closed today'}</p>
-                <p className="text-xs text-muted">{status.label.replace(/^(Open|Closed) today, /, '')}</p>
+                <p className="font-semibold text-ink">{status.title}</p>
+                {status.detail && <p className="text-xs text-muted">{status.detail}</p>}
               </div>
             </motion.div>
           </motion.div>
@@ -389,37 +391,64 @@ function GalleryPreview({ section }: { section: Section }) {
   );
 }
 
+const STATUS_TONE: Record<ClinicState, { pill: string; dot: string }> = {
+  open: { pill: 'bg-emerald-50 text-emerald-800 ring-emerald-200/70 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20', dot: 'bg-emerald-500' },
+  break: { pill: 'bg-amber-50 text-amber-800 ring-amber-200/70 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20', dot: 'bg-amber-500' },
+  closed: { pill: 'bg-slate-100 text-slate-700 ring-slate-200 dark:bg-white/[0.05] dark:text-slate-300 dark:ring-white/10', dot: 'bg-slate-400' },
+};
+
+/** Live open / break / closed pill. */
+function StatusPill({ status, className }: { status: ClinicStatus; className?: string }) {
+  const tone = STATUS_TONE[status.state];
+  return (
+    <p className={cn('inline-flex items-center gap-2.5 rounded-full py-1.5 pr-4 pl-3 text-sm ring-1', tone.pill, className)}>
+      <span className="relative flex size-2.5">
+        {status.state !== 'closed' && <span className={cn('absolute inline-flex size-full animate-ping rounded-full opacity-60', tone.dot)} />}
+        <span className={cn('relative inline-flex size-2.5 rounded-full', tone.dot)} />
+      </span>
+      <span className="font-semibold">{status.title}</span>
+      {status.detail && <span className="opacity-80">· {status.detail}</span>}
+    </p>
+  );
+}
+
 function Timings({ section }: { section: Section }) {
   const { clinic } = useSite();
-  const schedule = weeklySchedule(clinic);
-  const status = todayStatus(clinic);
+  const nowMs = useNow(60_000);
+  const now = new Date(nowMs);
+  const status = todayStatus(clinic, now);
+  const today = weekdayInZone(clinic.timezone, now);
+  const hours = clinicHours(clinic);
+  const days = DAYS_ORDER.map((day) => ({ day, tiles: clinic.workingDays.includes(day) ? clinicTiles(hours) : null }));
+  const openToday = clinic.workingDays.includes(today);
+
   return (
     <section className="container-page py-16 sm:py-24">
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal from="left">
           <CmsHeading section={section} />
-          <p className={cn('mt-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium', status.open ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600')}>
-            <span className={cn('size-2 rounded-full', status.open ? 'bg-emerald-500' : 'bg-slate-400')} aria-hidden />
-            {status.label}
-          </p>
-          <p className="mt-4 text-sm text-muted">
+          <StatusPill status={status} className="mt-6" />
+          <p className="mt-5 text-sm text-muted">
             Each doctor keeps their own consultation hours.{' '}
             <SmartLink to="/doctors" className="font-semibold text-brand-700 hover:underline dark:text-brand-300">See doctors&apos; timings <ArrowRight className="inline size-3.5" aria-hidden /></SmartLink>
           </p>
         </Reveal>
-        <Reveal from="right" className="rounded-3xl border border-slate-200 bg-surface p-2 shadow-soft">
-          <table className="w-full text-sm">
-            <caption className="sr-only">Clinic opening hours</caption>
-            <tbody>
-              {schedule.map((d, i) => (
-                <motion.tr key={d.day} initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-                  transition={{ delay: 0.15 + i * 0.05, duration: 0.4, ease: EASE_OUT }} className="border-b border-slate-100 last:border-0">
-                  <th scope="row" className="px-5 py-3.5 text-left font-medium text-ink">{d.label}</th>
-                  <td className={cn('px-5 py-3.5 text-right', d.open ? 'text-slate-600' : 'text-slate-400')}>{d.hours}</td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+        <Reveal from="right" className="relative">
+          <div aria-hidden className="pointer-events-none absolute -inset-4 -z-10 rounded-[2.5rem] bg-gradient-to-br from-amber-200/30 via-transparent to-indigo-300/25 blur-2xl dark:from-amber-400/10 dark:to-indigo-500/15" />
+          <div className="rounded-[2rem] border border-slate-200/80 bg-surface p-5 shadow-lift sm:p-7 dark:ring-1 dark:ring-brand-400/10">
+            <div className="mb-6 rounded-2xl bg-slate-50/80 p-4 ring-1 ring-slate-100 dark:bg-white/[0.03] dark:ring-white/5">
+              <div className="mb-3 flex items-center justify-between gap-3 text-sm">
+                <span className="font-semibold text-ink">Today · {DAY_LABELS[today].long}</span>
+                <span className="text-xs text-muted">{openToday ? clinicHoursText(hours, { withBreak: false }) : 'Closed today'}</span>
+              </div>
+              {openToday ? (
+                <DayTimeline segments={clinicSegments(hours)} gapLabel="Break" now={timeInZone(clinic.timezone, now)} className="pt-4" />
+              ) : (
+                <p className="text-sm text-muted">{status.detail}</p>
+              )}
+            </div>
+            <WeeklyHours days={days} today={today} />
+          </div>
         </Reveal>
       </div>
     </section>

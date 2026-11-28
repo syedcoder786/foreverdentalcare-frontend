@@ -134,17 +134,30 @@ export const settingsSchema = z
     path: ['firstVisitDiscountPercent'],
     message: 'Set the first-visit discount',
   })
+  // Clinic hours: opening..closing with an optional break inside them.
   .refine((v) => v.closingTime > v.openingTime, {
     path: ['closingTime'],
     message: 'Closing time must be after opening time',
   })
-  .refine((v) => !v.breakStartTime === !v.breakEndTime, {
+  .refine((v) => !v.breakEndTime || !!v.breakStartTime, {
+    path: ['breakStartTime'],
+    message: 'Enter when the break starts',
+  })
+  .refine((v) => !v.breakStartTime || !!v.breakEndTime, {
     path: ['breakEndTime'],
-    message: 'Provide both break start and end, or neither',
+    message: 'Enter when the break ends',
+  })
+  .refine((v) => !v.breakStartTime || v.breakStartTime > v.openingTime, {
+    path: ['breakStartTime'],
+    message: 'Break must start after opening time',
   })
   .refine((v) => !v.breakStartTime || !v.breakEndTime || v.breakEndTime > v.breakStartTime, {
     path: ['breakEndTime'],
-    message: 'Break end must be after break start',
+    message: 'Break must end after it starts',
+  })
+  .refine((v) => !v.breakEndTime || v.closingTime > v.breakEndTime, {
+    path: ['breakEndTime'],
+    message: 'Break must end before closing time',
   });
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>;

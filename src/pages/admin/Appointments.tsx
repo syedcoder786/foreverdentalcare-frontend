@@ -38,7 +38,8 @@ export default function Appointments() {
   const specialtyId = params.get('specialtyId') ? Number(params.get('specialtyId')) : '';
   const date = params.get('date') ?? '';
   const page = Number(params.get('page') ?? 0);
-  const sortBy = (params.get('sortBy') ?? 'appointmentDate') as AppointmentFilters['sortBy'];
+  // Default: most recently booked first.
+  const sortBy = (params.get('sortBy') ?? 'createdAt') as AppointmentFilters['sortBy'];
   const [selected, setSelected] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -106,8 +107,8 @@ export default function Appointments() {
               </Select>
               <Input label="Date" type="date" value={date} onChange={(e) => updateParam('date', e.target.value)} wrapperClassName="md:col-span-2 xl:col-span-2" />
               <Select label="Sort by" value={sortBy} onChange={(e) => updateParam('sortBy', e.target.value)} wrapperClassName="md:col-span-2 xl:col-span-1">
-                <option value="appointmentDate">Date</option>
-                <option value="createdAt">Received</option>
+                <option value="createdAt">Date booked (newest)</option>
+                <option value="appointmentDate">Appointment date</option>
                 <option value="patientName">Patient</option>
                 <option value="doctorName">Doctor</option>
               </Select>

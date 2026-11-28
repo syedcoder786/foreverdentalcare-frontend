@@ -24,6 +24,7 @@ import { DoctorAvatar } from '../doctors/DoctorCard';
 import { CmsIcon } from '../content/CmsIcon';
 import { getErrorMessage } from '../../utils/errors';
 import { cn } from '../../utils/cn';
+import { toast } from '../ui/Toast';
 
 export interface BookingPrefill {
   specialty?: string; // slug
@@ -183,7 +184,10 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
   useEffect(() => {
     if (!confirmation) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    const card = document.getElementById('booking-form');
+    if (card) card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    else window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    toast.success('Appointment request sent. The clinic will contact you to confirm.');
   }, [confirmation]);
 
   const selectedDoctor = doctors.data?.find((d) => String(d.id) === doctorId);
@@ -226,7 +230,7 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
       }
       setFormError(mapped ? 'Please review the highlighted fields.' : parsed.message);
     }
-  });
+  }, () => toast.error('Please complete the highlighted fields to send your request.', { title: 'Almost there' }));
 
   if (confirmation) {
     return (
@@ -244,8 +248,6 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-8" aria-label="Appointment request form">
-      <AnimatePresence>{formError && <Alert tone="error" title="We couldn't submit your request">{formError}</Alert>}</AnimatePresence>
-
       <Step n={1} title="Choose a specialty" done={Boolean(specialtyId)}>
         {specialties.isLoading ? (
           <Skeleton className="h-16" />
@@ -372,6 +374,8 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
       )}
 
       <Checkbox label={consentText || DEFAULT_CONSENT} error={errors.consent?.message} {...register('consent')} />
+
+      <AnimatePresence>{formError && <Alert tone="error" title="We couldn't submit your request">{formError}</Alert>}</AnimatePresence>
 
       <motion.div layout className="flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-slate-500">

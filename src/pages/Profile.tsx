@@ -21,6 +21,7 @@ import { isUpcoming } from '../utils/appointments';
 import { useNow } from '../hooks/useNow';
 import { getErrorMessage, parseApiError } from '../utils/errors';
 import { EASE_OUT } from '../components/motion/Reveal';
+import { toast } from '../components/ui/Toast';
 
 export default function Profile() {
   const { status, patient } = usePatientAuth();
@@ -133,6 +134,7 @@ function ProfileForm() {
     try {
       await mutation.mutateAsync({ fullName: fullName.trim(), email: email.trim() || undefined });
       setSaved(true);
+      toast.success('Profile saved.');
     } catch (err) {
       const parsed = parseApiError(err);
       setErrors(Object.keys(parsed.fieldErrors).length ? parsed.fieldErrors : { form: parsed.message });
@@ -144,13 +146,13 @@ function ProfileForm() {
       <h2 className="flex items-center gap-2 font-semibold text-ink">
         <UserRound className="size-4 text-brand-600" aria-hidden /> Your details
       </h2>
+      <Input label="Full name" required value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} />
+      <Input label="Email" optional type="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
+      <Input label="Mobile number" value={formatPhone(patient?.phone)} disabled hint="Your mobile number is your sign-in and can't be changed here." />
       <AnimatePresence>
         {saved && <Alert tone="success">Profile saved.</Alert>}
         {errors.form && <Alert tone="error">{errors.form}</Alert>}
       </AnimatePresence>
-      <Input label="Full name" required value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} />
-      <Input label="Email" optional type="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
-      <Input label="Mobile number" value={formatPhone(patient?.phone)} disabled hint="Your mobile number is your sign-in and can't be changed here." />
       <Button type="submit" variant="outline" loading={mutation.isPending}>Save details</Button>
     </form>
   );

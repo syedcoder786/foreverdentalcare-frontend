@@ -6,17 +6,33 @@ import { CustomSections } from '../components/content/Cms';
 import { PageHeader } from '../components/layout/PageHeader';
 import { LinkButton } from '../components/ui/Button';
 import { WhatsAppIcon } from '../components/layout/WhatsAppButton';
-import { formatPhone, formatTime, telHref, whatsappHref } from '../utils/format';
-import { weeklySchedule } from '../utils/clinicHours';
+import { formatPhone, telHref, whatsappHref } from '../utils/format';
+import { clinicHours, weekdayInZone, weeklySchedule } from '../utils/clinicHours';
+import { WeeklyHours, clinicTiles } from '../components/hours/WeeklyHours';
 import { directionsHref } from '../utils/maps';
-import { cn } from '../utils/cn';
 import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 
-function InfoCard({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
+/** `wide`: content goes below the icon row and uses the card's full width (for richer content like the hours). */
+function InfoCard({ icon, title, children, wide }: { icon: ReactNode; title: string; children: ReactNode; wide?: boolean }) {
+  const iconEl = (
+    <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-700 transition-transform duration-300 group-hover:scale-110 dark:text-brand-300">{icon}</span>
+  );
+  const card = 'group rounded-3xl border border-slate-200 bg-surface p-6 shadow-soft transition-shadow duration-300 hover:shadow-lift dark:hover:shadow-glow';
+  if (wide) {
+    return (
+      <StaggerItem className={card}>
+        <div className="flex items-center gap-4">
+          {iconEl}
+          <h2 className="font-semibold text-ink">{title}</h2>
+        </div>
+        <div className="mt-5 text-sm leading-relaxed text-muted">{children}</div>
+      </StaggerItem>
+    );
+  }
   return (
-    <StaggerItem className="group flex gap-4 rounded-3xl border border-slate-200 bg-surface p-6 shadow-soft transition-shadow duration-300 hover:shadow-lift dark:hover:shadow-glow">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-700 transition-transform duration-300 group-hover:scale-110 dark:text-brand-300">{icon}</span>
-      <div className="min-w-0">
+    <StaggerItem className={`${card} flex gap-4`}>
+      {iconEl}
+      <div className="min-w-0 flex-1">
         <h2 className="font-semibold text-ink">{title}</h2>
         <div className="mt-1 text-sm leading-relaxed text-muted">{children}</div>
       </div>
@@ -75,20 +91,12 @@ export default function Contact() {
               </a>
             </InfoCard>
           )}
-          <InfoCard icon={<Clock className="size-5" aria-hidden />} title="Working hours">
-            <ul className="mt-2 space-y-1">
-              {schedule.map((d) => (
-                <li key={d.day} className="flex justify-between gap-4">
-                  <span className={cn(d.open ? 'text-ink' : 'text-slate-400')}>{d.label}</span>
-                  <span className={cn(d.open ? '' : 'text-slate-400')}>{d.hours}</span>
-                </li>
-              ))}
-            </ul>
-            {clinic.breakStartTime && clinic.breakEndTime && (
-              <p className="mt-2 text-xs">
-                Break: {formatTime(clinic.breakStartTime)} - {formatTime(clinic.breakEndTime)}
-              </p>
-            )}
+          <InfoCard wide icon={<Clock className="size-5" aria-hidden />} title="Working hours">
+            <WeeklyHours
+              compact
+              today={weekdayInZone(clinic.timezone)}
+              days={schedule.map((d) => ({ day: d.day, tiles: d.open ? clinicTiles(clinicHours(clinic)) : null }))}
+            />
           </InfoCard>
         </Stagger>
 

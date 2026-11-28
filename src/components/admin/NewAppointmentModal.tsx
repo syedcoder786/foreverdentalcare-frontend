@@ -57,7 +57,6 @@ export function NewAppointmentModal({ open, onClose, onCreated }: { open: boolea
         <Button loading={create.isPending} disabled={!doctorId || !serviceId || !date || !time || !fullName || !phone} onClick={submit}>Create appointment</Button>
       </>}>
       <div className="space-y-5">
-        {create.isError && <Alert tone="error">{parseApiError(create.error).message}</Alert>}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select label="Doctor" required value={doctorId} onChange={(e) => { setDoctorId(e.target.value); setServiceId(''); setTime(''); }} error={errors.doctorId}>
             <option value="">Select a doctor</option>
@@ -80,6 +79,7 @@ export function NewAppointmentModal({ open, onClose, onCreated }: { open: boolea
           <Input label="Email" optional type="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} wrapperClassName="sm:col-span-2" />
         </div>
         <Textarea label="Notes" optional rows={2} value={message} onChange={(e) => setMessage(e.target.value)} />
+        {create.isError && <Alert tone="error">{parseApiError(create.error).message}</Alert>}
       </div>
     </Modal>
   );

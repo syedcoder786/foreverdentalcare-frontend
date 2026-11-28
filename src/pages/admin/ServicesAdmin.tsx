@@ -16,6 +16,7 @@ import { getErrorMessage } from '../../utils/errors';
 import { cn } from '../../utils/cn';
 import { offerRange } from '../../utils/offers';
 import type { ServiceOffer } from '../../types';
+import { Notice } from '../../components/admin/Notice';
 
 const OFFER_STYLE: Record<ServiceOffer['status'], { label: string; cls: string }> = {
   ACTIVE: { label: 'Running', cls: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
@@ -102,7 +103,7 @@ export default function ServicesAdmin() {
         </Button>
       </div>
 
-      {notice && <Alert tone="success">{notice}</Alert>}
+      <Notice message={notice} onClear={() => setNotice(null)} />
 
       <div className="rounded-2xl border border-slate-200 bg-surface p-2 shadow-soft sm:p-3">
         {isError ? (

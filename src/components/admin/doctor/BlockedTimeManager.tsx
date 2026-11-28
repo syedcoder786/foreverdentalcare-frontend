@@ -45,7 +45,6 @@ export function BlockedTimeManager({ doctorId, blocks, onMessage }: Props) {
         <p className="mt-1 text-sm text-slate-500">
           {doctorId ? 'Patients will not be able to book this doctor during blocked time. Other doctors are unaffected.' : 'Closes every doctor’s calendar on these dates.'}
         </p>
-        {add.isError && <Alert tone="error" className="mt-4">{parseApiError(add.error).message}</Alert>}
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input label="Date" type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
           <Input label="Until (optional)" type="date" value={endDate} min={date} onChange={(e) => setEndDate(e.target.value)} hint="For multi-day leave" />
@@ -61,6 +60,7 @@ export function BlockedTimeManager({ doctorId, blocks, onMessage }: Props) {
             <Input label="To" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
         )}
+        {add.isError && <Alert tone="error" className="mt-4">{parseApiError(add.error).message}</Alert>}
         <div className="mt-5 flex justify-end">
           <Button icon={<Ban className="size-4" aria-hidden />} loading={add.isPending} disabled={!date || (partial && (!startTime || !endTime))} onClick={submit}>
             Block time

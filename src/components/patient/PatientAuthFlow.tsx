@@ -10,6 +10,7 @@ import { Button } from '../ui/Button';
 import { Alert } from '../ui/Alert';
 import { WhatsAppIcon } from '../layout/WhatsAppButton';
 import { cn } from '../../utils/cn';
+import { toast } from '../ui/Toast';
 
 type Step = 'phone' | 'code' | 'name';
 const CODE_LENGTH = 6;
@@ -55,6 +56,7 @@ export function PatientAuthFlow({ onSignedIn, title = 'Sign in with your mobile'
     const parsed = parseApiError(err);
     setFieldErrors(parsed.fieldErrors);
     setError(Object.keys(parsed.fieldErrors).length ? null : parsed.message);
+    toast.error(Object.values(parsed.fieldErrors)[0] ?? parsed.message);
   };
 
   const finish = (payload: PatientAuthPayload) => {
@@ -163,8 +165,6 @@ export function PatientAuthFlow({ onSignedIn, title = 'Sign in with your mobile'
 
   return (
     <div className="space-y-5">
-      <AnimatePresence>{error && <Alert tone="error">{error}</Alert>}</AnimatePresence>
-
       <AnimatePresence mode="wait" initial={false}>
         {step === 'phone' && (
           <motion.form key="phone" {...slide} onSubmit={sendCode} noValidate className="space-y-5">
@@ -296,6 +296,8 @@ export function PatientAuthFlow({ onSignedIn, title = 'Sign in with your mobile'
           </motion.form>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>{error && <Alert tone="error">{error}</Alert>}</AnimatePresence>
     </div>
   );
 }

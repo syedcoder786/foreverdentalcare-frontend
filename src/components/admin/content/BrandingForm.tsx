@@ -8,6 +8,7 @@ import { Button } from '../../ui/Button';
 import { Alert, ErrorMessage } from '../../ui/Alert';
 import { Skeleton } from '../../ui/Spinner';
 import { ImageUpload } from '../ImageUpload';
+import { toast } from '../../ui/Toast';
 
 type BrandingFields = Pick<ClinicSettings, 'clinicName' | 'logoUrl' | 'tagline' | 'headerCtaText' | 'whatsappNumber' | 'footerDescription' | 'copyrightText' | 'facebookUrl' | 'instagramUrl' | 'youtubeUrl' | 'googleReviewsUrl'>;
 
@@ -34,13 +35,12 @@ export function BrandingForm() {
     try {
       await save.mutateAsync({ ...rest, ...form });
       setSaved(true);
+      toast.success('Header & footer saved.');
     } catch { /* shown below */ }
   };
 
   return (
     <div className="space-y-6">
-      {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
-      {saved && <Alert tone="success">Header & footer saved.</Alert>}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ImageUpload label="Clinic logo" aspect="square" hint="Square image works best. Leave empty to use the default mark." value={form.logoUrl} onChange={(url) => set('logoUrl', url)} error={errors.logoUrl} />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2">
@@ -61,6 +61,8 @@ export function BrandingForm() {
       <p className="text-xs text-slate-500">
         Address, phone, email, map and opening hours are edited in <Link to="/admin/settings" className="font-semibold text-brand-700 hover:underline">Clinic settings</Link> and used in the header, footer and contact page.
       </p>
+      {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
+      {saved && <Alert tone="success">Header & footer saved.</Alert>}
       <div className="flex justify-end"><Button loading={save.isPending} onClick={submit}>Save header & footer</Button></div>
     </div>
   );

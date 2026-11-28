@@ -21,6 +21,7 @@ import { Skeleton } from '../../components/ui/Spinner';
 import { formatDateTime } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 import { cn } from '../../utils/cn';
+import { toast } from '../../components/ui/Toast';
 
 type Tab = 'setup' | 'names' | 'appointments' | 'marketing';
 const TABS: Array<{ id: Tab; label: string; icon: typeof Plug }> = [
@@ -147,6 +148,7 @@ function CampaignSender({ templates, audience }: { templates: WhatsAppTemplate[]
     try {
       await start.mutateAsync(Number(templateId));
       setResult({ tone: 'success', text: `Campaign started. Sending to ${audience} patients; progress is shown below.` });
+      toast.success(`Campaign started. Sending to ${audience} patients.`);
       setTemplateId('');
     } catch (err) {
       setResult({ tone: 'error', text: getErrorMessage(err) });

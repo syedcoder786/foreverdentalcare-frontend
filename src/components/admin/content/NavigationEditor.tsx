@@ -7,6 +7,7 @@ import { Input } from '../../ui/FormField';
 import { Button } from '../../ui/Button';
 import { Alert, ErrorMessage } from '../../ui/Alert';
 import { Skeleton } from '../../ui/Spinner';
+import { toast } from '../../ui/Toast';
 
 /** Header menu editor (order = position in the list). The footer "Explore" links use the same menu. */
 export function NavigationEditor() {
@@ -24,8 +25,6 @@ export function NavigationEditor() {
 
   return (
     <div className="space-y-4">
-      {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
-      {saved && <Alert tone="success">Menu saved.</Alert>}
       <div className="space-y-2">
         {items.map((item, i) => (
           <div key={item.id ?? `new-${i}`} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 p-3 sm:grid-cols-[1fr_1.5fr_auto_auto] sm:items-end">
@@ -43,10 +42,12 @@ export function NavigationEditor() {
           </div>
         ))}
       </div>
+      {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
+      {saved && <Alert tone="success">Menu saved.</Alert>}
       <div className="flex justify-between">
         <Button variant="outline" icon={<Plus className="size-4" aria-hidden />} onClick={() => setItems((l) => [...l, { label: '', url: '/', active: true, openInNewTab: false }])}>Add menu item</Button>
         <Button loading={save.isPending} onClick={async () => {
-          try { await save.mutateAsync(items.map((it, i) => ({ ...it, displayOrder: i + 1 }))); setSaved(true); } catch { /* shown above */ }
+          try { await save.mutateAsync(items.map((it, i) => ({ ...it, displayOrder: i + 1 }))); setSaved(true); toast.success('Menu saved.'); } catch { /* shown above */ }
         }}>Save menu</Button>
       </div>
     </div>

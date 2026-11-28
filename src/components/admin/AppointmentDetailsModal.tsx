@@ -15,6 +15,7 @@ import { FeeSummary } from './AppointmentFee';
 import { formatDate, formatDateTime, formatPhone, formatTime, telHref, whatsappHref } from '../../utils/format';
 import { addDays, todayInZone } from '../../utils/dates';
 import { getErrorMessage } from '../../utils/errors';
+import { toast } from '../ui/Toast';
 
 const ACTIONS: Record<AppointmentStatus, { label: string; variant: 'primary' | 'danger' | 'secondary'; icon: ReactNode }> = {
   CONFIRMED: { label: 'Confirm appointment', variant: 'primary', icon: <CheckCircle2 className="size-4" aria-hidden /> },
@@ -58,6 +59,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose }: Props) {
       () => {
         setConfirmCancel(false);
         setNotice(`Appointment marked as ${status.toLowerCase()}.`);
+        toast.success(`Appointment marked as ${status.toLowerCase()}.`);
       },
       () => undefined,
     );
@@ -70,6 +72,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose }: Props) {
       () => {
         setRescheduling(false);
         setNotice(`Rescheduled to ${formatDate(newDate)} at ${formatTime(newTime)}.`);
+        toast.success(`Rescheduled to ${formatDate(newDate)} at ${formatTime(newTime)}.`);
       },
       () => undefined,
     );
@@ -83,9 +86,6 @@ export function AppointmentDetailsModal({ appointmentId, onClose }: Props) {
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {appt && (
         <div className="space-y-6">
-          {notice && <Alert tone="success">{notice}</Alert>}
-          {mutationError && <Alert tone="error">{getErrorMessage(mutationError)}</Alert>}
-
           <div className="flex flex-col gap-4 rounded-2xl bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-slate-500">
@@ -230,6 +230,9 @@ export function AppointmentDetailsModal({ appointmentId, onClose }: Props) {
               )}
             </section>
           )}
+
+          {notice && <Alert tone="success">{notice}</Alert>}
+          {mutationError && <Alert tone="error">{getErrorMessage(mutationError)}</Alert>}
         </div>
       )}
     </Modal>

@@ -1,9 +1,11 @@
 import { useId } from 'react';
 import { LayoutGroup, motion } from 'motion/react';
-import { CalendarX2, Clock, Coffee } from 'lucide-react';
+import { CalendarX2, Clock } from 'lucide-react';
 import { EASE_OUT } from '../motion/Reveal';
 import { useAvailability } from '../../hooks/usePublicData';
 import { formatTime } from '../../utils/format';
+import { scheduleHours, shiftsOf, type Shift } from '../../utils/clinicHours';
+import { ShiftHours } from '../ui/ShiftHours';
 import { getErrorMessage } from '../../utils/errors';
 import { cn } from '../../utils/cn';
 import { Alert, ErrorMessage } from '../ui/Alert';
@@ -20,7 +22,13 @@ interface SlotPickerProps {
   label?: string;
 }
 
-function groupSlots(slots: SlotView[]) {
+/** Two shifts: group by shift. One shift: split into morning / afternoon / evening for easier scanning. */
+function groupSlots(slots: SlotView[], shifts: Shift[]) {
+  if (shifts.length > 1) {
+    return shifts
+      .map((sh, i) => [sh.label, slots.filter((s) => (i === 0 ? s.time < shifts[1].from : s.time >= shifts[1].from))] as [string, SlotView[]])
+      .filter(([, list]) => list.length > 0);
+  }
   const groups: Record<'Morning' | 'Afternoon' | 'Evening', SlotView[]> = { Morning: [], Afternoon: [], Evening: [] };
   for (const s of slots) {
     const hour = Number(s.time.slice(0, 2));
@@ -78,19 +86,11 @@ export function SlotPicker({ doctorId, serviceId, date, value, onChange, error, 
       <LayoutGroup id={layoutGroupId}>
         <div className="space-y-4">
           <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="size-3.5" aria-hidden />
-              {formatTime(data.startTime)} - {formatTime(data.endTime)}
-            </span>
-            {data.breakStartTime && (
-              <span className="inline-flex items-center gap-1.5">
-                <Coffee className="size-3.5" aria-hidden />
-                Break {formatTime(data.breakStartTime)} - {formatTime(data.breakEndTime)}
-              </span>
-            )}
+            <span className="font-medium text-slate-600 dark:text-slate-300">Doctor's hours this day:</span>
+            <ShiftHours hours={scheduleHours(data)} variant="inline" hideSingleLabel />
             {data.appointmentMinutes ? <span>Appointment length: {data.appointmentMinutes} min</span> : null}
           </p>
-          {groupSlots(available).map(([groupName, slots], groupIndex) => (
+          {groupSlots(available, shiftsOf(scheduleHours(data))).map(([groupName, slots], groupIndex) => (
             <motion.div
               key={`${date}-${groupName}`}
               initial={{ opacity: 0, y: 12 }}

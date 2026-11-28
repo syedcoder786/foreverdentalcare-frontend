@@ -10,6 +10,7 @@ import { Alert, ErrorMessage } from '../ui/Alert';
 import { Skeleton } from '../ui/Spinner';
 import { WhatsAppIcon } from '../layout/WhatsAppButton';
 import { cn } from '../../utils/cn';
+import { toast } from '../ui/Toast';
 
 const EMPTY: WhatsAppSettingsPayload = {
   enabled: false,
@@ -57,6 +58,7 @@ export function WhatsAppSettingsCard() {
       await save.mutateAsync({ ...form, accessToken: form.accessToken.trim() });
       set('accessToken', '');
       setMessage({ tone: 'success', text: 'WhatsApp settings saved.' });
+      toast.success('WhatsApp settings saved.');
     } catch (err) {
       const parsed = parseApiError(err);
       setErrors(parsed.fieldErrors);
@@ -69,7 +71,9 @@ export function WhatsAppSettingsCard() {
     try {
       const res = await test.mutateAsync(testPhone);
       const text = res.data.message || 'Test code 123456 sent. Check WhatsApp on that number.';
-      setTestResult({ tone: text.includes("can't carry") ? 'warning' : 'success', text });
+      const tone = text.includes("can't carry") ? 'warning' : 'success';
+      setTestResult({ tone, text });
+      toast[tone](text);
     } catch (err) {
       setTestResult({ tone: 'error', text: getErrorMessage(err) });
     }
@@ -112,7 +116,6 @@ export function WhatsAppSettingsCard() {
       ) : (
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
           <form onSubmit={submit} noValidate className="space-y-5 lg:col-span-2">
-            <AnimatePresence>{message && <Alert tone={message.tone}>{message.text}</Alert>}</AnimatePresence>
             <Checkbox
               label="Turn on WhatsApp (sign-in codes and messages)"
               checked={form.enabled}
@@ -145,6 +148,7 @@ export function WhatsAppSettingsCard() {
             <Input label="Default country code" required inputMode="numeric" placeholder="91" value={form.defaultCountryCode} wrapperClassName="sm:max-w-48"
               onChange={(e) => set('defaultCountryCode', e.target.value.replace(/\D/g, ''))} error={errors.defaultCountryCode}
               hint="Added to numbers patients type without one." />
+            <AnimatePresence>{message && <Alert tone={message.tone}>{message.text}</Alert>}</AnimatePresence>
             <Button type="submit" loading={save.isPending} icon={<Save className="size-4" aria-hidden />}>Save WhatsApp settings</Button>
 
             <div className="border-t border-slate-100 pt-5">

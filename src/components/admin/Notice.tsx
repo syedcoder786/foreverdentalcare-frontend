@@ -1,36 +1,18 @@
-import { useEffect, useState } from 'react';
-import { AnimatePresence } from 'motion/react';
-import { Alert } from '../ui/Alert';
+import { useEffect } from 'react';
+import { toast } from '../ui/Toast';
 
-/** Success / warning message shown after admin actions. Messages containing "review" are shown as warnings. */
+const isWarning = (m: string) => /review|reschedul|please/i.test(m);
+
+/**
+ * Success / warning message shown after admin actions, as a toast (so it is visible wherever the user has scrolled).
+ * Messages containing "review" / "reschedule" / "please" are shown as warnings and stay longer.
+ */
 export function Notice({ message, onClear }: { message: string | null; onClear?: () => void }) {
-  const [visible, setVisible] = useState(message);
   useEffect(() => {
-    setVisible(message);
     if (!message) return;
-    const warning = /review|reschedul|please/i.test(message);
-    if (warning) return; // warnings stay until dismissed
-    const t = setTimeout(() => {
-      setVisible(null);
-      onClear?.();
-    }, 6000);
-    return () => clearTimeout(t);
+    if (isWarning(message)) toast.warning(message, { duration: 12000 });
+    else toast.success(message);
+    onClear?.();
   }, [message]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <AnimatePresence>
-      {visible && (
-        <Alert
-          tone={/review|reschedul|please/i.test(visible) ? 'warning' : 'success'}
-          action={
-            <button type="button" className="text-xs font-semibold underline" onClick={() => { setVisible(null); onClear?.(); }}>
-              Dismiss
-            </button>
-          }
-        >
-          {visible}
-        </Alert>
-      )}
-    </AnimatePresence>
-  );
+  return null;
 }

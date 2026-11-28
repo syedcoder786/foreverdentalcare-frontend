@@ -6,6 +6,8 @@ import { useAdminDoctors, useCalendar } from '../../../hooks/useAdminData';
 import { useSite } from '../../../hooks/usePublicData';
 import { addDays, addMonths, dayOfWeek, daysBetween, endOfMonth, startOfMonth, startOfWeek, todayInZone } from '../../../utils/dates';
 import { formatDate, formatTime } from '../../../utils/format';
+import { scheduleHours } from '../../../utils/clinicHours';
+import { ShiftHours } from '../../ui/ShiftHours';
 import { getErrorMessage } from '../../../utils/errors';
 import { doctorColor } from '../doctorColors';
 import { Button } from '../../ui/Button';
@@ -123,7 +125,7 @@ export function CalendarView({ initialDoctorId }: { initialDoctorId?: number }) 
             return (
               <div key={d.id} className={cn('rounded-2xl border border-l-4 border-slate-200 bg-surface p-4', doctorColor(d.id, orderedIds).bar)}>
                 <p className="font-semibold text-ink">{d.fullName}</p>
-                <p className="text-xs text-slate-500">{hours?.active ? `${formatTime(hours.startTime)} - ${formatTime(hours.endTime)}${hours.breakStartTime ? ` · break ${formatTime(hours.breakStartTime)}-${formatTime(hours.breakEndTime)}` : ''}` : 'Not working'}</p>
+                <p className="mt-0.5 text-xs text-slate-500">{hours?.active ? <ShiftHours hours={scheduleHours(hours)} variant="inline" /> : 'Not working'}</p>
                 {blocks.map((b) => <p key={b.id} className="mt-2 rounded-lg bg-slate-100 px-2 py-1 text-xs text-slate-500">Blocked {b.startTime ? `${formatTime(b.startTime)}-${formatTime(b.endTime)}` : 'all day'}{b.reason ? ` · ${b.reason}` : ''}</p>)}
                 <div className="mt-3 space-y-1.5">{appts.length ? appts.map(chip) : <p className="text-xs text-slate-400">No appointments</p>}</div>
               </div>

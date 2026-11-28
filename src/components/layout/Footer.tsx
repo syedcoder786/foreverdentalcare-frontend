@@ -2,7 +2,9 @@ import { Clock, Facebook, Instagram, Mail, MapPin, Phone, Star, Youtube } from '
 import { Logo } from './Logo';
 import { SmartLink } from '../content/Cms';
 import { useSite } from '../../hooks/usePublicData';
-import { formatPhone, formatTime, formatWorkingDays, telHref } from '../../utils/format';
+import { formatPhone, formatWorkingDays, telHref } from '../../utils/format';
+import { clinicHours } from '../../utils/clinicHours';
+import { ClinicHours } from '../ui/ShiftHours';
 
 /** Footer content (description, social links, copyright, contact, hours) is managed in Admin -> Clinic settings. */
 export function Footer() {
@@ -84,9 +86,7 @@ export function Footer() {
             <Clock className="mt-0.5 size-4 shrink-0 text-brand-300" aria-hidden />
             <div className="space-y-1 text-mint/80">
               <p className="font-medium text-white">{formatWorkingDays(clinic.workingDays)}</p>
-              <p>
-                {formatTime(clinic.openingTime)} - {formatTime(clinic.closingTime)}
-              </p>
+              <ClinicHours hours={clinicHours(clinic)} />
               <p className="text-mint/60">Each doctor&apos;s consultation hours are shown on their profile.</p>
             </div>
           </div>

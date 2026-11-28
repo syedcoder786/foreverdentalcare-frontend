@@ -15,6 +15,7 @@ import { Checkbox, Input, Select } from '../../ui/FormField';
 import { Button } from '../../ui/Button';
 import { Alert } from '../../ui/Alert';
 import { cn } from '../../../utils/cn';
+import { toast } from '../../ui/Toast';
 
 export const SOURCE_LABELS: Record<TemplateParamSource, string> = {
   PATIENT_NAME: 'Patient name',
@@ -125,6 +126,7 @@ export function TemplateEditor({ purpose: initialPurpose, template, freePurposes
         },
       });
       setMessage({ tone: 'success', text: enabled ? 'Saved. This message is on.' : 'Saved. This message is off.' });
+      toast.success(enabled ? 'Saved. This message is on.' : 'Saved. This message is off.');
       if (!template) onCancelNew?.();
     } catch (err) {
       const parsed = parseApiError(err);
@@ -139,6 +141,7 @@ export function TemplateEditor({ purpose: initialPurpose, template, freePurposes
     try {
       const res = await test.mutateAsync({ id: template.id, phone: testPhone });
       setTestResult({ tone: 'success', text: res.data.message || 'Test message sent.' });
+      toast.success(res.data.message || 'Test message sent.');
     } catch (err) {
       setTestResult({ tone: 'error', text: getErrorMessage(err) });
     }
@@ -170,7 +173,6 @@ export function TemplateEditor({ purpose: initialPurpose, template, freePurposes
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <div className="space-y-5 border-t border-slate-100 p-4 sm:p-6 dark:border-white/5">
               <p className="text-sm text-slate-500">{PURPOSE_HELP[purpose]}</p>
-              <AnimatePresence>{message && <Alert tone={message.tone}>{message.text}</Alert>}</AnimatePresence>
 
               {isMarketing && (
                 <Input label="Name (for you)" required placeholder="e.g. Free check-up camp" value={label} onChange={(e) => setLabel(e.target.value)} error={errors.label} />
@@ -221,6 +223,8 @@ export function TemplateEditor({ purpose: initialPurpose, template, freePurposes
 
               <Checkbox label={isMarketing ? 'Ready to send as a campaign' : 'Send this message automatically'} checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
 
+              <AnimatePresence>{message && <Alert tone={message.tone}>{message.text}</Alert>}</AnimatePresence>
+
               <div className="flex flex-wrap items-center gap-3">
                 <Button onClick={submit} loading={save.isPending} icon={<Save className="size-4" aria-hidden />}>Save</Button>
                 {!template && onCancelNew && <Button variant="ghost" onClick={onCancelNew}>Cancel</Button>}
@@ -230,7 +234,7 @@ export function TemplateEditor({ purpose: initialPurpose, template, freePurposes
                     loading={remove.isPending}
                     icon={<Trash2 className="size-4" aria-hidden />}
                     onClick={() => {
-                      if (window.confirm(`Remove "${template.label}"?`)) remove.mutate(template.id);
+                      if (window.confirm(`Remove "${template.label}"?`)) remove.mutate(template.id, { onSuccess: () => toast.success('Template removed.') });
                     }}
                   >
                     Remove

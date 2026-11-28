@@ -60,7 +60,7 @@ export default function TestimonialsAdmin() {
               <p className="mt-3 text-xs text-slate-500">{t.consentConfirmed ? 'Consent recorded' : 'Consent NOT recorded'} · order {t.displayOrder}</p>
               <div className="mt-3 flex gap-1">
                 <Button size="sm" variant="ghost" icon={<Pencil className="size-4" />} onClick={() => { setEditing(t); setOpen(true); }}>Edit</Button>
-                <Button size="sm" variant="ghostDanger" icon={<Trash2 className="size-4" />} onClick={async () => setNotice(await remove.mutateAsync(t.id))}>Delete</Button>
+                <Button size="sm" variant="ghostDanger" icon={<Trash2 className="size-4" />} onClick={async () => { try { setNotice(await remove.mutateAsync(t.id)); } catch { /* toast */ } }}>Delete</Button>
               </div>
             </div>
           ))}
@@ -75,7 +75,6 @@ export default function TestimonialsAdmin() {
           }}>Save</Button>
         </>}>
         <div className="space-y-4">
-          {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Input label="Patient name or initials" required value={draft.patientName} onChange={(e) => setDraft({ ...draft, patientName: e.target.value })} error={errors.patientName} />
             <Input label="Context" optional placeholder="e.g. Teeth cleaning" value={draft.context ?? ''} onChange={(e) => setDraft({ ...draft, context: e.target.value })} />
@@ -90,6 +89,7 @@ export default function TestimonialsAdmin() {
           </div>
           <Checkbox label="The patient gave permission to publish this testimonial" checked={draft.consentConfirmed} onChange={(e) => setDraft({ ...draft, consentConfirmed: e.target.checked, published: e.target.checked ? draft.published : false })} error={errors.consentConfirmed} />
           <Checkbox label="Published on the website" checked={draft.published} disabled={!draft.consentConfirmed} onChange={(e) => setDraft({ ...draft, published: e.target.checked })} />
+          {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
         </div>
       </Modal>
     </div>

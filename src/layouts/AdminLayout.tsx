@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Sidebar } from '../components/admin/Sidebar';
 import { Topbar } from '../components/admin/Topbar';
 import { AnimatedOutlet } from '../components/motion/AnimatedOutlet';
+import { ScrollToTop } from '../components/layout/ScrollToTop';
 
 const TITLES: Record<string, string> = {
   '/admin': 'Dashboard',
@@ -30,6 +31,7 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-dvh bg-slate-50 dark:bg-canvas">
+      <ScrollToTop />
       <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="lg:pl-72">
         <Topbar title={title} onMenu={() => setMenuOpen(true)} />

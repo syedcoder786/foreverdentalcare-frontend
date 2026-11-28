@@ -12,7 +12,8 @@ import { Modal } from '../../components/ui/Modal';
 import { Notice } from '../../components/admin/Notice';
 import { Stagger, StaggerItem } from '../../components/motion/Reveal';
 import { getErrorMessage } from '../../utils/errors';
-import { DAY_LABELS, formatTime } from '../../utils/format';
+import { DAY_LABELS } from '../../utils/format';
+import { scheduleHours, shiftsText } from '../../utils/clinicHours';
 import type { AdminDoctor } from '../../types';
 import { cn } from '../../utils/cn';
 
@@ -20,9 +21,10 @@ function hoursSummary(d: AdminDoctor) {
   const active = d.weekly.filter((w) => w.active);
   if (active.length === 0) return 'No working days set';
   const first = active[0];
-  const same = active.every((w) => w.startTime === first.startTime && w.endTime === first.endTime);
+  const text = shiftsText(scheduleHours(first), { alwaysLabel: true });
+  const same = active.every((w) => shiftsText(scheduleHours(w), { alwaysLabel: true }) === text);
   const days = active.map((w) => DAY_LABELS[w.dayOfWeek].short).join(', ');
-  return same ? `${days} · ${formatTime(first.startTime)} - ${formatTime(first.endTime)}` : `${days} · varying hours`;
+  return same ? `${days} · ${text}` : `${days} · varying hours`;
 }
 
 export default function DoctorsAdmin() {

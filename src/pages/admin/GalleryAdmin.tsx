@@ -59,7 +59,7 @@ export default function GalleryAdmin() {
                 <p className="text-xs text-slate-500">{g.category || 'Uncategorised'} · order {g.displayOrder}{g.active ? '' : ' · hidden'}</p>
                 <div className="mt-2 flex gap-1">
                   <Button size="sm" variant="ghost" aria-label="Edit" icon={<Pencil className="size-4" />} onClick={() => { setEditing(g); setOpen(true); }} />
-                  <Button size="sm" variant="ghostDanger" aria-label="Delete" icon={<Trash2 className="size-4" />} onClick={async () => setNotice(await remove.mutateAsync(g.id))} />
+                  <Button size="sm" variant="ghostDanger" aria-label="Delete" icon={<Trash2 className="size-4" />} onClick={async () => { try { setNotice(await remove.mutateAsync(g.id)); } catch { /* toast */ } }} />
                 </div>
               </figcaption>
             </figure>
@@ -75,7 +75,6 @@ export default function GalleryAdmin() {
           }}>Save</Button>
         </>}>
         <div className="space-y-4">
-          {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
           <ImageUpload label="Photo" value={draft.imageUrl} onChange={(url) => setDraft({ ...draft, imageUrl: url })} />
           <Input label="Caption" optional value={draft.caption ?? ''} onChange={(e) => setDraft({ ...draft, caption: e.target.value })} />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -84,6 +83,7 @@ export default function GalleryAdmin() {
             <Input label="Display order" inputMode="numeric" value={String(draft.displayOrder)} onChange={(e) => setDraft({ ...draft, displayOrder: Number(e.target.value.replace(/\D/g, '') || 0) })} />
           </div>
           <Checkbox label="Visible on website" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} />
+          {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
         </div>
       </Modal>
     </div>

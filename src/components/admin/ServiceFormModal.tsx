@@ -104,7 +104,6 @@ export function ServiceFormModal({ open, service, onClose, onSaved }: Props) {
         <Button type="submit" form="service-form" loading={mutation.isPending}>{service ? 'Save changes' : 'Create service'}</Button>
       </>}>
       <form id="service-form" onSubmit={onSubmit} noValidate className="space-y-5">
-        {mutation.isError && <Alert tone="error">{parseApiError(mutation.error).message}</Alert>}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input label="Name" required error={errors.name?.message} {...register('name')} />
           <Select label="Specialty" required error={errors.specialtyId?.message} {...register('specialtyId')}>
@@ -141,6 +140,7 @@ export function ServiceFormModal({ open, service, onClose, onSaved }: Props) {
         <OfferFields register={register} errors={errors} values={watch()} />
         <ImageUpload label="Service image (optional)" value={watch('imageUrl')} onChange={(url) => setValue('imageUrl', url, { shouldDirty: true })} />
         <Checkbox label="Active (visible on the website and bookable)" {...register('active')} />
+        {mutation.isError && <Alert tone="error">{parseApiError(mutation.error).message}</Alert>}
       </form>
     </Modal>
   );

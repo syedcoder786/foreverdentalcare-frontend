@@ -42,7 +42,6 @@ function SpecialtyForm({ specialty, open, onClose, onSaved }: { specialty: Speci
     <Modal open={open} onClose={onClose} title={specialty ? 'Edit specialty' : 'Add specialty'} description="Specialties group treatments and practitioners (e.g. Dentistry, Unani Medicine)."
       footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button type="submit" form="specialty-form" loading={save.isPending}>Save</Button></>}>
       <form id="specialty-form" onSubmit={submit} noValidate className="space-y-5">
-        {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input label="Name" required error={errors.name?.message} {...register('name', { required: 'Name is required' })} />
           <Input label="URL slug" optional hint="e.g. unani-medicine" error={errors.slug?.message} {...register('slug')} />
@@ -56,6 +55,7 @@ function SpecialtyForm({ specialty, open, onClose, onSaved }: { specialty: Speci
         </div>
         <ImageUpload label="Image (optional)" value={watch('imageUrl')} onChange={(url) => setValue('imageUrl', url)} />
         <Checkbox label="Active (shown on the website)" {...register('active')} />
+        {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
       </form>
     </Modal>
   );
@@ -96,7 +96,7 @@ export default function SpecialtiesAdmin() {
                 <div className="flex justify-end gap-1">
                   <Button size="sm" variant="ghost" icon={<Pencil className="size-4" />} onClick={() => { setEditing(s); setFormOpen(true); }}>Edit</Button>
                   <Button size="sm" variant="ghostDanger" icon={<Trash2 className="size-4" />} loading={remove.isPending && remove.variables === s.id}
-                    onClick={async () => { try { setNotice(await remove.mutateAsync(s.id)); } catch (e) { setNotice(getErrorMessage(e)); } }}>Delete</Button>
+                    onClick={async () => { try { setNotice(await remove.mutateAsync(s.id)); } catch { /* error toast */ } }}>Delete</Button>
                 </div>
               ) },
             ]}

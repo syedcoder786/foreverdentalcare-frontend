@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Award, BadgeCheck, Briefcase, CalendarPlus, Clock, GraduationCap } from 'lucide-react';
-import { useDoctor, useServices } from '../hooks/usePublicData';
+import { useDoctor, useServices, useSite } from '../hooks/usePublicData';
 import { DoctorAvatar, SpecialtyChips } from '../components/doctors/DoctorCard';
 import { ServiceCard } from '../components/services/ServiceCard';
 import { RichText } from '../components/content/Cms';
@@ -9,13 +9,17 @@ import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 import { LinkButton } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/Alert';
 import { PageLoader } from '../components/ui/Spinner';
-import { DAY_LABELS, formatFee, formatTime } from '../utils/format';
+import { DAYS_ORDER, formatFee } from '../utils/format';
+import { scheduleHours, weekdayInZone } from '../utils/clinicHours';
+import { WeeklyHours, shiftTiles } from '../components/hours/WeeklyHours';
 import { getErrorMessage } from '../utils/errors';
 import NotFound from './NotFound';
+import { cn } from '../utils/cn';
 
 export default function DoctorProfile() {
   const { slug } = useParams();
   const { data: doctor, isLoading, isError, error } = useDoctor(slug);
+  const { clinic } = useSite();
   const services = useServices(doctor ? { doctorId: doctor.id } : undefined);
 
   if (isLoading) return <PageLoader />;
@@ -25,6 +29,7 @@ export default function DoctorProfile() {
   }
   if (!doctor) return <NotFound />;
 
+  const hasIntro = !!doctor.biography || (doctor.credentialsVerified && doctor.qualifications.length > 0);
   const bySpecialty = doctor.specialties.map((sp) => ({
     specialty: sp,
     services: (services.data ?? []).filter((s) => s.specialty.id === sp.id && doctor.services.some((ds) => ds.id === s.id)),
@@ -61,8 +66,11 @@ export default function DoctorProfile() {
         </div>
       </section>
 
-      <section className="container-page grid grid-cols-1 gap-12 py-14 sm:py-20 lg:grid-cols-12">
-        <div className="space-y-12 lg:col-span-8">
+      {/* DOM order (mobile): about & qualifications, consultation hours, treatments.
+          Desktop: the hours card is a sticky sidebar spanning both rows on the right. */}
+      <section className="container-page grid grid-cols-1 gap-12 py-14 sm:py-20 lg:grid-cols-12 lg:grid-rows-[auto_1fr]">
+        {hasIntro && (
+        <div className="space-y-12 lg:col-span-8 lg:col-start-1 lg:row-start-1">
           {doctor.biography && (
             <Reveal>
               <h2 className="text-xl font-semibold text-ink">About</h2>
@@ -88,6 +96,32 @@ export default function DoctorProfile() {
               )}
             </Reveal>
           )}
+        </div>
+        )}
+
+        <aside className="lg:col-span-4 lg:col-start-9 lg:row-span-2 lg:row-start-1">
+          <Reveal from="right" className="rounded-3xl lg:sticky lg:top-28 border border-slate-200 bg-surface p-6 shadow-soft">
+            <h2 className="flex items-center gap-2 font-semibold text-ink"><Clock className="size-5 text-brand-600" aria-hidden />Consultation hours</h2>
+            {doctor.weekly.length === 0 ? (
+              <p className="mt-3 text-sm text-muted">Please contact the clinic for timings.</p>
+            ) : (
+              <WeeklyHours
+                className="mt-5"
+                compact
+                today={weekdayInZone(clinic.timezone)}
+                days={DAYS_ORDER.map((day) => {
+                  const d = doctor.weekly.find((w) => w.dayOfWeek === day);
+                  return { day, tiles: d && d.active !== false ? shiftTiles(scheduleHours(d)) : null };
+                })}
+              />
+            )}
+            <LinkButton to={`/book?doctor=${doctor.slug}`} fullWidth className="mt-6" icon={<CalendarPlus className="size-4" aria-hidden />}>
+              Book appointment
+            </LinkButton>
+          </Reveal>
+        </aside>
+
+        <div className={cn('space-y-12 lg:col-span-8 lg:col-start-1', hasIntro ? 'lg:row-start-2' : 'lg:row-start-1 lg:row-span-2')}>
           {bySpecialty.map(({ specialty, services: list }) =>
             list.length > 0 ? (
               <div key={specialty.id}>
@@ -99,30 +133,6 @@ export default function DoctorProfile() {
             ) : null,
           )}
         </div>
-
-        <aside className="lg:col-span-4">
-          <Reveal from="right" className="sticky top-28 rounded-3xl border border-slate-200 bg-surface p-6 shadow-soft">
-            <h2 className="flex items-center gap-2 font-semibold text-ink"><Clock className="size-5 text-brand-600" aria-hidden />Consultation hours</h2>
-            {doctor.weekly.length === 0 ? (
-              <p className="mt-3 text-sm text-muted">Please contact the clinic for timings.</p>
-            ) : (
-              <ul className="mt-4 space-y-2 text-sm">
-                {doctor.weekly.map((d) => (
-                  <li key={d.dayOfWeek} className="flex justify-between gap-4">
-                    <span className="text-ink">{DAY_LABELS[d.dayOfWeek].long}</span>
-                    <span className="text-right text-slate-600">
-                      {formatTime(d.startTime)} - {formatTime(d.endTime)}
-                      {d.breakStartTime && <span className="block text-xs text-slate-400">Break {formatTime(d.breakStartTime)} - {formatTime(d.breakEndTime)}</span>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <LinkButton to={`/book?doctor=${doctor.slug}`} fullWidth className="mt-6" icon={<CalendarPlus className="size-4" aria-hidden />}>
-              Book appointment
-            </LinkButton>
-          </Reveal>
-        </aside>
       </section>
     </>
   );

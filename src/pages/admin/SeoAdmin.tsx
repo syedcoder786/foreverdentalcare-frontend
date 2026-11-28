@@ -8,6 +8,7 @@ import { Checkbox, Input, Textarea } from '../../components/ui/FormField';
 import { Skeleton } from '../../components/ui/Spinner';
 import { ImageUpload } from '../../components/admin/ImageUpload';
 import { getErrorMessage, parseApiError } from '../../utils/errors';
+import { toast } from '../../components/ui/Toast';
 
 const LABELS: Record<PageKey, string> = {
   HOME: 'Home', ABOUT: 'About', DOCTORS: 'Our doctors', SPECIALTIES: 'Specialties', SERVICES: 'Treatments', CONTACT: 'Contact', BOOK: 'Book appointment',
@@ -22,16 +23,16 @@ function SeoCard({ seo }: { seo: Seo }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-surface p-5 shadow-soft">
       <h3 className="font-semibold text-ink">{LABELS[seo.pageKey]}</h3>
-      {save.isError && <Alert tone="error" className="mt-3">{parseApiError(save.error).message}</Alert>}
-      {saved && <Alert tone="success" className="mt-3">Saved.</Alert>}
       <div className="mt-4 space-y-4">
         <Input label="Page title" hint={`${(draft.metaTitle ?? '').length}/70 · the clinic name is added automatically`} value={draft.metaTitle ?? ''} onChange={(e) => { setDraft({ ...draft, metaTitle: e.target.value }); setSaved(false); }} error={errors.metaTitle} />
         <Textarea label="Meta description" rows={2} hint={`${(draft.metaDescription ?? '').length}/170`} value={draft.metaDescription ?? ''} onChange={(e) => { setDraft({ ...draft, metaDescription: e.target.value }); setSaved(false); }} error={errors.metaDescription} />
         <ImageUpload label="Social sharing image (Open Graph)" hint="1200 x 630 px recommended" value={draft.ogImageUrl} onChange={(url) => { setDraft({ ...draft, ogImageUrl: url }); setSaved(false); }} />
         <Checkbox label="Allow search engines to index this page" checked={draft.indexable} onChange={(e) => { setDraft({ ...draft, indexable: e.target.checked }); setSaved(false); }} />
+        {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
+        {saved && <Alert tone="success">Saved.</Alert>}
         <div className="flex justify-end">
           <Button size="sm" loading={save.isPending} onClick={async () => {
-            try { await save.mutateAsync({ pageKey: seo.pageKey, payload: { metaTitle: draft.metaTitle, metaDescription: draft.metaDescription, ogImageUrl: draft.ogImageUrl, indexable: draft.indexable } }); setSaved(true); } catch { /* shown */ }
+            try { await save.mutateAsync({ pageKey: seo.pageKey, payload: { metaTitle: draft.metaTitle, metaDescription: draft.metaDescription, ogImageUrl: draft.ogImageUrl, indexable: draft.indexable } }); setSaved(true); toast.success(`${LABELS[seo.pageKey] ?? 'Page'} SEO saved.`); } catch { /* shown */ }
           }}>Save</Button>
         </div>
       </div>

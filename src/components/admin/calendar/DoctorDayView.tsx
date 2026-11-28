@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Ban, ChevronLeft, ChevronRight, Clock, Coffee } from 'lucide-react';
+import { Ban, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useDoctorDay } from '../../../hooks/useAdminData';
 import { useSite } from '../../../hooks/usePublicData';
 import { addDays, todayInZone } from '../../../utils/dates';
 import { formatDate, formatTime } from '../../../utils/format';
+import { scheduleHours, shiftRange, shiftsOf, type Shift } from '../../../utils/clinicHours';
+import type { AdminDaySchedule } from '../../../types';
+import { ShiftHours, ShiftIcon } from '../../ui/ShiftHours';
 import { getErrorMessage } from '../../../utils/errors';
 import { Button } from '../../ui/Button';
 import { ErrorMessage } from '../../ui/Alert';
@@ -12,6 +15,16 @@ import { Skeleton } from '../../ui/Spinner';
 import { StatusBadge } from '../../ui/StatusBadge';
 import { AppointmentDetailsModal } from '../AppointmentDetailsModal';
 import { cn } from '../../../utils/cn';
+
+/** Splits the day's slots into morning / evening shift groups (one ungrouped list when there is a single shift). */
+function slotGroups(data: AdminDaySchedule): Array<[Shift | null, AdminDaySchedule['slots']]> {
+  const shifts = shiftsOf(scheduleHours(data));
+  if (shifts.length < 2) return [[null, data.slots]];
+  return [
+    [shifts[0], data.slots.filter((s) => s.time < shifts[1].from)],
+    [shifts[1], data.slots.filter((s) => s.time >= shifts[1].from)],
+  ].filter(([, list]) => (list as AdminDaySchedule['slots']).length > 0) as Array<[Shift, AdminDaySchedule['slots']]>;
+}
 
 const SLOT_STYLES = {
   AVAILABLE: 'border-emerald-200 bg-emerald-50/60 text-emerald-700',
@@ -45,8 +58,8 @@ export function DoctorDayView({ doctorId, initialDate }: { doctorId: number; ini
           <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600">
             {data.startTime ? (
               <>
-                <span className="inline-flex items-center gap-1.5"><Clock className="size-4" aria-hidden />{formatTime(data.startTime)} - {formatTime(data.endTime)} · {data.slotDurationMinutes}-min slots</span>
-                {data.breakStartTime && <span className="inline-flex items-center gap-1.5"><Coffee className="size-4" aria-hidden />Break {formatTime(data.breakStartTime)} - {formatTime(data.breakEndTime)}</span>}
+                <ShiftHours hours={scheduleHours(data)} variant="inline" />
+                <span className="inline-flex items-center gap-1.5"><Clock className="size-4" aria-hidden />{data.slotDurationMinutes}-min slots</span>
               </>
             ) : (
               <span>Not working on this day.</span>
@@ -56,8 +69,16 @@ export function DoctorDayView({ doctorId, initialDate }: { doctorId: number; ini
 
           {data.slots.length > 0 && (
             <>
+              {slotGroups(data).map(([shift, slots]) => (
+              <div key={shift?.key ?? 'all'} className="space-y-2">
+              {shift && (
+                <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                  <ShiftIcon shift={shift} className="size-3.5" />
+                  {shift.label} · <span className="font-normal normal-case">{shiftRange(shift)}</span>
+                </p>
+              )}
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8">
-                {data.slots.map((s) => {
+                {slots.map((s) => {
                   const appt = s.appointmentId ? data.appointments.find((a) => a.id === s.appointmentId) : undefined;
                   return (
                     <button
@@ -74,6 +95,8 @@ export function DoctorDayView({ doctorId, initialDate }: { doctorId: number; ini
                   );
                 })}
               </div>
+              </div>
+              ))}
               <div className="flex flex-wrap gap-3 text-xs text-slate-500">
                 {(['AVAILABLE', 'BOOKED', 'BLOCKED', 'PAST'] as const).map((k) => (
                   <span key={k} className="inline-flex items-center gap-1.5"><span className={cn('size-3 rounded border', SLOT_STYLES[k])} />{k.charAt(0) + k.slice(1).toLowerCase()}</span>
