@@ -42,6 +42,9 @@ const queryClient = new QueryClient({
   },
 });
 
+// index.html ships default link-preview tags for crawlers; in the browser each page renders its own via <Seo>.
+document.querySelectorAll('head [data-seo]').forEach((el) => el.remove());
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -1,9 +1,8 @@
 import { Home } from 'lucide-react';
 import { LinkButton } from '../components/ui/Button';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { Seo } from '../components/content/Seo';
 
 export default function NotFound() {
-  useDocumentTitle('Page not found');
   return (
     <section className="container-page flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
       <p className="font-display text-7xl font-semibold text-brand-200">404</p>
@@ -12,6 +11,7 @@ export default function NotFound() {
       <LinkButton to="/" className="mt-8" icon={<Home className="size-4" aria-hidden />}>
         Back to home
       </LinkButton>
+      <Seo title="Page not found" noindex />
     </section>
   );
 }

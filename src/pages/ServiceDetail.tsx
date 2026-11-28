@@ -28,7 +28,7 @@ export default function ServiceDetail() {
 
   return (
     <>
-      <Seo title={service.name} description={service.description} image={service.imageUrl} />
+      <Seo title={service.name} description={service.description} image={service.imageUrl} type="article" />
       <PageHeader eyebrow={service.specialty.name} title={service.name} description={service.description}>
         <div className="flex flex-wrap items-center gap-4">
           <LinkButton to={`/book?specialty=${service.specialty.slug}&service=${service.slug}${doctorParam}`} size="lg" icon={<CalendarPlus className="size-5" aria-hidden />}>

@@ -37,7 +37,7 @@ export default function DoctorProfile() {
 
   return (
     <>
-      <Seo title={doctor.fullName} description={doctor.shortBio ?? `${doctor.fullName}, ${doctor.professionalTitle}`} image={doctor.profileImageUrl} />
+      <Seo title={doctor.fullName} description={doctor.shortBio ?? `${doctor.fullName}, ${doctor.professionalTitle}`} image={doctor.profileImageUrl} type="profile" />
       <section className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-b from-brand-50/70 to-surface dark:from-brand-500/[0.07] dark:to-transparent">
         <div className="container-page grid grid-cols-1 gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:items-center">
           <Reveal from="left" className="lg:col-span-4">

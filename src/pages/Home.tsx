@@ -119,7 +119,7 @@ function Hero({ section }: { section: Section }) {
     <section className="relative -mt-18 overflow-hidden pt-18">
       <Aurora />
       <NextAppointmentCard />
-      <div className="container-page relative grid grid-cols-1 items-center gap-12 py-12 sm:py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
+      <div className="container-page relative grid grid-cols-1 items-center gap-12 pt-4 pb-12 sm:pt-8 sm:pb-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
         <motion.div className="min-w-0 lg:col-span-7" variants={heroContainer} initial="hidden" animate="show">
           <HeroSlides
             intro={

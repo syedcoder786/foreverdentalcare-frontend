@@ -26,7 +26,7 @@ export default function SpecialtyDetail() {
 
   return (
     <>
-      <Seo title={specialty.name} description={specialty.description} image={specialty.imageUrl} />
+      <Seo title={specialty.name} description={specialty.description} image={specialty.imageUrl} type="article" />
       <PageHeader eyebrow="Specialty" title={specialty.name} description={specialty.description}>
         <LinkButton to={`/book?specialty=${specialty.slug}`} size="lg" icon={<CalendarPlus className="size-5" aria-hidden />}>
           Book a {specialty.name} appointment
