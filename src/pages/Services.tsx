@@ -1,4 +1,5 @@
-import { Info } from 'lucide-react';
+import { Info, Moon } from 'lucide-react';
+import { TbGenderFemale } from 'react-icons/tb';
 import { usePage, useServices } from '../hooks/usePublicData';
 import { PageHeader } from '../components/layout/PageHeader';
 import { ServiceCard } from '../components/services/ServiceCard';
@@ -42,7 +43,20 @@ export default function Services() {
         <div className="space-y-16">
           {Array.from(groups.entries()).map(([id, g]) => (
             <div key={id} id={g.slug} className="scroll-mt-28">
-              <Reveal><SectionHeading eyebrow="Specialty" title={g.name} /></Reveal>
+              <Reveal>
+                {g.slug === 'unani-medicine' ? (
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <SectionHeading eyebrow="For women only" title={g.name} />
+                    <p className="inline-flex w-fit items-center gap-2 rounded-full bg-violet-50 px-3.5 py-1.5 text-sm font-medium text-violet-700 ring-1 ring-violet-200 dark:bg-violet-400/10 dark:text-violet-300 dark:ring-violet-400/25">
+                      <TbGenderFemale className="size-4" aria-hidden />
+                      Female doctor · Evening consultations only
+                      <Moon className="size-4" aria-hidden />
+                    </p>
+                  </div>
+                ) : (
+                  <SectionHeading eyebrow="Dental care for the whole family" title={g.name} />
+                )}
+              </Reveal>
               <Stagger stagger={0.07} className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {g.services.map((s) => <StaggerItem key={s.id} className="h-full"><ServiceCard service={s} variant="detailed" hideSpecialty /></StaggerItem>)}
               </Stagger>

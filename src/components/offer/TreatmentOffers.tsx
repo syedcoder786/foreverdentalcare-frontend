@@ -233,7 +233,17 @@ export function TreatmentOffersSection() {
     const pad = parseFloat(getComputedStyle(el).scrollPaddingLeft) || 0;
     el.scrollTo({ left: card.offsetLeft - pad, behavior: 'smooth' });
   };
-  const scrollBy = (dir: number) => scrollToCard(Math.max(0, Math.min(count - 1, activeIndex + dir)));
+  // Step from the real scroll position, not activeIndex: at the right edge activeIndex is forced to the last card, and
+  // on wide screens the previous card is already in view, so "back" from there would not move at all.
+  const scrollBy = (dir: number) => {
+    const el = scroller.current;
+    if (!el) return;
+    const pad = parseFloat(getComputedStyle(el).scrollPaddingLeft) || 0;
+    const lefts = Array.from(el.querySelectorAll<HTMLElement>('[data-offer-card]'), (c) => c.offsetLeft - pad);
+    const x = el.scrollLeft;
+    const target = dir < 0 ? [...lefts].reverse().find((l) => l < x - 4) : lefts.find((l) => l > x + 4);
+    el.scrollTo({ left: target ?? (dir < 0 ? 0 : el.scrollWidth), behavior: 'smooth' });
+  };
 
   const arrowCls =
     'flex size-11 items-center justify-center rounded-full border border-slate-200 bg-surface text-ink shadow-soft transition hover:border-brand-300 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-40 dark:border-white/10 dark:hover:text-brand-300';

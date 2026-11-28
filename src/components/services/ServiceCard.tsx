@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Check, Clock, UserRound } from 'lucide-react';
 import type { DentalService } from '../../types';
 import { ServiceIcon } from './ServiceIcon';
+import { ServiceCover } from '../ui/Illustrations';
 import { cn } from '../../utils/cn';
 
 interface ServiceCardProps {
@@ -24,11 +25,13 @@ export function ServiceCard({ service, variant = 'compact', hideSpecialty }: Ser
         'dark:hover:border-brand-400/40 dark:hover:shadow-glow',
       )}
     >
-      {service.imageUrl && (
-        <Link to={`/services/${service.slug}`} tabIndex={-1} aria-hidden className="block aspect-[16/9] overflow-hidden">
+      <Link to={`/services/${service.slug}`} tabIndex={-1} aria-hidden className="block aspect-[16/7] overflow-hidden">
+        {service.imageUrl ? (
           <img src={service.imageUrl} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-        </Link>
-      )}
+        ) : (
+          <ServiceCover icon={service.icon} specialtySlug={service.specialty.slug} className="h-full w-full" />
+        )}
+      </Link>
       <div className="relative flex flex-1 flex-col p-6">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-700 ring-1 ring-brand-100 transition duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:bg-brand-700 group-hover:text-white dark:text-brand-300 dark:ring-brand-400/20">

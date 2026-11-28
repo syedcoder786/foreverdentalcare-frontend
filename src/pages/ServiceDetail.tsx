@@ -11,6 +11,7 @@ import { LinkButton } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/Alert';
 import { PageLoader } from '../components/ui/Spinner';
 import { getErrorMessage } from '../utils/errors';
+import { ServiceCover } from '../components/ui/Illustrations';
 import NotFound from './NotFound';
 
 export default function ServiceDetail() {
@@ -41,7 +42,13 @@ export default function ServiceDetail() {
 
       <section className="container-page grid grid-cols-1 gap-12 py-14 sm:py-20 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          {service.imageUrl && <Reveal><img src={service.imageUrl} alt="" className="mb-10 w-full rounded-[2rem] object-cover shadow-lift" /></Reveal>}
+          <Reveal>
+            {service.imageUrl ? (
+              <img src={service.imageUrl} alt="" className="mb-10 w-full rounded-[2rem] object-cover shadow-lift" />
+            ) : (
+              <ServiceCover icon={service.icon} specialtySlug={service.specialty.slug} className="mb-10 aspect-[21/8] w-full rounded-[2rem] shadow-soft" />
+            )}
+          </Reveal>
           {service.details.length > 0 && (
             <Reveal>
               <h2 className="text-xl font-semibold text-ink">What to expect</h2>

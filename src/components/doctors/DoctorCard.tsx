@@ -1,18 +1,42 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { BadgeCheck, CalendarPlus, UserRound } from 'lucide-react';
+import { BadgeCheck, CalendarPlus, Stethoscope } from 'lucide-react';
 import type { Doctor } from '../../types';
 import { LinkButton } from '../ui/Button';
 import { cn } from '../../utils/cn';
 
-export function DoctorAvatar({ doctor, className }: { doctor: Pick<Doctor, 'profileImageUrl' | 'fullName'>; className?: string }) {
-  return (
-    <div className={cn('flex items-center justify-center overflow-hidden bg-brand-50 text-brand-600 dark:text-brand-300', className)}>
-      {doctor.profileImageUrl ? (
+/** "Dr. Faiza Khan" -> "FK" (ignores the "Dr." prefix and single-letter initials such as "S. M."). */
+function initials(fullName: string): string {
+  const words = fullName.replace(/^dr\.?\s+/i, '').split(/\s+/).filter((w) => w.replace(/\W/g, '').length > 1);
+  const picked = words.length > 1 ? [words[0], words[words.length - 1]] : words;
+  return picked.map((w) => w[0]!.toUpperCase()).join('') || 'Dr';
+}
+
+export function DoctorAvatar({ doctor, className }: { doctor: Pick<Doctor, 'profileImageUrl' | 'fullName'> & { gender?: Doctor['gender'] }; className?: string }) {
+  if (doctor.profileImageUrl) {
+    return (
+      <div className={cn('overflow-hidden bg-brand-50', className)}>
         <img src={doctor.profileImageUrl} alt={`Portrait of ${doctor.fullName}`} loading="lazy" className="h-full w-full object-cover" />
-      ) : (
-        <UserRound className="size-1/3" aria-hidden />
+      </div>
+    );
+  }
+  const female = doctor.gender === 'FEMALE';
+  return (
+    <div
+      role="img"
+      aria-label={doctor.fullName}
+      className={cn(
+        '@container relative flex items-center justify-center overflow-hidden bg-gradient-to-br',
+        female ? 'from-violet-100 via-rose-50 to-amber-50 text-violet-700 dark:from-violet-500/20 dark:via-rose-500/10 dark:to-transparent dark:text-violet-200'
+               : 'from-brand-100 via-brand-50 to-sky-soft-100 text-brand-800 dark:text-brand-200',
+        className,
       )}
+    >
+      <div aria-hidden className="absolute inset-0 opacity-50 [background-image:radial-gradient(currentColor_1px,transparent_1px)] [background-size:18px_18px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+      <Stethoscope aria-hidden className="absolute -right-[8%] -bottom-[10%] size-[55%] rotate-12 opacity-10" />
+      <span aria-hidden className="relative font-display text-[clamp(0.85rem,28cqw,5rem)] leading-none font-semibold tracking-tight">
+        {initials(doctor.fullName)}
+      </span>
     </div>
   );
 }

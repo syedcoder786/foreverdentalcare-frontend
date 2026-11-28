@@ -1,4 +1,5 @@
-import { Clock, Facebook, Instagram, Mail, MapPin, Phone, Star, Youtube } from 'lucide-react';
+import { Clock, Mail, MapPin, Phone } from 'lucide-react';
+import { FaFacebookF, FaGoogle, FaInstagram, FaYoutube } from 'react-icons/fa6';
 import { Logo } from './Logo';
 import { SmartLink } from '../content/Cms';
 import { useSite } from '../../hooks/usePublicData';
@@ -11,10 +12,10 @@ export function Footer() {
   const { clinic, navigation } = useSite();
   const year = new Date().getFullYear();
   const social = [
-    { href: clinic.instagramUrl, label: 'Instagram', icon: Instagram },
-    { href: clinic.facebookUrl, label: 'Facebook', icon: Facebook },
-    { href: clinic.youtubeUrl, label: 'YouTube', icon: Youtube },
-    { href: clinic.googleReviewsUrl, label: 'Google reviews', icon: Star },
+    { href: clinic.instagramUrl, label: 'Instagram', icon: FaInstagram },
+    { href: clinic.facebookUrl, label: 'Facebook', icon: FaFacebookF },
+    { href: clinic.youtubeUrl, label: 'YouTube', icon: FaYoutube },
+    { href: clinic.googleReviewsUrl, label: 'Google reviews', icon: FaGoogle },
   ].filter((s) => Boolean(s.href));
 
   return (

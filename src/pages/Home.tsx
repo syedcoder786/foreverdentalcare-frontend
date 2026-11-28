@@ -207,7 +207,7 @@ function Hero({ section }: { section: Section }) {
         >
           <div aria-hidden className="absolute -inset-3 rounded-[2.9rem] bg-gradient-to-br from-brand-200/60 via-transparent to-sky-soft-200/60 blur-xl dark:from-brand-400/30 dark:to-sky-soft-500/25" />
           <motion.div style={{ y: imageY }} className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] shadow-lift ring-1 ring-slate-200/60 sm:aspect-square lg:aspect-[4/5] dark:ring-white/10">
-            <ImagePlaceholder src={section.imageUrl} alt="The clinic" label="Upload a hero image in Admin -> Homepage editor" />
+            <ImagePlaceholder src={section.imageUrl} alt={`Healthy, confident smiles at ${clinic.clinicName}`} />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.75, duration: 0.6, ease: EASE_OUT }} className="absolute -bottom-5 -left-3 sm:-left-8">
             <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}

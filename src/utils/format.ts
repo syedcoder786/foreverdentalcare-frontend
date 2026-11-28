@@ -61,6 +61,8 @@ export function formatDateTime(iso?: string | null): string {
 
 export function formatFee(fee?: number | null): string {
   if (fee === null || fee === undefined) return 'Discussed at consultation';
+  // A treatment priced at 0 (e.g. the check-up itself) costs nothing on top of the doctor's consultation fee.
+  if (Number(fee) === 0) return 'Only consultation fee';
   // Whole amounts without ".00" (₹500); paise only when present (₹499.50).
   const whole = Number.isInteger(Number(fee));
   return new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY, minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 }).format(fee);
