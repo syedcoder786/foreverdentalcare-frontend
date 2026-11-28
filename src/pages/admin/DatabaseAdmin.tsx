@@ -127,7 +127,7 @@ function CurrentConnection({ status: s }: { status: DatabaseStatus }) {
       }
     >
       {s.error && <Alert tone="error" className="mb-5">{s.error}</Alert>}
-      <dl className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {fromPanel ? (
           <>
             <Fact label="Host" value={s.host} />
@@ -251,7 +251,7 @@ function ConnectDatabase({ status, onSwitched }: { status: DatabaseStatus; onSwi
       title="Connect a database"
       description="Move the app to another PostgreSQL database, for example Supabase. The tables are created automatically."
     >
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
           <Input
             label="Paste a connection string"
@@ -269,13 +269,13 @@ function ConnectDatabase({ status, onSwitched }: { status: DatabaseStatus; onSwi
             </p>
           )}
 
-          <div className="grid gap-5 sm:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-4">
             <Input label="Host" required wrapperClassName="sm:col-span-3" placeholder="db.xxxx.supabase.co" value={form.host}
               onChange={(e) => set('host', e.target.value.trim())} error={errors.host} autoComplete="off" spellCheck={false} />
             <Input label="Port" required inputMode="numeric" value={String(form.port)}
               onChange={(e) => set('port', Number(e.target.value.replace(/\D/g, '')) || 0)} error={errors.port} />
           </div>
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Input label="Database" required value={form.database} onChange={(e) => set('database', e.target.value.trim())}
               error={errors.database} autoComplete="off" />
             <Input label="User" required value={form.username} onChange={(e) => set('username', e.target.value.trim())}
@@ -292,7 +292,7 @@ function ConnectDatabase({ status, onSwitched }: { status: DatabaseStatus; onSwi
             error={errors.password}
             hint="Saved on the server only and never shown again."
           />
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Input label="Schema" optional value={form.schema} onChange={(e) => set('schema', e.target.value.trim().toLowerCase())}
               error={errors.schema} placeholder="dental_clinic"
               hint="A separate schema keeps clinic tables out of Supabase's public API. Created if missing." />

@@ -61,7 +61,14 @@ export function formatDateTime(iso?: string | null): string {
 
 export function formatFee(fee?: number | null): string {
   if (fee === null || fee === undefined) return 'Discussed at consultation';
-  return new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY, maximumFractionDigits: 2 }).format(fee);
+  // Whole amounts without ".00" (₹500); paise only when present (₹499.50).
+  const whole = Number.isInteger(Number(fee));
+  return new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY, minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 }).format(fee);
+}
+
+/** Whole-rupee amount without decimals: 500 -> "₹500". */
+export function formatRupees(amount: number): string {
+  return new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY, maximumFractionDigits: 0 }).format(amount);
 }
 
 /** Groups working days into human ranges: ["MONDAY".."SATURDAY"] -> "Mon - Sat". */

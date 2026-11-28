@@ -84,7 +84,7 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
               {info.help && <p className="rounded-xl bg-sky-soft-50 p-3 text-xs text-sky-soft-700">{info.help}</p>}
               {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
               {saved && <Alert tone="success">Saved. The website now shows the new content.</Alert>}
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input label="Title" value={draft.title ?? ''} onChange={(e) => set('title', e.target.value)} error={fieldError('title')} />
                 <Input label="Subtitle / eyebrow" value={draft.subtitle ?? ''} onChange={(e) => set('subtitle', e.target.value)} />
               </div>
@@ -92,7 +92,7 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
               {!info.noItems || section.sectionKey === 'intro' || section.sectionKey === 'hero' ? (
                 <ImageUpload label="Image" value={draft.imageUrl} onChange={(url) => set('imageUrl', url)} error={fieldError('imageUrl')} />
               ) : null}
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input label="Primary button text" value={draft.primaryButtonLabel ?? ''} onChange={(e) => set('primaryButtonLabel', e.target.value)} />
                 <Input label="Primary button link" placeholder="/book" value={draft.primaryButtonUrl ?? ''} onChange={(e) => set('primaryButtonUrl', e.target.value)} error={fieldError('primaryButtonUrl')} />
                 <Input label="Secondary button text" value={draft.secondaryButtonLabel ?? ''} onChange={(e) => set('secondaryButtonLabel', e.target.value)} />
@@ -106,7 +106,7 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
                     <Button size="sm" variant="outline" icon={<Plus className="size-4" aria-hidden />} onClick={() => set('items', [...draft.items, { title: '' }])}>Add</Button>
                   </div>
                   {draft.items.map((item, i) => (
-                    <div key={i} className="grid gap-3 rounded-xl border border-slate-200 p-3 lg:grid-cols-[1fr_2fr_auto]">
+                    <div key={i} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 p-3 lg:grid-cols-[1fr_2fr_auto]">
                       <div className="space-y-3">
                         <Input label="Title" value={item.title ?? ''} onChange={(e) => setItem(i, { title: e.target.value })} />
                         {section.sectionKey !== 'hero' && (
@@ -117,7 +117,7 @@ export function SectionEditor({ section, pageKey }: { section: Section; pageKey:
                         )}
                       </div>
                       {section.sectionKey !== 'hero' ? (
-                        <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <Textarea label="Text" rows={4} value={item.text ?? ''} onChange={(e) => setItem(i, { text: e.target.value })} />
                           <ImageUpload label="Photo" aspect="wide" value={item.imageUrl} onChange={(url) => setItem(i, { imageUrl: url })} />
                         </div>

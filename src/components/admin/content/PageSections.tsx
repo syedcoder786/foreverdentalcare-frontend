@@ -35,7 +35,7 @@ export function PageSections({ pageKey }: { pageKey: PageKey }) {
         <h4 className="text-sm font-semibold text-ink">Add a custom section</h4>
         <p className="mt-1 text-xs text-slate-500">Custom sections appear after the built-in ones, with a title, text, optional image, buttons and cards.</p>
         {create.isError && <Alert tone="error" className="mt-3">{parseApiError(create.error).message}</Alert>}
-        <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-end">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-end">
           <Input label="Key" placeholder="e.g. our_promise" value={key} onChange={(e) => setKey(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_'))} hint="Lowercase letters, numbers, underscores" />
           <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
           <Button icon={<Plus className="size-4" aria-hidden />} disabled={key.length < 2} loading={create.isPending}

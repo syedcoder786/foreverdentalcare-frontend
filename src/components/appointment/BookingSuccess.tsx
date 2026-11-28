@@ -3,6 +3,7 @@ import { CalendarCheck2, Clock, Hash, Phone, Stethoscope, UserRound } from 'luci
 import type { BookingConfirmation, ClinicSettings } from '../../types';
 import { formatDate, formatPhone, formatTime, telHref } from '../../utils/format';
 import { Button, LinkButton } from '../ui/Button';
+import { BookingSuccessOffer } from '../offer/FirstVisitOffer';
 
 interface BookingSuccessProps {
   confirmation: BookingConfirmation;
@@ -37,6 +38,7 @@ export function BookingSuccess({ confirmation, clinic, onBookAnother }: BookingS
         Thank you. Your appointment request is <strong className="text-amber-700">pending confirmation</strong>.{' '}
         {clinic.clinicName} will contact you to confirm the time.
       </p>
+      <BookingSuccessOffer snapshot={confirmation} />
 
       <dl className="mx-auto mt-8 grid max-w-md gap-3 rounded-2xl border border-slate-200 bg-slate-50/60 p-5 text-left text-sm">
         <div className="flex items-center gap-3">

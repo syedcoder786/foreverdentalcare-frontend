@@ -43,7 +43,7 @@ export default function TestimonialsAdmin() {
       {isLoading ? <Skeleton className="h-40" /> : data?.length === 0 ? (
         <EmptyState title="No testimonials yet" description="The testimonials section stays hidden on the website until you publish one." />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {data?.map((t) => (
             <div key={t.id} className="rounded-2xl border border-slate-200 bg-surface p-5 shadow-soft">
               <div className="flex items-start justify-between gap-3">
@@ -76,12 +76,12 @@ export default function TestimonialsAdmin() {
         </>}>
         <div className="space-y-4">
           {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Input label="Patient name or initials" required value={draft.patientName} onChange={(e) => setDraft({ ...draft, patientName: e.target.value })} error={errors.patientName} />
             <Input label="Context" optional placeholder="e.g. Teeth cleaning" value={draft.context ?? ''} onChange={(e) => setDraft({ ...draft, context: e.target.value })} />
           </div>
           <Textarea label="Testimonial" required rows={4} value={draft.quote} onChange={(e) => setDraft({ ...draft, quote: e.target.value })} error={errors.quote} />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Select label="Rating" value={draft.rating ?? ''} onChange={(e) => setDraft({ ...draft, rating: e.target.value ? Number(e.target.value) : null })}>
               <option value="">No rating</option>
               {[5, 4, 3, 2, 1].map((r) => <option key={r} value={r}>{r} stars</option>)}

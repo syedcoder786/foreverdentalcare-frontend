@@ -14,6 +14,25 @@ import { Skeleton } from '../../components/ui/Spinner';
 import { formatFee } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 import { cn } from '../../utils/cn';
+import { offerRange } from '../../utils/offers';
+import type { ServiceOffer } from '../../types';
+
+const OFFER_STYLE: Record<ServiceOffer['status'], { label: string; cls: string }> = {
+  ACTIVE: { label: 'Running', cls: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
+  SCHEDULED: { label: 'Scheduled', cls: 'bg-amber-50 text-amber-800 ring-amber-200' },
+  ENDED: { label: 'Ended', cls: 'bg-slate-100 text-slate-500 ring-slate-200' },
+};
+
+/** "30% off · Running · 1 Dec – 15 Dec" */
+function OfferTag({ offer }: { offer?: ServiceOffer | null }) {
+  if (!offer) return null;
+  const st = OFFER_STYLE[offer.status];
+  return (
+    <span title={offerRange(offer)} className={cn('mt-1 inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1', st.cls)}>
+      {offer.percent}% off · {st.label} · {offerRange(offer)}
+    </span>
+  );
+}
 
 function ActiveBadge({ active }: { active: boolean }) {
   return (
@@ -117,7 +136,7 @@ export default function ServicesAdmin() {
               },
               { key: 'specialty', header: 'Specialty', cell: (s) => <span className="whitespace-nowrap text-slate-700">{s.specialty.name}</span> },
               { key: 'doctors', header: 'Doctors', cell: (s) => s.doctors.length ? <span className="text-xs text-slate-600">{s.doctors.map((d) => d.fullName).join(', ')}</span> : <span className="text-xs text-amber-700">No doctor assigned</span> },
-              { key: 'fee', header: 'Fee', cell: (s) => <span className="whitespace-nowrap">{formatFee(s.consultationFee)}</span> },
+              { key: 'fee', header: 'Treatment fee', cell: (s) => <div><span className="whitespace-nowrap">{formatFee(s.consultationFee)}</span><br /><OfferTag offer={s.offer} /></div> },
               { key: 'duration', header: 'Duration', cell: (s) => `${s.estimatedDuration} min` },
               { key: 'status', header: 'Status', cell: (s) => <ActiveBadge active={s.active} /> },
               { key: 'actions', header: <span className="sr-only">Actions</span>, className: 'text-right', cell: actions },
@@ -136,6 +155,7 @@ export default function ServicesAdmin() {
                 <p className="mt-3 text-sm text-slate-600">
                   {formatFee(s.consultationFee)} &middot; {s.estimatedDuration} min
                 </p>
+                <OfferTag offer={s.offer} />
                 <div className="mt-2 -mr-2">{actions(s)}</div>
               </div>
             )}

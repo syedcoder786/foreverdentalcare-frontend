@@ -25,13 +25,13 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       {isLoading || !data ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-28" />
           ))}
         </div>
       ) : (
-        <Stagger immediate stagger={0.06} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Stagger immediate stagger={0.06} className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <StaggerItem><StatCard label="Today's appointments" value={data.todaysAppointments} icon={<CalendarDays className="size-5" />} tone="violet" hint={formatDate(data.today)} to={`/admin/appointments?date=${data.today}`} /></StaggerItem>
           <StaggerItem><StatCard label="Pending requests" value={data.pendingAppointments} icon={<Hourglass className="size-5" />} tone="amber" hint="Awaiting confirmation" to="/admin/appointments?status=PENDING" /></StaggerItem>
           <StaggerItem><StatCard label="Confirmed" value={data.confirmedAppointments} icon={<CalendarCheck2 className="size-5" />} tone="sky" to="/admin/appointments?status=CONFIRMED" /></StaggerItem>
@@ -97,13 +97,13 @@ export default function Dashboard() {
       </section>
 
       {data && (
-        <div className="grid gap-6 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-5">
           <section className="rounded-2xl border border-slate-200 bg-surface shadow-soft xl:col-span-3">
             <div className="border-b border-slate-100 p-5">
               <h2 className="font-semibold text-ink">Appointments by doctor</h2>
               <p className="text-sm text-slate-500">Every doctor has an independent calendar.</p>
             </div>
-            <div className="overflow-x-auto p-2 sm:p-3">
+            <div className="relative overflow-x-auto p-2 sm:p-3">
               <table className="w-full text-sm">
                 <thead className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
                   <tr>{['Doctor', 'Today', 'Pending', 'Confirmed', 'Completed', 'Cancelled', 'Total'].map((h) => <th key={h} className="px-3 py-2 text-left whitespace-nowrap">{h}</th>)}</tr>

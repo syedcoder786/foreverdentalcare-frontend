@@ -17,7 +17,7 @@ export function Footer() {
 
   return (
     <footer className="relative bg-brand-900 text-mint dark:bg-[#03100f] dark:shadow-[inset_0_1px_0_rgb(89_214_196/0.15)]">
-      <div className="container-page grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
+      <div className="container-page grid grid-cols-1 gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4 lg:col-span-1">
           <Logo light />
           {clinic.footerDescription && <p className="text-sm leading-relaxed text-mint/80">{clinic.footerDescription}</p>}

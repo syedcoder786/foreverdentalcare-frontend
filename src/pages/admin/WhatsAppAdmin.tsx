@@ -38,7 +38,7 @@ export default function WhatsAppAdmin() {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-surface p-1 shadow-soft" role="tablist">
+      <div className="flex gap-1 relative overflow-x-auto rounded-2xl border border-slate-200 bg-surface p-1 shadow-soft" role="tablist">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -206,7 +206,7 @@ function CampaignHistory() {
           const done = c.sent + c.failed;
           const pct = c.total ? Math.round((done / c.total) * 100) : 100;
           return (
-            <li key={c.id} className="grid gap-2 py-3 sm:grid-cols-[1fr_auto] sm:items-center">
+            <li key={c.id} className="grid grid-cols-1 gap-2 py-3 sm:grid-cols-[1fr_auto] sm:items-center">
               <div>
                 <p className="font-medium text-ink">{c.templateLabel}</p>
                 <p className="text-xs text-slate-500">{formatDateTime(c.createdAt)}{c.createdBy ? ` · ${c.createdBy}` : ''}</p>

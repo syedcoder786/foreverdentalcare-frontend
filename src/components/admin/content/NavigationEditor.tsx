@@ -28,7 +28,7 @@ export function NavigationEditor() {
       {saved && <Alert tone="success">Menu saved.</Alert>}
       <div className="space-y-2">
         {items.map((item, i) => (
-          <div key={item.id ?? `new-${i}`} className="grid gap-3 rounded-xl border border-slate-200 p-3 sm:grid-cols-[1fr_1.5fr_auto_auto] sm:items-end">
+          <div key={item.id ?? `new-${i}`} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 p-3 sm:grid-cols-[1fr_1.5fr_auto_auto] sm:items-end">
             <Input label="Label" value={item.label} onChange={(e) => update(i, { label: e.target.value })} />
             <Input label="Link" placeholder="/about or https://..." value={item.url} onChange={(e) => update(i, { url: e.target.value })} />
             <div className="flex gap-4 pb-2 text-sm text-slate-600">

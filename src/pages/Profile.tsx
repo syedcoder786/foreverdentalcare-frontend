@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { CalendarClock, CalendarPlus, Clock, LogOut, MapPin, Navigation, Phone, Stethoscope, UserRound } from 'lucide-react';
 import type { PatientAppointment } from '../types';
+import { feeParts } from '../utils/offers';
 import { usePatientAuth } from '../context/PatientAuthContext';
 import { usePatientAppointments, useUpdatePatientProfile } from '../hooks/usePatientData';
 import { useSite } from '../hooks/usePublicData';
@@ -13,7 +14,7 @@ import { Input } from '../components/ui/FormField';
 import { Alert, ErrorMessage } from '../components/ui/Alert';
 import { PageLoader, Skeleton } from '../components/ui/Spinner';
 import { StatusBadge } from '../components/ui/StatusBadge';
-import { formatDate, formatPhone, formatTime, telHref } from '../utils/format';
+import { formatDate, formatPhone, formatTime, telHref, formatRupees } from '../utils/format';
 import { directionsHref } from '../utils/maps';
 import { cn } from '../utils/cn';
 import { isUpcoming } from '../utils/appointments';
@@ -54,7 +55,7 @@ function SignedInProfile() {
   return (
     <section className="container-page py-10 sm:py-14">
       <Seo title="My profile" noindex />
-      <div className="grid gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <motion.aside
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,6 +182,31 @@ function AppointmentGroup({ title, items, empty, muted }: { title: string; items
   );
 }
 
+/** Saved fees with any discounts (struck through on cancelled appointments). */
+function AppointmentFees({ appointment: a }: { appointment: PatientAppointment }) {
+  const cancelled = a.status === 'CANCELLED';
+  const { total, discounted } = feeParts(a, { ignoreDiscounts: cancelled });
+  const plain = feeParts(a, { ignoreDiscounts: true }).total;
+  if (total == null) return null;
+  return (
+    <p className="mt-1.5 flex flex-wrap items-center gap-2 text-sm">
+      <span className="text-muted">Estimated fee</span>
+      {discounted && plain != null && <s className="text-muted">{formatRupees(plain)}</s>}
+      <strong className="text-ink">{total === 0 ? 'Free' : formatRupees(total)}</strong>
+      {!cancelled && a.firstVisitDiscountPercent ? (
+        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-400/15 dark:text-amber-300">
+          {a.firstVisitDiscountPercent}% first-visit online discount
+        </span>
+      ) : null}
+      {!cancelled && a.treatmentDiscountPercent ? (
+        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-400/15 dark:text-amber-300">
+          {a.treatmentDiscountPercent}% treatment offer
+        </span>
+      ) : null}
+    </p>
+  );
+}
+
 function AppointmentCard({ appointment: a, muted }: { appointment: PatientAppointment; muted?: boolean }) {
   const { clinic } = useSite();
   const showActions = !muted;
@@ -207,7 +233,8 @@ function AppointmentCard({ appointment: a, muted }: { appointment: PatientAppoin
             <p className="text-lg leading-snug font-semibold text-ink">{a.serviceName}</p>
             <StatusBadge status={a.status} />
           </div>
-          <div className="mt-2 grid gap-1.5 text-sm text-muted sm:grid-cols-2">
+          <AppointmentFees appointment={a} />
+          <div className="mt-2 grid grid-cols-1 gap-1.5 text-sm text-muted sm:grid-cols-2">
             <p className="flex items-center gap-2">
               <Stethoscope className="size-4 shrink-0 text-brand-600" aria-hidden />
               <Link to={`/doctors/${a.doctorSlug}`} className="truncate hover:text-brand-700 hover:underline">{a.doctorName}</Link>

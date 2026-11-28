@@ -34,7 +34,7 @@ export default function DoctorProfile() {
     <>
       <Seo title={doctor.fullName} description={doctor.shortBio ?? `${doctor.fullName}, ${doctor.professionalTitle}`} image={doctor.profileImageUrl} />
       <section className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-b from-brand-50/70 to-surface dark:from-brand-500/[0.07] dark:to-transparent">
-        <div className="container-page grid gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:items-center">
+        <div className="container-page grid grid-cols-1 gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:items-center">
           <Reveal from="left" className="lg:col-span-4">
             <DoctorAvatar doctor={doctor} className="mx-auto aspect-[4/5] w-full max-w-sm rounded-[2rem] shadow-lift ring-1 ring-slate-200/70 dark:ring-white/10" />
           </Reveal>
@@ -61,7 +61,7 @@ export default function DoctorProfile() {
         </div>
       </section>
 
-      <section className="container-page grid gap-12 py-14 sm:py-20 lg:grid-cols-12">
+      <section className="container-page grid grid-cols-1 gap-12 py-14 sm:py-20 lg:grid-cols-12">
         <div className="space-y-12 lg:col-span-8">
           {doctor.biography && (
             <Reveal>
@@ -92,7 +92,7 @@ export default function DoctorProfile() {
             list.length > 0 ? (
               <div key={specialty.id}>
                 <Reveal><h2 className="text-xl font-semibold text-ink">{specialty.name} treatments</h2></Reveal>
-                <Stagger className="mt-5 grid gap-5 md:grid-cols-2">
+                <Stagger className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
                   {list.map((s) => <StaggerItem key={s.id} className="h-full"><ServiceCard service={s} hideSpecialty /></StaggerItem>)}
                 </Stagger>
               </div>

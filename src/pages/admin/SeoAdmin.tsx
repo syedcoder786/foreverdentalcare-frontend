@@ -49,7 +49,7 @@ export default function SeoAdmin() {
       </p>
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {isLoading ? <Skeleton className="h-64" /> : (
-        <div className="grid gap-4 lg:grid-cols-2">{data?.map((s) => <SeoCard key={s.pageKey} seo={s} />)}</div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">{data?.map((s) => <SeoCard key={s.pageKey} seo={s} />)}</div>
       )}
     </div>
   );

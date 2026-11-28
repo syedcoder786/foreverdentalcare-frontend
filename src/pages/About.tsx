@@ -70,7 +70,7 @@ export default function About() {
 
       {(mission || vision) && (
         <section className="border-y border-slate-100 bg-slate-50/60 py-16 sm:py-20 dark:bg-surface/40">
-          <Stagger className="container-page grid gap-6 md:grid-cols-2">
+          <Stagger className="container-page grid grid-cols-1 gap-6 md:grid-cols-2">
             {[{ s: mission, icon: Target }, { s: vision, icon: Eye }].filter((x) => x.s).map(({ s, icon: Icon }) => (
               <StaggerItem key={s!.id} className="rounded-3xl border border-slate-200 bg-surface p-8 shadow-soft">
                 <Icon className="size-8 text-brand-600 dark:text-brand-300" aria-hidden />
@@ -85,7 +85,7 @@ export default function About() {
       {doctors.length > 0 && (
         <section className="container-page py-16 sm:py-20">
           <Reveal><SectionHeading eyebrow="Our team" title="The practitioners" /></Reveal>
-          <Stagger className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {doctors.map((d) => <StaggerItem key={d.id} className="h-full"><DoctorCard doctor={d} /></StaggerItem>)}
           </Stagger>
         </section>

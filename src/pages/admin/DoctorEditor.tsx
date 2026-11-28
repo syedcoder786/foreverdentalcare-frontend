@@ -54,7 +54,7 @@ export default function DoctorEditor() {
       <h2 className="text-2xl font-semibold text-ink">{isNew ? 'Add a doctor' : doctor.data?.fullName}</h2>
 
       {!isNew && (
-        <div className="flex gap-1 overflow-x-auto border-b border-slate-200" role="tablist">
+        <div className="flex gap-1 relative overflow-x-auto border-b border-slate-200" role="tablist">
           {TABS.map((t) => (
             <button key={t.key} type="button" role="tab" aria-selected={tab === t.key}
               onClick={() => setParams({ tab: t.key }, { replace: true })}

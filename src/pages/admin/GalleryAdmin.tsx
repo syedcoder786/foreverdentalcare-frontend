@@ -78,7 +78,7 @@ export default function GalleryAdmin() {
           {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
           <ImageUpload label="Photo" value={draft.imageUrl} onChange={(url) => setDraft({ ...draft, imageUrl: url })} />
           <Input label="Caption" optional value={draft.caption ?? ''} onChange={(e) => setDraft({ ...draft, caption: e.target.value })} />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Input label="Category" optional list="gallery-categories" placeholder="e.g. Treatment rooms" value={draft.category ?? ''} onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
             <datalist id="gallery-categories">{categories.map((c) => <option key={c} value={c} />)}</datalist>
             <Input label="Display order" inputMode="numeric" value={String(draft.displayOrder)} onChange={(e) => setDraft({ ...draft, displayOrder: Number(e.target.value.replace(/\D/g, '') || 0) })} />

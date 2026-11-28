@@ -41,11 +41,11 @@ export default function DoctorsAdmin() {
       <Notice message={notice} onClear={() => setNotice(null)} />
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-44" />)}</div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-44" />)}</div>
       ) : data && data.length === 0 ? (
         <EmptyState title="No doctors yet" description="Add the first practitioner to start taking bookings." />
       ) : (
-        <Stagger immediate className="grid gap-4 md:grid-cols-2">
+        <Stagger immediate className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {data?.map((d) => (
             <StaggerItem key={d.id} className={cn('flex gap-4 rounded-2xl border border-slate-200 bg-surface p-5 shadow-soft', !d.active && 'opacity-60')}>
               <DoctorAvatar doctor={d} className="size-20 shrink-0 rounded-2xl" />

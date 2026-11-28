@@ -69,7 +69,7 @@ export function DoctorScheduleForm({ doctorId, onSaved }: { doctorId: number; on
       <section>
         <h3 className="font-semibold text-ink">Weekly schedule</h3>
         <p className="mt-1 text-sm text-slate-500">Only this doctor&apos;s calendar is affected. Patients see slots of the chosen length within these hours, excluding the break.</p>
-        <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200">
+        <div className="mt-4 relative overflow-x-auto rounded-2xl border border-slate-200">
           <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
               <tr>

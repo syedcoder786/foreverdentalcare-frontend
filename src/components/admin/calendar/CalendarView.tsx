@@ -115,7 +115,7 @@ export function CalendarView({ initialDoctorId }: { initialDoctorId?: number }) 
       ) : isLoading || !data ? (
         <Skeleton className="h-96" />
       ) : view === 'day' ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {data.doctors.map((d) => {
             const hours = worksOn(d.id, anchor, data.weeklyHours);
             const appts = (byDay.get(anchor) ?? []).filter((a) => a.doctor.id === d.id);
@@ -131,7 +131,7 @@ export function CalendarView({ initialDoctorId }: { initialDoctorId?: number }) 
           })}
         </div>
       ) : (
-        <div className={cn('overflow-x-auto transition-opacity', isFetching && 'opacity-60')}>
+        <div className={cn('relative overflow-x-auto transition-opacity', isFetching && 'opacity-60')}>
           <div className={cn('grid min-w-[760px] grid-cols-7 gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200')}>
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
               <div key={d} className="bg-slate-50 px-2 py-2 text-center text-xs font-semibold text-slate-500 uppercase">{d}</div>

@@ -27,7 +27,7 @@ export function DataTable<T>({ columns, rows, rowKey, onRowClick, mobileCard, em
   }
   return (
     <>
-      <div className={cn('overflow-x-auto', mobileCard && 'hidden md:block')}>
+      <div className={cn('relative max-w-full overflow-x-auto', mobileCard && 'hidden md:block')}>
         <table className="w-full text-left text-sm">
           {caption && <caption className="sr-only">{caption}</caption>}
           <thead>

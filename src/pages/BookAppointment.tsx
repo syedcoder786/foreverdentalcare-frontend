@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { CalendarClock, PhoneCall, ShieldCheck, Stethoscope } from 'lucide-react';
 import { useClinic, usePage } from '../hooks/usePublicData';
 import { AppointmentForm } from '../components/appointment/AppointmentForm';
+import { BookingOfferNote } from '../components/offer/FirstVisitOffer';
 import { PatientAuthFlow } from '../components/patient/PatientAuthFlow';
 import { usePatientAuth } from '../context/PatientAuthContext';
 import { PageLoader } from '../components/ui/Spinner';
@@ -31,12 +32,12 @@ export default function BookAppointment() {
     <section className="relative">
       <Seo seo={seo} title="Book an appointment" />
       <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-80 bg-gradient-to-b from-brand-50/80 to-surface dark:from-brand-500/[0.07] dark:to-transparent" />
-      <div className="container-page grid gap-10 py-12 sm:py-16 lg:grid-cols-12">
+      <div className="container-page grid grid-cols-1 gap-10 py-12 sm:py-16 lg:grid-cols-12">
         <aside className="lg:col-span-4">
           <p className="text-xs font-semibold tracking-[0.16em] text-brand-700 uppercase dark:text-brand-300">{intro?.subtitle ?? 'Appointments'}</p>
           <h1 className="mt-3 font-display text-4xl font-semibold text-ink">{intro?.title ?? 'Request an appointment'}</h1>
           <RichText text={intro?.body} className="mt-4 text-muted" />
-          <Stagger as="ol" immediate stagger={0.12} className="mt-8 space-y-5">
+          <Stagger as="ol" immediate stagger={0.12} className="mt-8 hidden space-y-5 lg:block">
             {steps.map(({ icon: Icon, title, text }, i) => (
               <StaggerItem as="li" key={title} className="flex gap-4">
                 <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface text-brand-700 shadow-soft ring-1 ring-slate-100 dark:text-brand-300">
@@ -50,6 +51,7 @@ export default function BookAppointment() {
               </StaggerItem>
             ))}
           </Stagger>
+          <BookingOfferNote />
           {emergency && (
             <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
               {emergency.title && <p className="font-semibold">{emergency.title}</p>}

@@ -30,7 +30,7 @@ export function AddTemplateNameForm({ onAdded, onCancel }: { onAdded?: (n: Whats
   };
 
   return (
-    <div className="grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-[1fr_9rem_auto] sm:items-start dark:bg-white/[0.03]">
+    <div className="grid grid-cols-1 gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-[1fr_9rem_auto] sm:items-start dark:bg-white/[0.03]">
       <Input
         label="Template name"
         required

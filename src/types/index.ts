@@ -47,6 +47,16 @@ export interface DoctorSummary {
   professionalTitle?: string;
 }
 
+/** A treatment's time-limited offer. Dates are clinic-local and inclusive; startsAt/endsAt drive the countdown. */
+export interface ServiceOffer {
+  percent: number;
+  startDate: string;
+  endDate: string;
+  startsAt: string;
+  endsAt: string;
+  status: 'SCHEDULED' | 'ACTIVE' | 'ENDED';
+}
+
 export interface DentalService {
   id: number;
   name: string;
@@ -55,7 +65,9 @@ export interface DentalService {
   details: string[];
   icon?: string;
   imageUrl?: string;
+  /** The treatment's own fee (separate from the doctor's consultation fee). */
   consultationFee?: number | null;
+  offer?: ServiceOffer | null;
   estimatedDuration: number;
   displayOrder: number;
   active: boolean;
@@ -72,6 +84,7 @@ export interface ServiceRef {
   estimatedDuration: number;
   consultationFee?: number | null;
   active: boolean;
+  offer?: ServiceOffer | null;
 }
 
 export interface Qualification {
@@ -245,6 +258,9 @@ export interface ClinicSettings {
   googleReviewsUrl?: string;
   /** Google Maps share link (e.g. https://maps.app.goo.gl/...), used for "Get directions". */
   mapLinkUrl?: string;
+  /** Percent off the consultation fee (treatment / doctor fee) on a patient's first appointment booked online. */
+  firstVisitDiscountPercent?: number | null;
+  firstVisitOfferEnabled?: boolean;
 }
 
 export type ClinicSettingsPayload = Omit<ClinicSettings, 'timezone'>;
@@ -349,6 +365,16 @@ export interface BookingConfirmation {
   appointmentDate: string;
   appointmentTime: string;
   endTime: string;
+  /** Doctor's consultation fee at booking time; null = discussed at consultation. */
+  consultationFee?: number | null;
+  /** Set when this appointment carries the online first-visit discount (on the consultation fee). */
+  firstVisitDiscountPercent?: number | null;
+  /** Treatment's own fee at booking time. */
+  treatmentFee?: number | null;
+  /** Treatment offer percent covering the appointment date. */
+  treatmentDiscountPercent?: number | null;
+  /** Total after both discounts. */
+  finalFee?: number | null;
 }
 
 export interface Appointment {
@@ -365,6 +391,17 @@ export interface Appointment {
   reschedulable: boolean;
   createdAt: string;
   updatedAt: string;
+  /** Doctor's consultation fee at booking time; null = discussed at consultation. */
+  consultationFee?: number | null;
+  /** Set when this appointment carries the online first-visit discount (on the consultation fee). */
+  firstVisitDiscountPercent?: number | null;
+  /** Treatment's own fee at booking time. */
+  treatmentFee?: number | null;
+  /** Treatment offer percent covering the appointment date. */
+  treatmentDiscountPercent?: number | null;
+  /** Total after both discounts. */
+  finalFee?: number | null;
+  onlineBooking?: boolean;
 }
 
 export interface DoctorStats {
@@ -453,6 +490,9 @@ export interface ServicePayload {
   icon?: string;
   imageUrl?: string;
   consultationFee?: number | null;
+  offerDiscountPercent?: number | null;
+  offerStartDate?: string | null;
+  offerEndDate?: string | null;
   estimatedDuration: number;
   displayOrder?: number;
   active?: boolean;
@@ -552,6 +592,16 @@ export interface PatientAppointment {
   endTime: string;
   message?: string;
   createdAt: string;
+  /** Doctor's consultation fee at booking time; null = discussed at consultation. */
+  consultationFee?: number | null;
+  /** Set when this appointment carries the online first-visit discount (on the consultation fee). */
+  firstVisitDiscountPercent?: number | null;
+  /** Treatment's own fee at booking time. */
+  treatmentFee?: number | null;
+  /** Treatment offer percent covering the appointment date. */
+  treatmentDiscountPercent?: number | null;
+  /** Total after both discounts. */
+  finalFee?: number | null;
 }
 
 export interface PatientBookingRequest {

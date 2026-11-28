@@ -111,9 +111,9 @@ export function DoctorProfileForm({ doctor, onSaved }: { doctor?: AdminDoctor; o
     <form onSubmit={onSubmit} noValidate className="space-y-8">
       {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
 
-      <section className="grid gap-6 lg:grid-cols-3">
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ImageUpload label="Profile photo" aspect="portrait" value={photo} onChange={(url) => setValue('profileImageUrl', url, { shouldDirty: true })} />
-        <div className="grid gap-5 sm:grid-cols-2 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:col-span-2">
           <Input label="Full name" required error={errors.fullName?.message} {...register('fullName', { required: 'Full name is required' })} />
           <Input label="Professional title" required placeholder="e.g. Dentist (BDS) or Unani Physician (BUMS)" error={errors.professionalTitle?.message} {...register('professionalTitle', { required: 'Title is required' })} />
           <Select label="Gender (shown on profile)" {...register('gender')}>
@@ -136,14 +136,14 @@ export function DoctorProfileForm({ doctor, onSaved }: { doctor?: AdminDoctor; o
           <Button size="sm" variant="outline" icon={<Plus className="size-4" aria-hidden />} onClick={() => quals.append({ degree: '', institution: '', year: '' })}>Add qualification</Button>
         </div>
         {quals.fields.map((f, i) => (
-          <div key={f.id} className="grid gap-3 sm:grid-cols-[2fr_2fr_1fr_auto] sm:items-end">
+          <div key={f.id} className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_2fr_1fr_auto] sm:items-end">
             <Input label="Degree" placeholder="e.g. BUMS - Bachelor of Unani Medicine and Surgery" {...register(`qualifications.${i}.degree`)} />
             <Input label="Institution" {...register(`qualifications.${i}.institution`)} />
             <Input label="Year" {...register(`qualifications.${i}.year`)} />
             <Button variant="ghostDanger" size="sm" className="h-11" aria-label="Remove qualification" icon={<Trash2 className="size-4" />} onClick={() => quals.remove(i)} />
           </div>
         ))}
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input label="Registration number" optional {...register('registrationNumber')} />
           <Input label="Registration authority" optional placeholder="e.g. State Dental Council / State Board of Unani Medicine" {...register('registrationAuthority')} />
         </div>
@@ -155,7 +155,7 @@ export function DoctorProfileForm({ doctor, onSaved }: { doctor?: AdminDoctor; o
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <fieldset className="rounded-2xl border border-slate-200 p-5">
           <legend className="px-1 font-semibold text-ink">Specialties</legend>
           <div className="mt-2 space-y-2">

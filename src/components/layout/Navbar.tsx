@@ -5,6 +5,7 @@ import { CalendarPlus, Menu, Phone, UserRound, X } from 'lucide-react';
 import { usePatientAuth } from '../../context/PatientAuthContext';
 import { Logo } from './Logo';
 import { LinkButton } from '../ui/Button';
+import { OfferBadge } from '../offer/FirstVisitOffer';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useClinic } from '../../hooks/usePublicData';
 import { formatPhone, telHref } from '../../utils/format';
@@ -133,14 +134,17 @@ export function Navbar() {
               Sign in
             </button>
           )}
+          <span className="relative ml-1 inline-flex">
+          <OfferBadge />
           <LinkButton
             to="/book"
             size="sm"
-            className="ml-1 whitespace-nowrap shadow-lg shadow-brand-700/25 transition-shadow hover:shadow-brand-700/40 dark:shadow-brand-400/20"
+            className="whitespace-nowrap shadow-lg shadow-brand-700/25 transition-shadow hover:shadow-brand-700/40 dark:shadow-brand-400/20"
             icon={<CalendarPlus className="size-4" aria-hidden />}
           >
             {ctaText}
           </LinkButton>
+          </span>
         </div>
 
         <div className="flex items-center gap-2 xl:hidden">
@@ -215,7 +219,7 @@ export function Navbar() {
               ))}
               <motion.div
                 variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
-                className="mt-3 grid gap-2 sm:grid-cols-2"
+                className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2"
               >
                 {patientStatus === 'authenticated' ? (
                   <LinkButton to="/profile" variant="outline" icon={<UserRound className="size-4" aria-hidden />} className="sm:col-span-2">
@@ -236,9 +240,12 @@ export function Navbar() {
                 <LinkButton href={telHref(clinic.phone)} variant="outline" icon={<Phone className="size-4" aria-hidden />}>
                   Call {formatPhone(clinic.phone)}
                 </LinkButton>
-                <LinkButton to="/book" icon={<CalendarPlus className="size-4" aria-hidden />}>
-                  {ctaText}
-                </LinkButton>
+                <span className="relative grid">
+                  <OfferBadge className="right-2" />
+                  <LinkButton to="/book" icon={<CalendarPlus className="size-4" aria-hidden />}>
+                    {ctaText}
+                  </LinkButton>
+                </span>
               </motion.div>
             </motion.nav>
           </motion.div>

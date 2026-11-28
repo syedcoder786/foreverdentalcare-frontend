@@ -40,9 +40,9 @@ export default function Doctors() {
         )}
         {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
         {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[28rem] rounded-3xl" />)}</div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[28rem] rounded-3xl" />)}</div>
         ) : data && data.length > 0 ? (
-          <Stagger key={specialtyId ?? 'all'} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Stagger key={specialtyId ?? 'all'} className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {data.map((d) => <StaggerItem key={d.id} className="h-full"><DoctorCard doctor={d} /></StaggerItem>)}
           </Stagger>
         ) : (

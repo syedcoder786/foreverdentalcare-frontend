@@ -26,7 +26,7 @@ export default function WebsiteContent() {
 
   return (
     <div className="space-y-5">
-      <div className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-surface p-1.5 shadow-soft" role="tablist">
+      <div className="flex gap-1 relative overflow-x-auto rounded-2xl border border-slate-200 bg-surface p-1.5 shadow-soft" role="tablist">
         {TABS.map((t) => (
           <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} onClick={() => setParams({ tab: t.key }, { replace: true })}
             className={cn('relative shrink-0 rounded-xl px-3.5 py-2 text-sm font-medium', tab === t.key ? 'text-white' : 'text-slate-600 hover:text-ink')}>

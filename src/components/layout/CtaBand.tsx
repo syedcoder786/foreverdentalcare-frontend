@@ -5,6 +5,7 @@ import { RichText } from '../content/Cms';
 import { useSite, usePage } from '../../hooks/usePublicData';
 import { whatsappHref } from '../../utils/format';
 import type { Section } from '../../types';
+import { OfferPill } from '../offer/FirstVisitOffer';
 
 /** Call-to-action banner. Text and buttons come from the HOME "cta" section (Admin -> Homepage editor). */
 export function CtaBand({ section: given }: { section?: Section }) {
@@ -19,6 +20,7 @@ export function CtaBand({ section: given }: { section?: Section }) {
         <div aria-hidden className="pointer-events-none absolute -top-20 -left-16 size-72 rounded-full bg-brand-500/30 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -right-10 -bottom-24 size-72 rounded-full bg-sky-soft-500/25 blur-3xl" />
         <div className="relative mx-auto max-w-2xl">
+          <OfferPill className="mb-5" />
           {section.title && <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl">{section.title}</h2>}
           {section.body && <RichText text={section.body} className="mt-4 text-mint" />}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

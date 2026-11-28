@@ -38,12 +38,12 @@ export default function Services() {
           </div>
         )}
         {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
-        {isLoading && <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-96 rounded-3xl" />)}</div>}
+        {isLoading && <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-96 rounded-3xl" />)}</div>}
         <div className="space-y-16">
           {Array.from(groups.entries()).map(([id, g]) => (
             <div key={id} id={g.slug} className="scroll-mt-28">
               <Reveal><SectionHeading eyebrow="Specialty" title={g.name} /></Reveal>
-              <Stagger stagger={0.07} className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Stagger stagger={0.07} className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {g.services.map((s) => <StaggerItem key={s.id} className="h-full"><ServiceCard service={s} variant="detailed" hideSpecialty /></StaggerItem>)}
               </Stagger>
             </div>

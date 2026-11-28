@@ -41,9 +41,9 @@ export function BrandingForm() {
     <div className="space-y-6">
       {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
       {saved && <Alert tone="success">Header & footer saved.</Alert>}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ImageUpload label="Clinic logo" aspect="square" hint="Square image works best. Leave empty to use the default mark." value={form.logoUrl} onChange={(url) => set('logoUrl', url)} error={errors.logoUrl} />
-        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2">
           <Input label="Clinic name" required value={form.clinicName} onChange={(e) => set('clinicName', e.target.value)} error={errors.clinicName} />
           <Input label="Tagline (under the name)" value={form.tagline ?? ''} onChange={(e) => set('tagline', e.target.value)} />
           <Input label="Header button text" placeholder="Book appointment" value={form.headerCtaText ?? ''} onChange={(e) => set('headerCtaText', e.target.value)} />
@@ -52,7 +52,7 @@ export function BrandingForm() {
       </div>
       <Textarea label="Footer description" rows={2} value={form.footerDescription ?? ''} onChange={(e) => set('footerDescription', e.target.value)} />
       <Input label="Copyright text" hint="Shown after '© year Clinic name.'" value={form.copyrightText ?? ''} onChange={(e) => set('copyrightText', e.target.value)} />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input label="Instagram URL" placeholder="https://instagram.com/..." value={form.instagramUrl ?? ''} onChange={(e) => set('instagramUrl', e.target.value)} error={errors.instagramUrl} />
         <Input label="Facebook URL" value={form.facebookUrl ?? ''} onChange={(e) => set('facebookUrl', e.target.value)} error={errors.facebookUrl} />
         <Input label="YouTube URL" value={form.youtubeUrl ?? ''} onChange={(e) => set('youtubeUrl', e.target.value)} error={errors.youtubeUrl} />

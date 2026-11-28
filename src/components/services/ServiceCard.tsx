@@ -1,8 +1,8 @@
+import { TreatmentFee, TreatmentOfferTag } from '../offer/TreatmentOffers';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Check, Clock, UserRound } from 'lucide-react';
 import type { DentalService } from '../../types';
 import { ServiceIcon } from './ServiceIcon';
-import { formatFee } from '../../utils/format';
 import { cn } from '../../utils/cn';
 
 interface ServiceCardProps {
@@ -83,8 +83,9 @@ export function ServiceCard({ service, variant = 'compact', hideSpecialty }: Ser
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-6">
           <div className="text-sm">
-            <span className="block text-xs text-slate-400">Consultation fee</span>
-            <span className="font-semibold text-ink">{formatFee(service.consultationFee)}</span>
+            <span className="block text-xs text-slate-400">Treatment fee</span>
+            <TreatmentFee service={service} />
+            <TreatmentOfferTag offer={service.offer} className="mt-1 flex w-fit" />
           </div>
           <Link
             to={`/book?specialty=${service.specialty.slug}&service=${service.slug}${doctorQuery}`}

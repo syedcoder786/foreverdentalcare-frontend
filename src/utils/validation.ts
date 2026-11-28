@@ -76,6 +76,24 @@ export const serviceSchema = z.object({
   estimatedDuration: intString(5, 480, 'Duration'),
   displayOrder: intString(0, 9999, 'Display order'),
   active: z.boolean(),
+  offerEnabled: z.boolean(),
+  offerDiscountPercent: z.string().trim(),
+  offerStartDate: z.string(),
+  offerEndDate: z.string(),
+}).superRefine((v, ctx) => {
+  if (!v.offerEnabled) return;
+  const pct = Number(v.offerDiscountPercent);
+  if (!/^\d+$/.test(v.offerDiscountPercent) || pct < 1 || pct > 100) {
+    ctx.addIssue({ code: 'custom', path: ['offerDiscountPercent'], message: 'Enter a whole number from 1 to 100' });
+  }
+  if (!v.offerStartDate) ctx.addIssue({ code: 'custom', path: ['offerStartDate'], message: 'Choose when the offer starts' });
+  if (!v.offerEndDate) ctx.addIssue({ code: 'custom', path: ['offerEndDate'], message: 'Choose when the offer ends' });
+  if (v.offerStartDate && v.offerEndDate && v.offerEndDate < v.offerStartDate) {
+    ctx.addIssue({ code: 'custom', path: ['offerEndDate'], message: 'The offer must end on or after its start date' });
+  }
+  if (!v.consultationFee || Number(v.consultationFee) <= 0) {
+    ctx.addIssue({ code: 'custom', path: ['consultationFee'], message: 'Set a fee for this treatment to give a percentage off' });
+  }
 });
 
 export type ServiceFormValues = z.infer<typeof serviceSchema>;
@@ -105,6 +123,16 @@ export const settingsSchema = z
     workingDays: z.array(z.string()).min(1, 'Select at least one working day'),
     slotDurationMinutes: intString(5, 240, 'Slot duration'),
     bookingWindowDays: intString(1, 365, 'Booking window'),
+    firstVisitDiscountPercent: z
+      .string()
+      .trim()
+      .refine((v) => v === '' || /^\d+$/.test(v), 'Discount must be a whole number')
+      .refine((v) => v === '' || (Number(v) >= 1 && Number(v) <= 100), 'Discount must be between 1 and 100'),
+    firstVisitOfferEnabled: z.boolean(),
+  })
+  .refine((v) => !v.firstVisitOfferEnabled || v.firstVisitDiscountPercent !== '', {
+    path: ['firstVisitDiscountPercent'],
+    message: 'Set the first-visit discount',
   })
   .refine((v) => v.closingTime > v.openingTime, {
     path: ['closingTime'],

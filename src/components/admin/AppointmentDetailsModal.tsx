@@ -11,6 +11,7 @@ import { StatusBadge } from '../ui/StatusBadge';
 import { Input } from '../ui/FormField';
 import { SlotPicker } from '../appointment/SlotPicker';
 import { WhatsAppIcon } from '../layout/WhatsAppButton';
+import { FeeSummary } from './AppointmentFee';
 import { formatDate, formatDateTime, formatPhone, formatTime, telHref, whatsappHref } from '../../utils/format';
 import { addDays, todayInZone } from '../../utils/dates';
 import { getErrorMessage } from '../../utils/errors';
@@ -98,7 +99,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose }: Props) {
             <StatusBadge status={appt.status} className="self-start text-sm sm:self-center" />
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <section>
               <h3 className="mb-3 text-xs font-semibold tracking-wide text-slate-400 uppercase">Patient</h3>
               <p className="text-lg font-semibold text-ink">{appt.patient.fullName}</p>
@@ -147,6 +148,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose }: Props) {
               ) : (
                 <p className="text-sm text-slate-400">No message provided.</p>
               )}
+              <div className="mt-4"><FeeSummary appt={appt} /></div>
               <p className="mt-4 text-xs text-slate-400">Requested {formatDateTime(appt.createdAt)}</p>
               <p className="text-xs text-slate-400">Last updated {formatDateTime(appt.updatedAt)}</p>
             </section>

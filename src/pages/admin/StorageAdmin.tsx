@@ -124,7 +124,7 @@ function CurrentStorage({ status: s }: { status: StorageStatus }) {
         </span>
       }
     >
-      <dl className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {cloud ? (
           <>
             <Fact label="Cloud name" value={s.cloudName} />
@@ -239,7 +239,7 @@ function ConnectCloudinary({ status, onSaved }: { status: StorageStatus; onSaved
       title={hasSaved ? 'Cloudinary account' : 'Connect Cloudinary'}
       description="Store uploaded images in Cloudinary and serve them from its CDN. Test the details first; nothing changes until you save."
     >
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
           <Input
             label="Paste your CLOUDINARY_URL"
@@ -257,7 +257,7 @@ function ConnectCloudinary({ status, onSaved }: { status: StorageStatus; onSaved
             </p>
           )}
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Input label="Cloud name" required placeholder="my-cloud" value={form.cloudName}
               onChange={(e) => set('cloudName', e.target.value.trim())} error={errors.cloudName} autoComplete="off" spellCheck={false} />
             <Input label="API key" required placeholder="123456789012345" value={form.apiKey}

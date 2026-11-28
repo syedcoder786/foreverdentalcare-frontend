@@ -272,7 +272,7 @@ function ParamGroup({ title, params, onChange, sources, names, error }: {
     <fieldset className="space-y-3">
       <legend className="mb-1 text-sm font-semibold text-ink">{title}</legend>
       {params.map((p, i) => (
-        <div key={i} className="grid gap-3 sm:grid-cols-[8rem_1fr_1fr] sm:items-center">
+        <div key={i} className="grid grid-cols-1 gap-3 sm:grid-cols-[8rem_1fr_1fr] sm:items-center">
           <span className="text-sm font-medium text-slate-500">{names?.[i] ?? `{{${i + 1}}}`}</span>
           <Select aria-label={`${title} value ${i + 1}`} value={p.source} onChange={(e) => update(i, { source: e.target.value as TemplateParamSource })}>
             {sources.map((s) => (

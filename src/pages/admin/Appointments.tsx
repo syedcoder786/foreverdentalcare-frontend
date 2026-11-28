@@ -19,6 +19,7 @@ import { NewAppointmentModal } from '../../components/admin/NewAppointmentModal'
 import { CalendarView } from '../../components/admin/calendar/CalendarView';
 import { Notice } from '../../components/admin/Notice';
 import { doctorColor } from '../../components/admin/doctorColors';
+import { FeeCell, FirstVisitBadge } from '../../components/admin/AppointmentFee';
 import { STATUS_LABELS, formatDate, formatDateTime, formatPhone, formatTime } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 import { cn } from '../../utils/cn';
@@ -86,7 +87,7 @@ export default function Appointments() {
       ) : (
         <>
           <div className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-soft">
-            <div className="grid gap-3 md:grid-cols-6 xl:grid-cols-12 xl:items-end">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-6 xl:grid-cols-12 xl:items-end">
               <div className="relative md:col-span-6 xl:col-span-3">
                 <Search className="pointer-events-none absolute top-[38px] left-3.5 size-4 text-slate-400" aria-hidden />
                 <Input label="Search" placeholder="Patient name or phone" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="pl-10" />
@@ -151,6 +152,7 @@ export default function Appointments() {
                   { key: 'when', header: 'Date & time', cell: (a) => (
                     <div className="whitespace-nowrap"><p className="font-medium text-ink">{formatDate(a.appointmentDate)}</p><p className="text-xs text-slate-500">{formatTime(a.appointmentTime)} - {formatTime(a.endTime)}</p></div>
                   ) },
+                  { key: 'fee', header: 'Fee', cell: (a) => <FeeCell appt={a} /> },
                   { key: 'status', header: 'Status', cell: (a) => <StatusBadge status={a.status} /> },
                   { key: 'created', header: 'Requested', className: 'hidden 2xl:table-cell', cell: (a) => <span className="text-xs text-slate-500">{formatDateTime(a.createdAt)}</span> },
                   { key: 'action', header: <span className="sr-only">Actions</span>, className: 'text-right', cell: (a) => (
@@ -163,6 +165,7 @@ export default function Appointments() {
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-ink">{a.patient.fullName}</p>
                         <p className="text-xs text-slate-500">{a.doctor.fullName}</p>
+                        <FirstVisitBadge appt={a} className="mt-1.5" />
                       </div>
                       <StatusBadge status={a.status} />
                     </div>

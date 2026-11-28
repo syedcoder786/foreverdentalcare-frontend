@@ -54,7 +54,7 @@ export default function Contact() {
         </div>
       </PageHeader>
 
-      <section className="container-page grid gap-8 py-14 sm:py-20 lg:grid-cols-5">
+      <section className="container-page grid grid-cols-1 gap-8 py-14 sm:py-20 lg:grid-cols-5">
         <Stagger className="space-y-4 lg:col-span-2">
           <InfoCard icon={<MapPin className="size-5" aria-hidden />} title="Clinic address">
             <p>{clinic.address}</p>

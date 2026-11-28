@@ -7,6 +7,7 @@ import { ScrollProgress } from '../components/motion/ScrollProgress';
 import { useLocation } from 'react-router-dom';
 import { PatientSignInModal } from '../components/patient/PatientSignInModal';
 import { NextAppointmentCard } from '../components/patient/NextAppointmentCard';
+import { FloatingOfferPill } from '../components/offer/FirstVisitOffer';
 
 export function PublicLayout() {
   // The home page shows the card inside its hero (which sits under the transparent navbar).
@@ -27,6 +28,7 @@ export function PublicLayout() {
         <AnimatedOutlet />
       </main>
       <Footer />
+      <FloatingOfferPill />
       <WhatsAppFloatingButton />
       <PatientSignInModal />
     </div>

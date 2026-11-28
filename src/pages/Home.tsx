@@ -14,6 +14,9 @@ import { CtaBand } from '../components/layout/CtaBand';
 import { CmsButtons, CmsCards, CmsHeading, CustomSection, RichText, SmartLink } from '../components/content/Cms';
 import { Seo } from '../components/content/Seo';
 import { NextAppointmentCard } from '../components/patient/NextAppointmentCard';
+import { HeroOfferCard, OfferBadge, OfferTicker } from '../components/offer/FirstVisitOffer';
+import { TreatmentOffersSection } from '../components/offer/TreatmentOffers';
+import { HeroSlides } from '../components/offer/HeroSlides';
 import { EASE_OUT, Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 import { formatPhone, telHref } from '../utils/format';
 import { directionsHref } from '../utils/maps';
@@ -114,52 +117,61 @@ function Hero({ section }: { section: Section }) {
     <section className="relative -mt-18 overflow-hidden pt-18">
       <Aurora />
       <NextAppointmentCard />
-      <div className="container-page relative grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
-        <motion.div className="lg:col-span-7" variants={heroContainer} initial="hidden" animate="show">
-          {section.subtitle && (
-            <motion.p variants={heroItem} className="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-surface/80 px-3.5 py-1.5 text-xs font-semibold text-brand-800 shadow-sm backdrop-blur dark:border-brand-400/20">
-              <span className="relative flex size-2">
-                {status.open && <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
-                <span className={cn('relative inline-flex size-2 rounded-full', status.open ? 'bg-emerald-500' : 'bg-slate-300')} />
-              </span>
-              {section.subtitle}
-            </motion.p>
-          )}
-          <motion.h1
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
-            className="mt-6 font-display text-[2.6rem] leading-[1.08] font-semibold text-ink sm:text-6xl lg:text-[4.25rem]"
-          >
-            {plain.map((w, i) => (
-              <motion.span key={`${w}-${i}`} variants={word} className="inline-block whitespace-pre">
-                {w}{' '}
-              </motion.span>
-            ))}
-            <motion.span variants={word} className="relative inline-block whitespace-nowrap text-gradient-brand">
-              {highlighted}
-              <svg aria-hidden viewBox="0 0 220 12" className="absolute -bottom-2 left-0 h-3 w-full text-brand-200 dark:text-brand-400/60" preserveAspectRatio="none">
-                <motion.path d="M2 9c50-6 160-8 216-2" stroke="currentColor" strokeWidth="5" fill="none" strokeLinecap="round"
-                  initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 0.9, ease: EASE_OUT }} />
-              </svg>
-            </motion.span>
-          </motion.h1>
-          {section.body && (
-            <motion.div variants={heroItem} className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-              <RichText text={section.body} />
-            </motion.div>
-          )}
-          <motion.div variants={heroItem} className="mt-9 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5">
-            <CmsButtons section={section} />
-            {!section.primaryButtonLabel && (
-              <LinkButton
-                to="/book"
-                size="lg"
-                className="shadow-lg shadow-brand-700/25 hover:-translate-y-0.5 dark:shadow-brand-400/20"
-                icon={<CalendarPlus className="size-5" aria-hidden />}
+      <div className="container-page relative grid grid-cols-1 items-center gap-12 py-12 sm:py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
+        <motion.div className="min-w-0 lg:col-span-7" variants={heroContainer} initial="hidden" animate="show">
+          <HeroSlides
+            intro={
+              <>
+              {section.subtitle && (
+                <motion.p variants={heroItem} className="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-surface/80 px-3.5 py-1.5 text-xs font-semibold text-brand-800 shadow-sm backdrop-blur dark:border-brand-400/20">
+                  <span className="relative flex size-2">
+                    {status.open && <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
+                    <span className={cn('relative inline-flex size-2 rounded-full', status.open ? 'bg-emerald-500' : 'bg-slate-300')} />
+                  </span>
+                  {section.subtitle}
+                </motion.p>
+              )}
+              <motion.h1
+                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+                className="mt-6 font-display text-[2.6rem] leading-[1.08] font-semibold text-ink sm:text-6xl lg:text-[4.25rem]"
               >
-                {clinic.headerCtaText || 'Book an appointment'}
-              </LinkButton>
-            )}
-          </motion.div>
+                {plain.map((w, i) => (
+                  <motion.span key={`${w}-${i}`} variants={word} className="inline-block whitespace-pre">
+                    {w}{' '}
+                  </motion.span>
+                ))}
+                <motion.span variants={word} className="relative inline-block whitespace-nowrap text-gradient-brand">
+                  {highlighted}
+                  <svg aria-hidden viewBox="0 0 220 12" className="absolute -bottom-2 left-0 h-3 w-full text-brand-200 dark:text-brand-400/60" preserveAspectRatio="none">
+                    <motion.path d="M2 9c50-6 160-8 216-2" stroke="currentColor" strokeWidth="5" fill="none" strokeLinecap="round"
+                      initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 0.9, ease: EASE_OUT }} />
+                  </svg>
+                </motion.span>
+              </motion.h1>
+              {section.body && (
+                <motion.div variants={heroItem} className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+                  <RichText text={section.body} />
+                </motion.div>
+              )}
+              <motion.div variants={heroItem} className="mt-9 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5">
+                <CmsButtons section={section} />
+                {!section.primaryButtonLabel && (
+                  <span className="relative inline-flex">
+                  <OfferBadge />
+                  <LinkButton
+                    to="/book"
+                    size="lg"
+                    className="shadow-lg shadow-brand-700/25 hover:-translate-y-0.5 dark:shadow-brand-400/20"
+                    icon={<CalendarPlus className="size-5" aria-hidden />}
+                  >
+                    {clinic.headerCtaText || 'Book an appointment'}
+                  </LinkButton>
+                  </span>
+                )}
+              </motion.div>
+              </>
+            }
+          />
           <motion.div variants={heroItem} className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
             {clinic.phone && (
               <HeroContact href={telHref(clinic.phone)} icon={<Phone className="size-[18px] transition-transform duration-200 group-hover:rotate-12" aria-hidden />} label="Call us">
@@ -207,6 +219,7 @@ function Hero({ section }: { section: Section }) {
               </div>
             </motion.div>
           </motion.div>
+          <HeroOfferCard />
           {featured.length > 0 && (
             <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95, duration: 0.6, ease: EASE_OUT }} className="absolute -top-4 -right-2 hidden sm:block">
               <motion.div animate={{ y: [0, 7, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
@@ -225,6 +238,7 @@ function Hero({ section }: { section: Section }) {
           )}
         </motion.div>
       </div>
+      <OfferTicker />
     </section>
   );
 }
@@ -232,7 +246,7 @@ function Hero({ section }: { section: Section }) {
 function Intro({ section }: { section: Section }) {
   return (
     <section className="border-y border-slate-100 bg-slate-50/50 dark:bg-surface/40">
-      <div className="container-page grid gap-8 py-14 md:grid-cols-3 md:gap-12">
+      <div className="container-page grid grid-cols-1 gap-8 py-14 md:grid-cols-3 md:gap-12">
         <Reveal from="left" className="md:col-span-1">
           {section.subtitle && (
             <p className="flex items-center gap-2 text-xs font-semibold tracking-[0.16em] text-brand-700 uppercase dark:text-brand-300">
@@ -273,9 +287,9 @@ function FeaturedDoctors({ section }: { section: Section }) {
     <SectionShell section={section}>
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {isLoading ? (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-96 rounded-3xl" />)}</div>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-96 rounded-3xl" />)}</div>
       ) : (
-        <Stagger className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {featured.map((d) => <StaggerItem key={d.id} className="h-full"><DoctorCard doctor={d} /></StaggerItem>)}
         </Stagger>
       )}
@@ -289,9 +303,9 @@ function Specialties({ section }: { section: Section }) {
   return (
     <SectionShell section={section} tinted>
       {isLoading ? (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-56 rounded-3xl" />)}</div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-56 rounded-3xl" />)}</div>
       ) : (
-        <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <Stagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {data!.map((s) => <StaggerItem key={s.id} className="h-full"><SpecialtyCard specialty={s} /></StaggerItem>)}
         </Stagger>
       )}
@@ -305,10 +319,10 @@ function FeaturedServices({ section }: { section: Section }) {
     <SectionShell section={section}>
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {isLoading ? (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-3xl" />)}</div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-3xl" />)}</div>
       ) : (
         data && (
-          <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {data.slice(0, 6).map((s) => <StaggerItem key={s.id} className="h-full"><ServiceCard service={s} /></StaggerItem>)}
           </Stagger>
         )
@@ -333,7 +347,7 @@ function Testimonials({ section }: { section: Section }) {
     <section className="bg-slate-50/70 py-16 sm:py-24 dark:bg-transparent">
       <div className="container-page">
         <Reveal><CmsHeading section={section} align="center" /></Reveal>
-        <Stagger stagger={0.12} className="mt-12 grid gap-5 md:grid-cols-3">
+        <Stagger stagger={0.12} className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
           {data.map((t) => (
             <StaggerItem key={t.id} className="h-full">
               <motion.figure whileHover={{ y: -6 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }}
@@ -381,7 +395,7 @@ function Timings({ section }: { section: Section }) {
   const status = todayStatus(clinic);
   return (
     <section className="container-page py-16 sm:py-24">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
         <Reveal from="left">
           <CmsHeading section={section} />
           <p className={cn('mt-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium', status.open ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600')}>
@@ -436,11 +450,17 @@ export default function Home() {
       </div>
     );
   }
+  // Treatment offers sit right under the hero (or at the top when the hero is hidden).
+  const hasHero = sections.some((s) => s.sectionKey === 'hero');
   return (
     <>
       <Seo seo={seo} />
+      {!hasHero && <TreatmentOffersSection />}
       {sections.map((s) => (
-        <div key={s.id}>{s.core ? RENDERERS[s.sectionKey]?.(s) : <CustomSection section={s} />}</div>
+        <div key={s.id}>
+          {s.core ? RENDERERS[s.sectionKey]?.(s) : <CustomSection section={s} />}
+          {s.sectionKey === 'hero' && <TreatmentOffersSection />}
+        </div>
       ))}
     </>
   );

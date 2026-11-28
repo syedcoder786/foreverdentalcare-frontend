@@ -6,10 +6,10 @@ import { DoctorCard } from '../components/doctors/DoctorCard';
 import { Seo } from '../components/content/Seo';
 import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 import { SectionHeading } from '../components/ui/SectionHeading';
+import { TreatmentFee, TreatmentOfferTag } from '../components/offer/TreatmentOffers';
 import { LinkButton } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/Alert';
 import { PageLoader } from '../components/ui/Spinner';
-import { formatFee } from '../utils/format';
 import { getErrorMessage } from '../utils/errors';
 import NotFound from './NotFound';
 
@@ -34,11 +34,12 @@ export default function ServiceDetail() {
             Book this treatment
           </LinkButton>
           <span className="inline-flex items-center gap-1.5 text-sm text-slate-600"><Clock className="size-4" aria-hidden />~{service.estimatedDuration} min per visit</span>
-          <span className="text-sm text-slate-600">Fee: <strong className="text-ink">{formatFee(service.consultationFee)}</strong></span>
+          <span className="inline-flex items-center gap-1.5 text-sm text-slate-600">Treatment fee: <TreatmentFee service={service} /></span>
+          <TreatmentOfferTag offer={service.offer} className="text-xs" />
         </div>
       </PageHeader>
 
-      <section className="container-page grid gap-12 py-14 sm:py-20 lg:grid-cols-12">
+      <section className="container-page grid grid-cols-1 gap-12 py-14 sm:py-20 lg:grid-cols-12">
         <div className="lg:col-span-7">
           {service.imageUrl && <Reveal><img src={service.imageUrl} alt="" className="mb-10 w-full rounded-[2rem] object-cover shadow-lift" /></Reveal>}
           {service.details.length > 0 && (

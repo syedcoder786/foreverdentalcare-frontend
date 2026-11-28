@@ -58,7 +58,7 @@ export function NewAppointmentModal({ open, onClose, onCreated }: { open: boolea
       </>}>
       <div className="space-y-5">
         {create.isError && <Alert tone="error">{parseApiError(create.error).message}</Alert>}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select label="Doctor" required value={doctorId} onChange={(e) => { setDoctorId(e.target.value); setServiceId(''); setTime(''); }} error={errors.doctorId}>
             <option value="">Select a doctor</option>
             {doctors.data?.filter((d) => d.active).map((d) => <option key={d.id} value={d.id}>{d.fullName} · {d.professionalTitle}</option>)}
@@ -74,7 +74,7 @@ export function NewAppointmentModal({ open, onClose, onCreated }: { open: boolea
           </Select>
         </div>
         <SlotPicker doctorId={doctor?.id} serviceId={serviceId ? Number(serviceId) : undefined} date={date && date >= today ? date : undefined} value={time} onChange={setTime} error={errors.appointmentTime} />
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Patient name" required value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} />
           <Input label="Phone" required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} error={errors.phone} />
           <Input label="Email" optional type="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} wrapperClassName="sm:col-span-2" />

@@ -11,7 +11,6 @@ import { formatPhone } from '../../utils/format';
 import { createAppointmentSchema, type AppointmentFormValues } from '../../utils/validation';
 import { parseApiError } from '../../utils/errors';
 import { addDays, todayInZone } from '../../utils/dates';
-import { formatFee } from '../../utils/format';
 import { useBookAppointment, useDoctorServices, useDoctors, useSpecialties } from '../../hooks/usePublicData';
 import { Checkbox, Input, Textarea } from '../ui/FormField';
 import { Button } from '../ui/Button';
@@ -19,6 +18,8 @@ import { Alert, ErrorMessage } from '../ui/Alert';
 import { Skeleton } from '../ui/Spinner';
 import { SlotPicker } from './SlotPicker';
 import { BookingSuccess } from './BookingSuccess';
+import { FeeBreakdown, FeeWithOffer } from '../offer/FirstVisitOffer';
+import { TreatmentFee, TreatmentOfferTag } from '../offer/TreatmentOffers';
 import { DoctorAvatar } from '../doctors/DoctorCard';
 import { CmsIcon } from '../content/CmsIcon';
 import { getErrorMessage } from '../../utils/errors';
@@ -251,7 +252,7 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
         ) : specialties.isError ? (
           <ErrorMessage message={getErrorMessage(specialties.error)} onRetry={() => specialties.refetch()} />
         ) : (
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {specialties.data?.map((s) => (
               <ChoiceCard key={s.id} selected={specialtyId === String(s.id)} onClick={() => choose('specialtyId', String(s.id))} label={s.name}>
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700 dark:text-brand-300">
@@ -269,13 +270,16 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
         {specialtyId && doctors.isLoading ? (
           <Skeleton className="h-20" />
         ) : (
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {doctors.data?.map((d) => (
               <ChoiceCard key={d.id} selected={doctorId === String(d.id)} onClick={() => choose('doctorId', String(d.id))} label={`${d.fullName}, ${d.professionalTitle}`}>
                 <DoctorAvatar doctor={d} className="size-12 shrink-0 rounded-xl" />
                 <span className="min-w-0">
                   <span className="block truncate font-medium text-ink">{d.fullName}</span>
                   <span className="block truncate text-xs text-slate-500">{d.professionalTitle}</span>
+                  {d.consultationFee != null && (
+                    <span className="mt-1 block text-xs text-slate-500"><FeeWithOffer fee={d.consultationFee} /></span>
+                  )}
                 </span>
               </ChoiceCard>
             ))}
@@ -294,9 +298,10 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
               <ChoiceCard key={s.id} selected={serviceId === String(s.id)} onClick={() => choose('serviceId', String(s.id))} label={s.name}>
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium text-ink">{s.name}</span>
-                  <span className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-slate-500">
+                  <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
                     <span className="inline-flex items-center gap-1"><Clock className="size-3" aria-hidden />~{s.estimatedDuration} min</span>
-                    <span>{formatFee(s.consultationFee ?? selectedDoctor?.consultationFee)}</span>
+                    <TreatmentFee service={s} className="text-xs" />
+                    <TreatmentOfferTag offer={s.offer} />
                   </span>
                 </span>
               </ChoiceCard>
@@ -352,16 +357,21 @@ export function AppointmentForm({ clinic, prefill, consentText, patient }: Appoi
               <Link to="/profile" className="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-300">Edit</Link>
             </div>
           ) : (
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <Input label="Full name" required autoComplete="name" placeholder="Your full name" error={errors.fullName?.message} wrapperClassName="sm:col-span-2" {...register('fullName')} />
               <Input label="Phone number" required type="tel" inputMode="tel" autoComplete="tel" placeholder="+91 98765 43210" error={errors.phone?.message} {...register('phone')} />
               <Input label="Email" optional type="email" autoComplete="email" placeholder="you@example.com" error={errors.email?.message} {...register('email')} />
             </div>
           )}
           <Textarea label="Message" optional rows={3} placeholder="Anything you'd like the doctor to know" error={errors.message?.message} {...register('message')} />
-          <Checkbox label={consentText || DEFAULT_CONSENT} error={errors.consent?.message} {...register('consent')} />
         </div>
       </Step>
+
+      {selectedDoctor && (
+        <FeeBreakdown doctorName={selectedDoctor.fullName} doctorFee={selectedDoctor.consultationFee} service={selectedService} date={date} />
+      )}
+
+      <Checkbox label={consentText || DEFAULT_CONSENT} error={errors.consent?.message} {...register('consent')} />
 
       <motion.div layout className="flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-slate-500">

@@ -110,7 +110,7 @@ export function WhatsAppSettingsCard() {
       ) : query.isError ? (
         <ErrorMessage className="mt-6" message={getErrorMessage(query.error)} onRetry={() => query.refetch()} />
       ) : (
-        <div className="mt-6 grid gap-8 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
           <form onSubmit={submit} noValidate className="space-y-5 lg:col-span-2">
             <AnimatePresence>{message && <Alert tone={message.tone}>{message.text}</Alert>}</AnimatePresence>
             <Checkbox
@@ -118,7 +118,7 @@ export function WhatsAppSettingsCard() {
               checked={form.enabled}
               onChange={(e) => set('enabled', e.target.checked)}
             />
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <Input label="Phone number ID" required inputMode="numeric" placeholder="1472524632613395" value={form.phoneNumberId}
                 onChange={(e) => set('phoneNumberId', e.target.value.trim())} error={errors.phoneNumberId} />
               <Input label="WhatsApp Business Account ID" optional inputMode="numeric" placeholder="1498195968878261" value={form.businessAccountId}
@@ -136,7 +136,7 @@ export function WhatsAppSettingsCard() {
               error={errors.accessToken}
               hint="Stored on the server and never shown again. Use a permanent System User token; temporary tokens expire after 24 hours."
             />
-            <div className="grid gap-5 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
               <Input label="Sign-in code template" required placeholder="otp" value={form.otpTemplateName} wrapperClassName="sm:col-span-2"
                 onChange={(e) => set('otpTemplateName', e.target.value.trim())} error={errors.otpTemplateName} />
               <Input label="Template language" required placeholder="en_US" value={form.otpTemplateLanguage}

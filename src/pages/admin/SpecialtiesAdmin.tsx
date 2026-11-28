@@ -43,12 +43,12 @@ function SpecialtyForm({ specialty, open, onClose, onSaved }: { specialty: Speci
       footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button type="submit" form="specialty-form" loading={save.isPending}>Save</Button></>}>
       <form id="specialty-form" onSubmit={submit} noValidate className="space-y-5">
         {save.isError && <Alert tone="error">{parseApiError(save.error).message}</Alert>}
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input label="Name" required error={errors.name?.message} {...register('name', { required: 'Name is required' })} />
           <Input label="URL slug" optional hint="e.g. unani-medicine" error={errors.slug?.message} {...register('slug')} />
         </div>
         <Textarea label="Description" optional rows={3} error={errors.description?.message} {...register('description')} />
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Select label="Icon" {...register('icon')}>
             {Object.entries(ICONS).map(([k, { label }]) => <option key={k} value={k}>{label}</option>)}
           </Select>

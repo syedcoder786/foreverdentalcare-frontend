@@ -36,7 +36,7 @@ export default function SpecialtyDetail() {
       {doctors.length > 0 && (
         <section className="container-page py-14 sm:py-20">
           <Reveal><SectionHeading eyebrow="Practitioners" title={`${specialty.name} doctors`} /></Reveal>
-          <Stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {doctors.map((d) => <StaggerItem key={d.id} className="h-full"><DoctorCard doctor={d} /></StaggerItem>)}
           </Stagger>
         </section>
@@ -45,7 +45,7 @@ export default function SpecialtyDetail() {
       {services.length > 0 && (
         <section className="container-page pb-20">
           <Reveal><SectionHeading eyebrow="Treatments" title={`${specialty.name} treatments`} /></Reveal>
-          <Stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => <StaggerItem key={s.id} className="h-full"><ServiceCard service={s} variant="detailed" hideSpecialty /></StaggerItem>)}
           </Stagger>
         </section>

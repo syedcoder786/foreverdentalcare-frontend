@@ -1,15 +1,16 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Save } from 'lucide-react';
+import { BadgePercent, Save } from 'lucide-react';
 import type { ClinicSettings, DayOfWeek } from '../../types';
-import { useAdminSettings, useHolidays, useSaveSettings } from '../../hooks/useAdminData';
+import { useAdminDoctors, useAdminSettings, useHolidays, useSaveSettings } from '../../hooks/useAdminData';
+import { Link } from 'react-router-dom';
 import { BlockedTimeManager } from '../../components/admin/doctor/BlockedTimeManager';
 import { Notice } from '../../components/admin/Notice';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { settingsSchema, type SettingsFormValues } from '../../utils/validation';
 import { parseApiError } from '../../utils/errors';
-import { DAYS_ORDER, DAY_LABELS, formatTime } from '../../utils/format';
+import { DAYS_ORDER, DAY_LABELS, formatRupees, formatTime } from '../../utils/format';
 import { Input, Textarea } from '../../components/ui/FormField';
 import { Button } from '../../components/ui/Button';
 import { Alert, ErrorMessage } from '../../components/ui/Alert';
@@ -32,6 +33,8 @@ function toForm(s: ClinicSettings): SettingsFormValues {
     workingDays: s.workingDays,
     slotDurationMinutes: String(s.slotDurationMinutes),
     bookingWindowDays: String(s.bookingWindowDays),
+    firstVisitDiscountPercent: s.firstVisitDiscountPercent != null ? String(s.firstVisitDiscountPercent) : '',
+    firstVisitOfferEnabled: !!s.firstVisitOfferEnabled,
   };
 }
 
@@ -54,7 +57,7 @@ function previewSlots(v: Partial<SettingsFormValues>): string[] {
 
 function Section({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <section className="grid gap-6 border-b border-slate-100 py-8 last:border-0 lg:grid-cols-3">
+    <section className="grid grid-cols-1 gap-6 border-b border-slate-100 py-8 last:border-0 lg:grid-cols-3">
       <div>
         <h2 className="font-semibold text-ink">{title}</h2>
         {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
@@ -116,6 +119,8 @@ export default function Settings() {
         workingDays: v.workingDays as DayOfWeek[],
         slotDurationMinutes: Number(v.slotDurationMinutes),
         bookingWindowDays: Number(v.bookingWindowDays),
+        firstVisitDiscountPercent: v.firstVisitDiscountPercent === '' ? null : Number(v.firstVisitDiscountPercent),
+        firstVisitOfferEnabled: v.firstVisitOfferEnabled,
       });
       setSaved(true);
     } catch (err) {
@@ -140,7 +145,7 @@ export default function Settings() {
       <Section title="Clinic information" description="Shown in the website header, footer and contact page.">
         <Input label="Clinic name" required error={errors.clinicName?.message} {...register('clinicName')} />
         <Textarea label="Address" required rows={2} error={errors.address?.message} {...register('address')} />
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input label="Contact number" required type="tel" error={errors.phone?.message} {...register('phone')} />
           <Input label="WhatsApp number" optional type="tel" error={errors.whatsappNumber?.message} {...register('whatsappNumber')} />
         </div>
@@ -164,7 +169,7 @@ export default function Settings() {
       </Section>
 
       <Section title="Clinic opening hours" description="Shown on the website. Each doctor's bookable hours are set in Doctors -> Schedule.">
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input label="Opening time" type="time" required error={errors.openingTime?.message} {...register('openingTime')} />
           <Input label="Closing time" type="time" required error={errors.closingTime?.message} {...register('closingTime')} />
           <Input label="Break start" type="time" optional error={errors.breakStartTime?.message} {...register('breakStartTime')} />
@@ -196,7 +201,7 @@ export default function Settings() {
       </Section>
 
       <Section title="Booking rules" description="Booking window applies to every doctor. Slot duration is the default for newly added doctors.">
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input label="Default slot duration for new doctors (minutes)" required inputMode="numeric" error={errors.slotDurationMinutes?.message} {...register('slotDurationMinutes')} />
           <Input label="Booking window (days ahead)" required inputMode="numeric" error={errors.bookingWindowDays?.message} {...register('bookingWindowDays')} />
         </div>
@@ -214,6 +219,24 @@ export default function Settings() {
         </div>
       </Section>
 
+      <Section
+        title="First-visit online offer"
+        description="A percentage off the consultation fee when a patient books their first appointment online. Fees come from each treatment, or the doctor's default fee (Doctors -> Profile). The website shows it until their first appointment is confirmed, and shows it again if that appointment is cancelled."
+      >
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <Input label="First-visit discount (%)" optional inputMode="numeric" placeholder="e.g. 50" error={errors.firstVisitDiscountPercent?.message} {...register('firstVisitDiscountPercent')} />
+        </div>
+        <label className="flex items-start gap-3 rounded-2xl border border-slate-200 p-4">
+          <input type="checkbox" className="mt-0.5 size-4 accent-brand-700" {...register('firstVisitOfferEnabled')} />
+          <span className="text-sm">
+            <span className="font-medium text-ink">Show the first-visit offer on the website</span>
+            <span className="block text-slate-500">Home page banner and ribbon, booking page, navigation badge and a small floating pill.</span>
+          </span>
+        </label>
+        <OfferPreview percent={values.firstVisitDiscountPercent} enabled={values.firstVisitOfferEnabled} />
+        <DoctorsWithoutFee />
+      </Section>
+
       <div className="sticky bottom-0 -mx-5 flex justify-end gap-3 border-t border-slate-100 bg-surface/95 px-5 py-4 backdrop-blur sm:-mx-8 sm:px-8">
         <Button variant="ghost" disabled={!isDirty || mutation.isPending} onClick={() => data && reset(toForm(data))}>
           Discard changes
@@ -229,6 +252,63 @@ export default function Settings() {
 }
 
 /** Clinic-wide holidays block every doctor's calendar. */
+/** The discount is a percentage of the fee, so doctors without one can't offer it. */
+function DoctorsWithoutFee() {
+  const { data = [] } = useAdminDoctors();
+  const active = data.filter((d) => d.active);
+  const missing = active.filter((d) => d.consultationFee == null || d.consultationFee <= 0);
+  if (missing.length === 0) return null;
+  const none = missing.length === active.length;
+  return (
+    <Alert tone="warning">
+      <p className="font-medium">
+        {none
+          ? 'No doctor has a consultation fee yet, so the offer is hidden on the website.'
+          : 'The discount is a percentage of the consultation fee, so it does not apply to these doctors:'}
+      </p>
+      <ul className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+        {missing.map((d) => (
+          <li key={d.id}>
+            <Link to={`/admin/doctors/${d.id}`} className="font-medium underline">{d.fullName}</Link>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1.5 text-xs">Add a "Default consultation fee" in Doctors -&gt; Profile &amp; services.</p>
+    </Alert>
+  );
+}
+
+function OfferPreview({ percent, enabled }: { percent?: string; enabled?: boolean }) {
+  const p = Number(percent);
+  if (!p || p < 1 || p > 100) {
+    return <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">Enter a discount to preview the offer.</p>;
+  }
+  const examples = [300, 500, 1000];
+  return (
+    <div className={cn('flex items-center gap-4 rounded-2xl bg-slate-50 p-4', !enabled && 'opacity-60')}>
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+        <BadgePercent className="size-6" aria-hidden />
+      </span>
+      <div className="text-sm">
+        <p className="font-semibold text-ink">{p}% off the first consultation booked online</p>
+        <p className="text-slate-500">
+          For example{' '}
+          {examples.map((f, i) => {
+            const price = Math.round((f * (100 - p)) / 100);
+            return (
+              <span key={f}>
+                <s className="text-slate-400">{formatRupees(f)}</s> {price === 0 ? 'Free' : formatRupees(price)}
+                {i < examples.length - 1 ? ', ' : '. '}
+              </span>
+            );
+          })}
+          {enabled ? 'Visible on the website after you save.' : 'Hidden. Tick the box above to show it.'}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function ClinicHolidays() {
   const holidays = useHolidays();
   const [message, setMessage] = useState<string | null>(null);

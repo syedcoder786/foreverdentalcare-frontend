@@ -46,7 +46,7 @@ export function BlockedTimeManager({ doctorId, blocks, onMessage }: Props) {
           {doctorId ? 'Patients will not be able to book this doctor during blocked time. Other doctors are unaffected.' : 'Closes every doctor’s calendar on these dates.'}
         </p>
         {add.isError && <Alert tone="error" className="mt-4">{parseApiError(add.error).message}</Alert>}
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input label="Date" type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
           <Input label="Until (optional)" type="date" value={endDate} min={date} onChange={(e) => setEndDate(e.target.value)} hint="For multi-day leave" />
           <Input label="Reason" optional value={reason} onChange={(e) => setReason(e.target.value)} wrapperClassName="lg:col-span-2" hint="Shown to patients as the reason the date is unavailable" />
