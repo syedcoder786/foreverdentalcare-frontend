@@ -12,7 +12,8 @@ import { Seo } from '../components/content/Seo';
 import { LinkButton, Button } from '../components/ui/Button';
 import { Input } from '../components/ui/FormField';
 import { Alert, ErrorMessage } from '../components/ui/Alert';
-import { PageLoader, Skeleton } from '../components/ui/Spinner';
+import { Skeleton } from '../components/ui/Spinner';
+import { ProfileSkeleton } from '../components/ui/Skeletons';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { formatDate, formatPhone, formatTime, telHref, formatRupees } from '../utils/format';
 import { directionsHref } from '../utils/maps';
@@ -26,7 +27,7 @@ import { toast } from '../components/ui/Toast';
 export default function Profile() {
   const { status, patient } = usePatientAuth();
 
-  if (status === 'loading') return <PageLoader label="Loading your profile..." />;
+  if (status === 'loading') return <ProfileSkeleton />;
 
   if (status !== 'authenticated' || !patient) {
     return (

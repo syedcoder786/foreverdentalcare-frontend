@@ -8,7 +8,7 @@ import { Seo } from '../components/content/Seo';
 import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 import { LinkButton } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/Alert';
-import { PageLoader } from '../components/ui/Spinner';
+import { DoctorProfileSkeleton } from '../components/ui/Skeletons';
 import { DAYS_ORDER, formatFee } from '../utils/format';
 import { scheduleHours, weekdayInZone } from '../utils/clinicHours';
 import { WeeklyHours, shiftTiles } from '../components/hours/WeeklyHours';
@@ -22,7 +22,7 @@ export default function DoctorProfile() {
   const { clinic } = useSite();
   const services = useServices(doctor ? { doctorId: doctor.id } : undefined);
 
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <DoctorProfileSkeleton />;
   if (isError) {
     if ((error as { response?: { status?: number } })?.response?.status === 404) return <NotFound />;
     return <div className="container-page py-20"><ErrorMessage message={getErrorMessage(error)} /></div>;

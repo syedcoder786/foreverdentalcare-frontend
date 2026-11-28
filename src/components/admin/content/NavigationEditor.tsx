@@ -6,8 +6,8 @@ import { getErrorMessage, parseApiError } from '../../../utils/errors';
 import { Input } from '../../ui/FormField';
 import { Button } from '../../ui/Button';
 import { Alert, ErrorMessage } from '../../ui/Alert';
-import { Skeleton } from '../../ui/Spinner';
 import { toast } from '../../ui/Toast';
+import { ListSkeleton } from '../../ui/Skeletons';
 
 /** Header menu editor (order = position in the list). The footer "Explore" links use the same menu. */
 export function NavigationEditor() {
@@ -20,7 +20,7 @@ export function NavigationEditor() {
   const update = (i: number, patch: Partial<NavigationItem>) => { setItems((list) => list.map((it, idx) => (idx === i ? { ...it, ...patch } : it))); setSaved(false); };
   const move = (i: number, dir: -1 | 1) => setItems((list) => { const next = [...list]; [next[i], next[i + dir]] = [next[i + dir], next[i]]; return next; });
 
-  if (isLoading) return <Skeleton className="h-48" />;
+  if (isLoading) return <ListSkeleton rows={5} rowClassName="h-12" label="Loading navigation" />;
   if (isError) return <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />;
 
   return (

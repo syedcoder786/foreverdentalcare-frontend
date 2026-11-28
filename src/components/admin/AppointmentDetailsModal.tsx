@@ -6,7 +6,7 @@ import { useClinic } from '../../hooks/usePublicData';
 import { Modal } from '../ui/Modal';
 import { Button, LinkButton } from '../ui/Button';
 import { Alert, ErrorMessage } from '../ui/Alert';
-import { PageLoader } from '../ui/Spinner';
+import { DetailListSkeleton } from '../ui/Skeletons';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Input } from '../ui/FormField';
 import { SlotPicker } from '../appointment/SlotPicker';
@@ -82,7 +82,7 @@ export function AppointmentDetailsModal({ appointmentId, onClose }: Props) {
 
   return (
     <Modal open={appointmentId !== null} onClose={onClose} title={appt ? `Appointment #${appt.id}` : 'Appointment'} size="lg">
-      {isLoading && <PageLoader label="Loading appointment..." />}
+      {isLoading && <DetailListSkeleton label="Loading appointment" />}
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {appt && (
         <div className="space-y-6">

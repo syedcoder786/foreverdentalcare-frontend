@@ -1,8 +1,8 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useState, type ReactNode } from 'react';
 import { useLocation, useOutlet } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { EASE_OUT } from './Reveal';
-import { PageLoader } from '../ui/Spinner';
+import { PageSkeleton } from '../ui/Skeletons';
 import { ScrollOnEnter } from '../layout/ScrollToTop';
 
 /** Keeps the previous route's element mounted while it animates out. */
@@ -13,7 +13,7 @@ function FrozenOutlet() {
 }
 
 /** Route outlet with a fade/slide page transition. */
-export function AnimatedOutlet({ offset = 14 }: { offset?: number }) {
+export function AnimatedOutlet({ offset = 14, fallback = <PageSkeleton /> }: { offset?: number; fallback?: ReactNode }) {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -25,7 +25,7 @@ export function AnimatedOutlet({ offset = 14 }: { offset?: number }) {
       >
         {/* Scrolls once this page has actually mounted (after the previous page animated out). */}
         <ScrollOnEnter />
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={fallback}>
           <FrozenOutlet />
         </Suspense>
       </motion.div>

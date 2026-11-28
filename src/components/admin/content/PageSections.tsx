@@ -6,9 +6,9 @@ import { getErrorMessage, parseApiError } from '../../../utils/errors';
 import { Input } from '../../ui/FormField';
 import { Button } from '../../ui/Button';
 import { Alert, ErrorMessage } from '../../ui/Alert';
-import { Skeleton } from '../../ui/Spinner';
 import { SectionEditor } from './SectionEditor';
 import { toast } from '../../ui/Toast';
+import { ListSkeleton } from '../../ui/Skeletons';
 
 const PAGE_PATHS: Record<PageKey, string> = {
   HOME: '/', ABOUT: '/about', DOCTORS: '/doctors', SPECIALTIES: '/specialties', SERVICES: '/services', CONTACT: '/contact', BOOK: '/book',
@@ -30,7 +30,7 @@ export function PageSections({ pageKey }: { pageKey: PageKey }) {
         </a>
       </div>
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
-      {isLoading ? <Skeleton className="h-48" /> : data?.map((s) => <SectionEditor key={s.id} section={s} pageKey={pageKey} />)}
+      {isLoading ? <ListSkeleton rows={3} rowClassName="h-20" label="Loading sections" /> : data?.map((s) => <SectionEditor key={s.id} section={s} pageKey={pageKey} />)}
 
       <div className="rounded-2xl border border-dashed border-slate-300 p-4">
         <h4 className="text-sm font-semibold text-ink">Add a custom section</h4>

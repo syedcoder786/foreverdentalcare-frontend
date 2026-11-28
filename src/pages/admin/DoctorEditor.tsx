@@ -11,7 +11,7 @@ import { DoctorDayView } from '../../components/admin/calendar/DoctorDayView';
 import { CalendarView } from '../../components/admin/calendar/CalendarView';
 import { Notice } from '../../components/admin/Notice';
 import { ErrorMessage } from '../../components/ui/Alert';
-import { PageLoader } from '../../components/ui/Spinner';
+import { FormSkeleton } from '../../components/ui/Skeletons';
 import { getErrorMessage } from '../../utils/errors';
 import { cn } from '../../utils/cn';
 
@@ -36,7 +36,7 @@ export default function DoctorEditor() {
   const schedule = useDoctorSchedule(doctorId);
   useDocumentTitle(isNew ? 'New doctor' : doctor.data?.fullName ?? 'Doctor');
 
-  if (!isNew && doctor.isLoading) return <PageLoader />;
+  if (!isNew && doctor.isLoading) return <FormSkeleton fields={8} label="Loading doctor" />;
   if (!isNew && doctor.isError) return <ErrorMessage message={getErrorMessage(doctor.error)} onRetry={() => doctor.refetch()} />;
 
   return (

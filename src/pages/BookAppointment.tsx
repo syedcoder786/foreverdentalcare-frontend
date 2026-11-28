@@ -6,7 +6,7 @@ import { AppointmentForm } from '../components/appointment/AppointmentForm';
 import { BookingOfferNote } from '../components/offer/FirstVisitOffer';
 import { PatientAuthFlow } from '../components/patient/PatientAuthFlow';
 import { usePatientAuth } from '../context/PatientAuthContext';
-import { PageLoader } from '../components/ui/Spinner';
+import { FormSkeleton } from '../components/ui/Skeletons';
 import { RichText } from '../components/content/Cms';
 import { Seo } from '../components/content/Seo';
 import { EASE_OUT, Stagger, StaggerItem } from '../components/motion/Reveal';
@@ -68,7 +68,7 @@ export default function BookAppointment() {
         <motion.div id="booking-form" className="scroll-mt-24 lg:col-span-8" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }}>
           <div className="rounded-[2rem] border border-slate-200/80 bg-surface p-5 shadow-lift sm:p-8 dark:ring-1 dark:ring-brand-400/10">
             {clinicLoading || pageLoading || patientStatus === 'loading' ? (
-              <PageLoader label="Loading booking form..." />
+              <FormSkeleton fields={5} label="Loading booking form" />
             ) : patientStatus !== 'authenticated' ? (
               <div className="mx-auto max-w-md py-4">
                 <PatientAuthFlow

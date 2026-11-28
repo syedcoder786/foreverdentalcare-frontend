@@ -14,7 +14,7 @@ import { DAYS_ORDER, DAY_LABELS, formatRupees, formatTime } from '../../utils/fo
 import { Input, Textarea } from '../../components/ui/FormField';
 import { Button } from '../../components/ui/Button';
 import { Alert, ErrorMessage } from '../../components/ui/Alert';
-import { PageLoader } from '../../components/ui/Spinner';
+import { FormSkeleton } from '../../components/ui/Skeletons';
 import { cn } from '../../utils/cn';
 import { toast } from '../../components/ui/Toast';
 import { ClinicHours, ShiftIcon } from '../../components/ui/ShiftHours';
@@ -168,7 +168,7 @@ export default function Settings() {
     }
   }, () => toast.error('Some fields need attention. They are highlighted in the form.', { title: 'Not saved yet' }));
 
-  if (isLoading) return <PageLoader label="Loading settings..." />;
+  if (isLoading) return <FormSkeleton fields={8} label="Loading settings" />;
   if (isError) return <ErrorMessage message={parseApiError(error).message} onRetry={() => refetch()} />;
 
   return (

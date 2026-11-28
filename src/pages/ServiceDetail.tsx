@@ -9,7 +9,7 @@ import { SectionHeading } from '../components/ui/SectionHeading';
 import { TreatmentFee, TreatmentOfferTag } from '../components/offer/TreatmentOffers';
 import { LinkButton } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/Alert';
-import { PageLoader } from '../components/ui/Spinner';
+import { DetailPageSkeleton } from '../components/ui/Skeletons';
 import { getErrorMessage } from '../utils/errors';
 import { ServiceCover } from '../components/ui/Illustrations';
 import NotFound from './NotFound';
@@ -17,7 +17,7 @@ import NotFound from './NotFound';
 export default function ServiceDetail() {
   const { slug } = useParams();
   const { data, isLoading, isError, error } = useService(slug);
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <DetailPageSkeleton label="Loading treatment" />;
   if (isError) {
     if ((error as { response?: { status?: number } })?.response?.status === 404) return <NotFound />;
     return <div className="container-page py-20"><ErrorMessage message={getErrorMessage(error)} /></div>;

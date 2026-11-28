@@ -19,7 +19,7 @@ export function PageLoader({ label = 'Loading...' }: { label?: string }) {
   );
 }
 
-/** Shimmering placeholder block for skeleton layouts. */
+/** Shimmering placeholder block for skeleton layouts (see `skeleton` in index.css). */
 export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden className={cn('animate-pulse rounded-xl bg-slate-100', className)} />;
+  return <div aria-hidden className={cn('skeleton rounded-xl', className)} />;
 }

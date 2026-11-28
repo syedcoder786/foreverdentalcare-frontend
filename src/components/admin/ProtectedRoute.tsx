@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { PageLoader } from '../ui/Spinner';
+import { AdminShellSkeleton } from '../ui/Skeletons';
 
 /** Renders children only for authenticated admins; otherwise redirects to the login page. */
 export function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -9,7 +9,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   if (status === 'loading') {
-    return <PageLoader label="Checking your session..." />;
+    return <AdminShellSkeleton />;
   }
   if (status === 'anonymous') {
     return <Navigate to="/admin/login" replace state={{ from: location.pathname + location.search }} />;

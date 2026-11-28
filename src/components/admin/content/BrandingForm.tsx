@@ -6,9 +6,9 @@ import { getErrorMessage, parseApiError } from '../../../utils/errors';
 import { Input, Textarea } from '../../ui/FormField';
 import { Button } from '../../ui/Button';
 import { Alert, ErrorMessage } from '../../ui/Alert';
-import { Skeleton } from '../../ui/Spinner';
 import { ImageUpload } from '../ImageUpload';
 import { toast } from '../../ui/Toast';
+import { FormSkeleton } from '../../ui/Skeletons';
 
 type BrandingFields = Pick<ClinicSettings, 'clinicName' | 'logoUrl' | 'tagline' | 'headerCtaText' | 'whatsappNumber' | 'footerDescription' | 'copyrightText' | 'facebookUrl' | 'instagramUrl' | 'youtubeUrl' | 'googleReviewsUrl'>;
 
@@ -24,7 +24,7 @@ export function BrandingForm() {
       youtubeUrl: data.youtubeUrl ?? '', googleReviewsUrl: data.googleReviewsUrl ?? '' });
   }, [data]);
 
-  if (isLoading || !form) return isError ? <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} /> : <Skeleton className="h-64" />;
+  if (isLoading || !form) return isError ? <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} /> : <FormSkeleton fields={6} label="Loading branding" />;
   const set = (k: keyof BrandingFields, v: string) => { setForm((f) => (f ? { ...f, [k]: v } : f)); setSaved(false); };
   const errors = save.isError ? parseApiError(save.error).fieldErrors : {};
 

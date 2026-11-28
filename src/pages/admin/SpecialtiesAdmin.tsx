@@ -9,12 +9,12 @@ import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { Alert, ErrorMessage } from '../../components/ui/Alert';
 import { Checkbox, Input, Select, Textarea } from '../../components/ui/FormField';
-import { Skeleton } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ImageUpload } from '../../components/admin/ImageUpload';
 import { Notice } from '../../components/admin/Notice';
 import { CmsIcon, ICONS } from '../../components/content/CmsIcon';
 import { getErrorMessage, parseApiError } from '../../utils/errors';
+import { TableSkeleton } from '../../components/ui/Skeletons';
 
 interface FormValues { name: string; slug: string; description: string; icon: string; imageUrl: string; displayOrder: string; active: boolean }
 
@@ -77,7 +77,7 @@ export default function SpecialtiesAdmin() {
       </div>
       <Notice message={notice} onClear={() => setNotice(null)} />
       <div className="rounded-2xl border border-slate-200 bg-surface p-2 shadow-soft sm:p-3">
-        {isError ? <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} /> : isLoading ? <Skeleton className="h-40" /> : (
+        {isError ? <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} /> : isLoading ? <TableSkeleton rows={4} label="Loading specialties" /> : (
           <DataTable<Specialty>
             caption="Specialties"
             rows={data ?? []}

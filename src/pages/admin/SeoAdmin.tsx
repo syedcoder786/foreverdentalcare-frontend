@@ -5,10 +5,10 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { Button } from '../../components/ui/Button';
 import { Alert, ErrorMessage } from '../../components/ui/Alert';
 import { Checkbox, Input, Textarea } from '../../components/ui/FormField';
-import { Skeleton } from '../../components/ui/Spinner';
 import { ImageUpload } from '../../components/admin/ImageUpload';
 import { getErrorMessage, parseApiError } from '../../utils/errors';
 import { toast } from '../../components/ui/Toast';
+import { ListSkeleton } from '../../components/ui/Skeletons';
 
 const LABELS: Record<PageKey, string> = {
   HOME: 'Home', ABOUT: 'About', DOCTORS: 'Our doctors', SPECIALTIES: 'Specialties', SERVICES: 'Treatments', CONTACT: 'Contact', BOOK: 'Book appointment',
@@ -49,7 +49,7 @@ export default function SeoAdmin() {
         Titles and descriptions for each page. Doctor, specialty and treatment pages use their own name and description automatically; their URL slugs are edited on their admin pages.
       </p>
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
-      {isLoading ? <Skeleton className="h-64" /> : (
+      {isLoading ? <ListSkeleton rows={5} rowClassName="h-20" label="Loading SEO settings" /> : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">{data?.map((s) => <SeoCard key={s.pageKey} seo={s} />)}</div>
       )}
     </div>

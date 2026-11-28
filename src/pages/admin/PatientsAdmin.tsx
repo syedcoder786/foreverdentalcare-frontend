@@ -9,7 +9,7 @@ import { Pagination } from '../../components/ui/Pagination';
 import { Input } from '../../components/ui/FormField';
 import { Modal } from '../../components/ui/Modal';
 import { ErrorMessage } from '../../components/ui/Alert';
-import { PageLoader, Skeleton } from '../../components/ui/Spinner';
+import { DetailListSkeleton, TableSkeleton } from '../../components/ui/Skeletons';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { AppointmentDetailsModal } from '../../components/admin/AppointmentDetailsModal';
@@ -20,7 +20,7 @@ function PatientModal({ id, onClose, onOpenAppointment }: { id: number | null; o
   const { data, isLoading, isError, error } = usePatient(id);
   return (
     <Modal open={id !== null} onClose={onClose} title={data?.patient.fullName ?? 'Patient'} size="lg">
-      {isLoading && <PageLoader />}
+      {isLoading && <DetailListSkeleton label="Loading patient" />}
       {isError && <ErrorMessage message={getErrorMessage(error)} />}
       {data && (
         <div className="space-y-5">
@@ -63,7 +63,7 @@ export default function PatientsAdmin() {
         <Input label="Search patients" placeholder="Name or phone" className="pl-10" value={searchInput} onChange={(e) => { setSearchInput(e.target.value); setPage(0); }} />
       </div>
       <div className="rounded-2xl border border-slate-200 bg-surface p-2 shadow-soft sm:p-3">
-        {isError ? <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} /> : isLoading ? <Skeleton className="h-48" /> : (
+        {isError ? <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} /> : isLoading ? <TableSkeleton rows={8} label="Loading patients" /> : (
           <DataTable<Patient>
             caption="Patients"
             rows={data?.content ?? []}

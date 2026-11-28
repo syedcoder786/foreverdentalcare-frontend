@@ -9,7 +9,7 @@ import { ServiceCard } from '../components/services/ServiceCard';
 import { DoctorAvatar, DoctorCard } from '../components/doctors/DoctorCard';
 import { SpecialtyCard } from '../components/specialties/SpecialtyCard';
 import { ErrorMessage } from '../components/ui/Alert';
-import { PageLoader, Skeleton } from '../components/ui/Spinner';
+import { CardGridSkeleton, HomeSkeleton } from '../components/ui/Skeletons';
 import { CtaBand } from '../components/layout/CtaBand';
 import { CmsButtons, CmsCards, CmsHeading, CustomSection, RichText, SmartLink } from '../components/content/Cms';
 import { Seo } from '../components/content/Seo';
@@ -289,7 +289,7 @@ function FeaturedDoctors({ section }: { section: Section }) {
     <SectionShell section={section}>
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-96 rounded-3xl" />)}</div>
+        <CardGridSkeleton kind="doctor" count={3} label="Loading doctors" className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3" />
       ) : (
         <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {featured.map((d) => <StaggerItem key={d.id} className="h-full"><DoctorCard doctor={d} /></StaggerItem>)}
@@ -305,7 +305,7 @@ function Specialties({ section }: { section: Section }) {
   return (
     <SectionShell section={section} tinted>
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-56 rounded-3xl" />)}</div>
+        <CardGridSkeleton kind="specialty" count={3} label="Loading specialties" className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" />
       ) : (
         <Stagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {data!.map((s) => <StaggerItem key={s.id} className="h-full"><SpecialtyCard specialty={s} /></StaggerItem>)}
@@ -321,7 +321,7 @@ function FeaturedServices({ section }: { section: Section }) {
     <SectionShell section={section}>
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-3xl" />)}</div>
+        <CardGridSkeleton kind="service" count={6} label="Loading treatments" className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" />
       ) : (
         data && (
           <Stagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -471,7 +471,7 @@ const RENDERERS: Record<string, (s: Section) => ReactNode> = {
 /** Home page sections are rendered in the order (and visibility) configured in Admin -> Homepage editor. */
 export default function Home() {
   const { sections, seo, isLoading, isError, error, refetch } = usePage('HOME');
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <HomeSkeleton />;
   if (isError) {
     return (
       <div className="container-page py-20">

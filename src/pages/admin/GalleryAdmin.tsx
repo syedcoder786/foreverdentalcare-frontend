@@ -7,12 +7,12 @@ import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { Alert, ErrorMessage } from '../../components/ui/Alert';
 import { Checkbox, Input } from '../../components/ui/FormField';
-import { Skeleton } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ImageUpload } from '../../components/admin/ImageUpload';
 import { Notice } from '../../components/admin/Notice';
 import { getErrorMessage, parseApiError } from '../../utils/errors';
 import { cn } from '../../utils/cn';
+import { ImageGridSkeleton } from '../../components/ui/Skeletons';
 
 type Draft = Omit<GalleryImage, 'id' | 'createdAt'>;
 const EMPTY: Draft = { imageUrl: '', caption: '', category: '', displayOrder: 0, active: true };
@@ -47,7 +47,7 @@ export default function GalleryAdmin() {
       </div>
       <Notice message={notice} onClear={() => setNotice(null)} />
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
-      {isLoading ? <Skeleton className="h-48" /> : images.length === 0 ? (
+      {isLoading ? <ImageGridSkeleton /> : images.length === 0 ? (
         <EmptyState title="No photos yet" description="Upload clinic photos. The gallery is hidden on the website until it has photos." />
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

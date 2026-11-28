@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { PublicLayout } from './layouts/PublicLayout';
 import { AdminLayout } from './layouts/AdminLayout';
 import { ProtectedRoute } from './components/admin/ProtectedRoute';
-import { PageLoader } from './components/ui/Spinner';
+import { AuthCardSkeleton } from './components/ui/Skeletons';
 import Home from './pages/Home';
 
 // Route-level code splitting keeps the public bundle small; admin code loads only when needed.
@@ -39,7 +39,7 @@ const StorageAdmin = lazy(() => import('./pages/admin/StorageAdmin'));
 
 export default function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={<AuthCardSkeleton />}>
       <Routes>
         <Route element={<PublicLayout />}>
           <Route index element={<Home />} />

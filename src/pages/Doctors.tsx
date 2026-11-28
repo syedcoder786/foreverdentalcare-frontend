@@ -7,7 +7,7 @@ import { CustomSections } from '../components/content/Cms';
 import { Seo } from '../components/content/Seo';
 import { Stagger, StaggerItem } from '../components/motion/Reveal';
 import { ErrorMessage } from '../components/ui/Alert';
-import { Skeleton } from '../components/ui/Spinner';
+import { CardGridSkeleton } from '../components/ui/Skeletons';
 import { EmptyState } from '../components/ui/EmptyState';
 import { getErrorMessage } from '../utils/errors';
 import { cn } from '../utils/cn';
@@ -40,7 +40,7 @@ export default function Doctors() {
         )}
         {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[28rem] rounded-3xl" />)}</div>
+          <CardGridSkeleton kind="doctor" count={3} label="Loading doctors" />
         ) : data && data.length > 0 ? (
           <Stagger key={specialtyId ?? 'all'} className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {data.map((d) => <StaggerItem key={d.id} className="h-full"><DoctorCard doctor={d} /></StaggerItem>)}

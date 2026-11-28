@@ -22,7 +22,7 @@ import {
 } from '../../../utils/clinicHours';
 import { Button } from '../../ui/Button';
 import { Alert, ErrorMessage } from '../../ui/Alert';
-import { PageLoader } from '../../ui/Spinner';
+import { ListSkeleton } from '../../ui/Skeletons';
 import { ShiftIcon } from '../../ui/ShiftHours';
 import { toast } from '../../ui/Toast';
 import { EASE_OUT } from '../../motion/Reveal';
@@ -229,7 +229,7 @@ export function DoctorScheduleForm({ doctorId, onSaved }: { doctorId: number; on
     }
   }, [data]);
 
-  if (isLoading) return <PageLoader label="Loading schedule..." />;
+  if (isLoading) return <ListSkeleton rows={7} rowClassName="h-14" label="Loading schedule" />;
   if (isError) return <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />;
 
   const updateDay = (day: DayOfWeek, patch: Partial<WithShifts<DaySchedule>>) =>

@@ -6,7 +6,7 @@ import { ServiceCard } from '../components/services/ServiceCard';
 import { CustomSections } from '../components/content/Cms';
 import { Seo } from '../components/content/Seo';
 import { ErrorMessage } from '../components/ui/Alert';
-import { Skeleton } from '../components/ui/Spinner';
+import { CardGridSkeleton } from '../components/ui/Skeletons';
 import { EmptyState } from '../components/ui/EmptyState';
 import { CtaBand } from '../components/layout/CtaBand';
 import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
@@ -39,7 +39,7 @@ export default function Services() {
           </div>
         )}
         {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
-        {isLoading && <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-96 rounded-3xl" />)}</div>}
+        {isLoading && <CardGridSkeleton kind="service" count={6} label="Loading treatments" />}
         <div className="space-y-16">
           {Array.from(groups.entries()).map(([id, g]) => (
             <div key={id} id={g.slug} className="scroll-mt-28">

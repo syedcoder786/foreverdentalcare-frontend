@@ -7,11 +7,11 @@ import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { Alert, ErrorMessage } from '../../components/ui/Alert';
 import { Checkbox, Input, Select, Textarea } from '../../components/ui/FormField';
-import { Skeleton } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Notice } from '../../components/admin/Notice';
 import { getErrorMessage, parseApiError } from '../../utils/errors';
 import { cn } from '../../utils/cn';
+import { ListSkeleton } from '../../components/ui/Skeletons';
 
 type Draft = Omit<Testimonial, 'id' | 'createdAt'>;
 const EMPTY: Draft = { patientName: '', context: '', quote: '', rating: null, consentConfirmed: false, published: false, displayOrder: 0 };
@@ -40,7 +40,7 @@ export default function TestimonialsAdmin() {
       </div>
       <Notice message={notice} onClear={() => setNotice(null)} />
       {isError && <ErrorMessage message={getErrorMessage(error)} onRetry={() => refetch()} />}
-      {isLoading ? <Skeleton className="h-40" /> : data?.length === 0 ? (
+      {isLoading ? <ListSkeleton rows={3} rowClassName="h-28" label="Loading testimonials" /> : data?.length === 0 ? (
         <EmptyState title="No testimonials yet" description="The testimonials section stays hidden on the website until you publish one." />
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

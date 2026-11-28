@@ -9,14 +9,14 @@ import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { LinkButton } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/Alert';
-import { PageLoader } from '../components/ui/Spinner';
+import { DetailPageSkeleton } from '../components/ui/Skeletons';
 import { getErrorMessage } from '../utils/errors';
 import NotFound from './NotFound';
 
 export default function SpecialtyDetail() {
   const { slug } = useParams();
   const { data, isLoading, isError, error } = useSpecialty(slug);
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <DetailPageSkeleton label="Loading specialty" />;
   if (isError) {
     if ((error as { response?: { status?: number } })?.response?.status === 404) return <NotFound />;
     return <div className="container-page py-20"><ErrorMessage message={getErrorMessage(error)} /></div>;

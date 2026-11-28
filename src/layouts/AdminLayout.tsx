@@ -4,6 +4,7 @@ import { Sidebar } from '../components/admin/Sidebar';
 import { Topbar } from '../components/admin/Topbar';
 import { AnimatedOutlet } from '../components/motion/AnimatedOutlet';
 import { ScrollToTop } from '../components/layout/ScrollToTop';
+import { AdminPageSkeleton } from '../components/ui/Skeletons';
 
 const TITLES: Record<string, string> = {
   '/admin': 'Dashboard',
@@ -36,7 +37,7 @@ export function AdminLayout() {
       <div className="lg:pl-72">
         <Topbar title={title} onMenu={() => setMenuOpen(true)} />
         <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-          <AnimatedOutlet offset={10} />
+          <AnimatedOutlet offset={10} fallback={<AdminPageSkeleton />} />
         </main>
       </div>
     </div>

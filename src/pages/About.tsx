@@ -8,7 +8,7 @@ import { CmsCards, CmsHeading, CustomSections, RichText } from '../components/co
 import { Seo } from '../components/content/Seo';
 import { DoctorCard } from '../components/doctors/DoctorCard';
 import { Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
-import { PageLoader } from '../components/ui/Spinner';
+import { ContentPageSkeleton } from '../components/ui/Skeletons';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { cn } from '../utils/cn';
 
@@ -48,7 +48,7 @@ export default function About() {
   const { clinic } = useSite();
   const { sections, section, seo, isLoading } = usePage('ABOUT');
   const { data: doctors = [] } = useDoctors();
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <ContentPageSkeleton label="Loading about page" />;
   const intro = section('intro');
   const mission = section('mission');
   const vision = section('vision');

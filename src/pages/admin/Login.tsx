@@ -10,7 +10,7 @@ import { getErrorMessage } from '../../utils/errors';
 import { Input } from '../../components/ui/FormField';
 import { Button } from '../../components/ui/Button';
 import { Alert } from '../../components/ui/Alert';
-import { PageLoader } from '../../components/ui/Spinner';
+import { AuthCardSkeleton } from '../../components/ui/Skeletons';
 import { Logo } from '../../components/layout/Logo';
 
 export default function Login() {
@@ -27,7 +27,7 @@ export default function Login() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
 
-  if (status === 'loading') return <PageLoader />;
+  if (status === 'loading') return <AuthCardSkeleton />;
   if (status === 'authenticated') return <Navigate to={from} replace />;
 
   const onSubmit = handleSubmit(async ({ email, password }) => {
