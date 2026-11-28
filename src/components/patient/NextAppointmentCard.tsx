@@ -488,41 +488,48 @@ function shortLeft(ms: number): string {
 /** Phones: one short card with only what matters (when, what, who, status) and icon actions. */
 function CompactSlide({ a, pending, live, soon, left, endsIn }: { a: PatientAppointment; pending: boolean; live: boolean; soon: boolean; left: number; endsIn: number }) {
   const { clinic } = useSite();
-  const iconBtn = 'flex size-9 shrink-0 items-center justify-center rounded-full ring-1 transition active:scale-95';
+  const iconBtn = 'flex size-8 shrink-0 items-center justify-center rounded-full ring-1 transition active:scale-95 min-[360px]:size-9';
   return (
     <div className="relative space-y-3 p-3.5 md:hidden">
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-3">
         {/* mini date tile */}
         <div className="flex w-13 shrink-0 flex-col items-center overflow-hidden rounded-2xl bg-linear-to-b from-brand-500 to-brand-700 text-white shadow-md shadow-brand-700/25">
           <span className="w-full bg-black/15 py-0.5 text-center text-[9px] font-bold tracking-[0.18em] uppercase">{datePart(a.appointmentDate, { month: 'short' })}</span>
           <span className="pt-0.5 font-display text-2xl leading-none font-semibold">{datePart(a.appointmentDate, { day: 'numeric' })}</span>
           <span className="pb-1 text-[9px] font-semibold tracking-wider uppercase opacity-90">{datePart(a.appointmentDate, { weekday: 'short' })}</span>
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h2 className="truncate font-display text-lg leading-tight font-semibold text-ink">{a.serviceName}</h2>
-            <StatusBadge status={a.status} className="shrink-0" />
-          </div>
-          <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted">
+        {/* The status lives in the pill below, so the title gets the full width and may wrap to two lines. */}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <h2 className="line-clamp-2 font-display text-[1.05rem] leading-snug font-semibold break-words text-ink">{a.serviceName}</h2>
+          <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted">
             <Clock className="size-3.5 shrink-0 text-brand-600" aria-hidden />
-            <span className="font-semibold text-ink">{formatTime(a.appointmentTime)}</span>
-            <span aria-hidden>·</span>
-            <Link to={`/doctors/${a.doctorSlug}`} className="truncate hover:underline">{a.doctorName}</Link>
+            <span className="shrink-0 font-semibold text-ink">{formatTime(a.appointmentTime)}</span>
+          </p>
+          <p className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-muted">
+            <Stethoscope className="size-3.5 shrink-0 text-brand-600" aria-hidden />
+            <Link to={`/doctors/${a.doctorSlug}`} className="min-w-0 truncate hover:underline">{a.doctorName}</Link>
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* @container: the pill switches to shorter wording when the card is narrow (small phones), so nothing is cut off. */}
+      <div className="@container flex items-center gap-1.5 min-[360px]:gap-2">
         {/* one-line status */}
         {pending ? (
           <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 ring-1 ring-amber-200/70 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20">
             <Hourglass className="size-3.5 shrink-0" aria-hidden />
-            <span className="truncate">Awaiting clinic confirmation</span>
+            <span className="truncate" title="Awaiting clinic confirmation">
+              <span className="@min-[19.5rem]:hidden">Awaiting</span>
+              <span className="hidden @min-[19.5rem]:inline">Awaiting confirmation</span>
+            </span>
           </span>
         ) : live ? (
           <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-brand-600 px-3 py-2 text-xs font-semibold text-white">
             <span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75" /><span className="relative inline-flex size-2 rounded-full bg-white" /></span>
-            <span className="truncate">It&apos;s time! {endsIn > 0 ? `Ends in ${endsIn} min` : 'Please come in'}</span>
+            <span className="truncate">
+              <span className="@min-[19.5rem]:hidden">{endsIn > 0 ? `Now · ${endsIn}m left` : 'Come in now'}</span>
+              <span className="hidden @min-[19.5rem]:inline">It&apos;s time! {endsIn > 0 ? `Ends in ${endsIn} min` : 'Please come in'}</span>
+            </span>
           </span>
         ) : (
           <span
@@ -532,7 +539,9 @@ function CompactSlide({ a, pending, live, soon, left, endsIn }: { a: PatientAppo
             )}
           >
             <BellRing className="size-3.5 shrink-0" aria-hidden />
-            <span className="truncate">{soon ? 'Starting soon' : 'Starts in'} <span className="font-bold tabular-nums">{shortLeft(left)}</span></span>
+            <span className="truncate">
+              <span className="hidden @min-[19.5rem]:inline">{soon ? 'Soon' : 'Confirmed'} · </span>in <span className="font-bold tabular-nums">{shortLeft(left)}</span>
+            </span>
           </span>
         )}
 
